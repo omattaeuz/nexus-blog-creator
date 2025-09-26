@@ -76,11 +76,11 @@ const Posts = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Blog Posts
+              Blogs
             </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover stories, insights, and ideas from our community of writers
+            Descubra histórias, insights e ideias da nossa comunidade de escritores
           </p>
         </div>
 
@@ -93,7 +93,7 @@ const Posts = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search posts..."
+                  placeholder="Buscar posts..."
                   value={searchTerm}
                   onChange={handleSearch}
                   className="pl-10 transition-all duration-300 focus:ring-primary"
@@ -111,7 +111,7 @@ const Posts = () => {
                 >
                   <Link to="/posts/new" className="flex items-center space-x-2">
                     <PlusCircle className="h-4 w-4" />
-                    <span>New Post</span>
+                    <span>Novo Post</span>
                   </Link>
                 </Button>
               </div>

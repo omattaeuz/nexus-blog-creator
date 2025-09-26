@@ -9,8 +9,8 @@ interface Post {
   id: string;
   title: string;
   content: string;
-  createdAt: string;
-  updatedAt?: string;
+  created_at: string;
+  updated_at?: string;
   author?: string;
 }
 
@@ -51,7 +51,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           <CardTitle className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
             {post.title}
           </CardTitle>
-          {post.updatedAt && post.updatedAt !== post.createdAt && (
+          {post.updated_at && post.updated_at !== post.created_at && (
             <Badge variant="secondary" className="ml-2">
               Updated
             </Badge>
@@ -69,7 +69,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(post.createdAt)}</span>
+            <span>{formatDate(post.created_at)}</span>
           </div>
           {post.author && (
             <div className="flex items-center space-x-1">

@@ -40,15 +40,15 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     };
 
     if (!formData.title.trim()) {
-      newErrors.title = "Title is required";
+      newErrors.title = "Título é obrigatório";
     } else if (formData.title.trim().length < 3) {
-      newErrors.title = "Title must be at least 3 characters long";
+      newErrors.title = "O título deve ter pelo menos 3 caracteres";
     }
 
     if (!formData.content.trim()) {
-      newErrors.content = "Content is required";
+      newErrors.content = "Conteúdo é obrigatório";
     } else if (formData.content.trim().length < 10) {
-      newErrors.content = "Content must be at least 10 characters long";
+      newErrors.content = "O conteúdo deve ter pelo menos 10 caracteres";
     }
 
     setErrors(newErrors);
@@ -60,8 +60,8 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     
     if (!validateForm()) {
       toast({
-        title: "Validation Error",
-        description: "Please fix the errors in the form",
+        title: "Erro de Validação",
+        description: "Por favor, corrija os erros no formulário",
         variant: "destructive",
       });
       return;
@@ -76,15 +76,15 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       });
       
       toast({
-        title: isEdit ? "Post updated" : "Post created",
-        description: `Your post has been ${isEdit ? "updated" : "created"} successfully.`,
+        title: isEdit ? "Post atualizado" : "Post criado",
+        description: `Seu post foi ${isEdit ? "atualizado" : "criado"} com sucesso.`,
       });
       
       navigate("/posts");
     } catch (error) {
       toast({
-        title: "Error",
-        description: `Failed to ${isEdit ? "update" : "create"} post. Please try again.`,
+        title: "Erro",
+        description: `Falha ao ${isEdit ? "atualizar" : "criar"} post. Tente novamente.`,
         variant: "destructive",
       });
     } finally {
@@ -105,7 +105,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       <Card className="bg-gradient-surface shadow-glow border-border/50">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            {isEdit ? "Edit Post" : "Create New Post"}
+            {isEdit ? "Editar Post" : "Criar Novo Post"}
           </CardTitle>
         </CardHeader>
 
@@ -114,14 +114,14 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             {/* Title Field */}
             <div className="space-y-2">
               <Label htmlFor="title" className="text-foreground font-medium">
-                Title
+                Título
               </Label>
               <Input
                 id="title"
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                placeholder="Enter your post title..."
+                placeholder="Digite o título do seu post..."
                 className={`transition-all duration-300 ${
                   errors.title 
                     ? "border-destructive focus:ring-destructive" 
@@ -137,13 +137,13 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             {/* Content Field */}
             <div className="space-y-2">
               <Label htmlFor="content" className="text-foreground font-medium">
-                Content
+                Conteúdo
               </Label>
               <Textarea
                 id="content"
                 value={formData.content}
                 onChange={(e) => handleInputChange("content", e.target.value)}
-                placeholder="Write your post content here..."
+                placeholder="Escreva o conteúdo do seu post aqui..."
                 rows={12}
                 className={`transition-all duration-300 resize-none ${
                   errors.content 
@@ -167,7 +167,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 className="transition-all duration-300"
               >
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                Cancelar
               </Button>
 
               <Button
@@ -180,7 +180,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 ) : (
                   <Save className="h-4 w-4 mr-2" />
                 )}
-                {isEdit ? "Update Post" : "Create Post"}
+                {isEdit ? "Atualizar Post" : "Criar Post"}
               </Button>
             </div>
           </form>
