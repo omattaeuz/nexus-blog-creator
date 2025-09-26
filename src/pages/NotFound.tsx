@@ -1,5 +1,7 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Home, AlertCircle } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -9,13 +11,34 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
+    <div className="min-h-screen bg-gradient-surface flex items-center justify-center">
+      <div className="text-center max-w-md mx-auto px-4">
+        <div className="inline-flex items-center justify-center w-20 h-20 mb-8 rounded-xl bg-destructive/10 text-destructive">
+          <AlertCircle className="h-10 w-10" />
+        </div>
+        
+        <h1 className="text-6xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
+          404
+        </h1>
+        
+        <h2 className="text-2xl font-semibold mb-4 text-foreground">
+          Page Not Found
+        </h2>
+        
+        <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+          Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
+        </p>
+        
+        <Button
+          asChild
+          size="lg"
+          className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+        >
+          <Link to="/" className="flex items-center space-x-2">
+            <Home className="h-5 w-5" />
+            <span>Return Home</span>
+          </Link>
+        </Button>
       </div>
     </div>
   );
