@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2, UserPlus, Eye, EyeOff } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Loader2, UserPlus, Eye, EyeOff, Mail, CheckCircle, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { type RegisterData } from "@/services/api";
@@ -15,6 +16,8 @@ const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
     email: "",
     password: "",
@@ -76,12 +79,16 @@ const RegisterForm = () => {
         password: formData.password,
       });
       
-      toast({
-        title: "Conta Criada!",
-        description: "Sua conta foi criada com sucesso. Bem-vindo!",
-      });
+      // Store the registered email and show success modal
+      setRegisteredEmail(formData.email);
+      setShowSuccessModal(true);
       
-      navigate("/posts");
+      // Clear the form
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
     } catch (error) {
       toast({
         title: "Falha no Cadastro",
@@ -99,6 +106,15 @@ const RegisterForm = () => {
     if (errors[field as keyof typeof errors]) {
       setErrors(prev => ({ ...prev, [field]: "" }));
     }
+  };
+
+  const handleGoToLogin = () => {
+    setShowSuccessModal(false);
+    navigate("/login");
+  };
+
+  const handleCloseModal = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -245,6 +261,73 @@ const RegisterForm = () => {
           </form>
         </CardContent>
       </Card>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+              <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-green-600 dark:text-green-400">
+              Conta Criada com Sucesso!
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Enviamos um email de confirmação para:
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Email Display */}
+            <div className="flex items-center justify-center p-4 bg-muted/50 rounded-lg border">
+              <Mail className="h-5 w-5 text-primary mr-2" />
+              <span className="font-medium text-foreground">{registeredEmail}</span>
+            </div>
+
+            {/* Instructions */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-foreground">Próximos passos:</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-3 mt-0.5">1</span>
+                  <span>Verifique sua caixa de entrada (e pasta de spam)</span>
+                </div>
+                <div className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-3 mt-0.5">2</span>
+                  <span>Clique no link de confirmação no email</span>
+                </div>
+                <div className="flex items-start">
+                  <span className="flex-shrink-0 w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-3 mt-0.5">3</span>
+                  <span>Volte aqui e faça login com suas credenciais</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={handleGoToLogin}
+                className="flex-1 bg-gradient-primary hover:bg-primary-hover"
+              >
+                Ir para Login
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleCloseModal}
+                className="flex-1"
+              >
+                Fechar
+              </Button>
+            </div>
+
+            {/* Help Text */}
+            <p className="text-xs text-muted-foreground text-center">
+              Não recebeu o email? Verifique sua pasta de spam ou aguarde alguns minutos.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

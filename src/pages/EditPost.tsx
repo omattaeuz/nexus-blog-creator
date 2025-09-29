@@ -4,11 +4,13 @@ import PostForm from "@/components/PostForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, AlertCircle } from "lucide-react";
 import { api, type Post, type UpdatePostData } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 
 const EditPost = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,8 +47,9 @@ const EditPost = () => {
 
   const handleSubmit = async (data: UpdatePostData) => {
     if (!id) throw new Error("Post ID is required");
+    if (!token) throw new Error("Authentication required");
     
-    const updatedPost = await api.updatePost(id, data);
+    const updatedPost = await api.updatePost(id, data, token);
     if (!updatedPost) {
       throw new Error("Failed to update post");
     }

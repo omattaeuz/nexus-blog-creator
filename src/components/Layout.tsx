@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, BookOpen, Home, LogIn, LogOut, User } from "lucide-react";
+import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface LayoutProps {
@@ -38,7 +38,7 @@ const Layout = ({ children }: LayoutProps) => {
                 asChild
                 className="transition-all duration-300"
               >
-                <Link to="/" className="flex items-center">
+                <Link to="/" className="flex items-center mr-2">
                   <Home className="h-4 w-4" />
                   <span className="hidden sm:inline">Início</span>
                 </Link>
@@ -79,6 +79,17 @@ const Layout = ({ children }: LayoutProps) => {
                     <User className="h-4 w-4" />
                     <span className="hidden sm:inline">{user?.email}</span>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                    className="transition-all duration-300"
+                  >
+                    <Link to="/config" className="flex items-center">
+                      <Settings className="h-4 w-4" />
+                      <span className="hidden sm:inline ml-2">Config</span>
+                    </Link>
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

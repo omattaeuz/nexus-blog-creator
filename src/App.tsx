@@ -13,6 +13,7 @@ import EditPost from "@/pages/EditPost";
 import PostDetail from "@/pages/PostDetail";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Config from "@/pages/Config";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,16 +21,17 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Toaster />
+          <Sonner />
           <Layout>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/config" element={<Config />} />
               
               {/* Protected routes */}
               <Route path="/posts" element={

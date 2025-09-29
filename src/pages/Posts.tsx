@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostCard from "@/components/PostCard";
 import { api, type Post } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { Search, PlusCircle, Loader2, BookOpen } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const Posts = () => {
+  const { token } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -48,9 +50,22 @@ const Posts = () => {
   }, [searchTerm]);
 
   const handleDelete = async (id: string) => {
+    if (!token) {
+      toast({
+        title: "Error",
+        description: "Authentication required to delete posts.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      await api.deletePost(id);
+      await api.deletePost(id, token);
       await fetchPosts(currentPage, searchTerm);
+      toast({
+        title: "Success",
+        description: "Post deleted successfully.",
+      });
     } catch (error) {
       toast({
         title: "Error",

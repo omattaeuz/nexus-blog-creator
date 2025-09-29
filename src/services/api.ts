@@ -1,7 +1,8 @@
 // API service for blog posts
-// Integrated with n8n backend on Railway
+// Integrated with n8n backend workflow
 
 import axios from 'axios';
+import { N8N_CONFIG } from '@/config/n8n';
 
 interface Post {
   id: string;
@@ -20,12 +21,6 @@ interface CreatePostData {
 interface UpdatePostData {
   title: string;
   content: string;
-}
-
-interface ApiResponse<T> {
-  status: string;
-  message: string;
-  data: T;
 }
 
 interface User {
@@ -52,26 +47,37 @@ interface LoginData {
   password: string;
 }
 
+interface PostsResponse {
+  posts: Post[];
+  total?: number;
+  page?: number;
+  totalPages?: number;
+}
+
 // Configure axios with base URL for n8n webhook
-// Always use direct URL to n8n production
-const baseURL = 'https://primary-production-e91c.up.railway.app/webhook';
+const baseURL = N8N_CONFIG.WEBHOOK_URL;
 
 const apiClient = axios.create({
   baseURL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
   },
 });
 
 // Add request interceptor for logging
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+    console.log(`🚀 Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+    console.log('📤 Request data:', config.data);
+    console.log('🔑 Headers:', config.headers);
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    console.error('❌ Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -79,59 +85,105 @@ apiClient.interceptors.request.use(
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log('Response received:', response.status, response.data);
+    console.log('✅ Response received:', {
+      status: response.status,
+      statusText: response.statusText,
+      url: response.config.url,
+      method: response.config.method?.toUpperCase(),
+      data: response.data,
+      headers: response.headers
+    });
+    
+    // Check if N8N is returning workflow started message instead of actual data
+    if (response.data && typeof response.data === 'object' && response.data.message === 'Workflow was started') {
+      console.warn('⚠️ N8N returned "Workflow was started" - check Response Mode = Last Node');
+    }
+    
     return response;
   },
   (error) => {
-    console.error('Response error:', error.response?.status, error.response?.data);
+    console.error('❌ Response error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      url: error.config?.url,
+      method: error.config?.method?.toUpperCase(),
+      data: error.response?.data,
+      message: error.message,
+      code: error.code
+    });
     return Promise.reject(error);
   }
 );
 
-// Auth service functions
+// Supabase configuration
+const SUPABASE_URL = N8N_CONFIG.SUPABASE.URL;
+const SUPABASE_ANON_KEY = N8N_CONFIG.SUPABASE.ANON_KEY;
+
+// Create a separate axios instance for Supabase auth
+const supabaseClient = axios.create({
+  baseURL: SUPABASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON_KEY,
+  },
+});
+
+// Auth service functions using Supabase
 export const auth = {
   // Register a new user
-  async register(data: RegisterData): Promise<ApiResponse<User>> {
+  async register(data: RegisterData): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<ApiResponse<User>>('/register', data);
+      const response = await supabaseClient.post<AuthResponse>('/auth/v1/signup', {
+        email: data.email,
+        password: data.password,
+      });
       return response.data;
     } catch (error) {
       console.error('Error registering user:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
-          throw new Error(`Failed to register: ${message}`);
+          const message = error.response.data?.msg || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao registrar: ${message}`);
         }
-        const message = error.message || 'Network error occurred';
-        throw new Error(`Failed to register: ${message}`);
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao registrar: ${message}`);
       }
-      throw new Error('Failed to register: Unknown error');
+      throw new Error('Falha ao registrar: Erro desconhecido');
     }
   },
 
   // Login user
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      const response = await apiClient.post<AuthResponse>('/login', data);
+      const response = await supabaseClient.post<AuthResponse>('/auth/v1/token?grant_type=password', {
+        email: data.email,
+        password: data.password,
+      });
       return response.data;
     } catch (error) {
       console.error('Error logging in:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
-          throw new Error(`Failed to login: ${message}`);
+          // Handle specific error cases
+          if (error.response.data?.error_code === 'email_not_confirmed') {
+            throw new Error('Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação.');
+          }
+          
+          const message = error.response.data?.msg || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao fazer login: ${message}`);
         }
-        const message = error.message || 'Network error occurred';
-        throw new Error(`Failed to login: ${message}`);
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao fazer login: ${message}`);
       }
-      throw new Error('Failed to login: Unknown error');
+      throw new Error('Falha ao fazer login: Erro desconhecido');
     }
   },
 
   // Get current user from token
   async getCurrentUser(token: string): Promise<User> {
     try {
-      const response = await apiClient.get<User>('/user', {
+      const response = await supabaseClient.get<User>('/auth/v1/user', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -139,7 +191,7 @@ export const auth = {
       return response.data;
     } catch (error) {
       console.error('Error getting current user:', error);
-      throw new Error('Failed to get current user');
+      throw new Error('Falha ao obter usuário atual');
     }
   }
 };
@@ -148,67 +200,67 @@ export const api = {
   // Create a new post (requires authentication)
   async createPost(data: CreatePostData, token: string): Promise<Post> {
     try {
-      const response = await apiClient.post<ApiResponse<Post>>('/posts', data, {
+      // Debug: Check if token is provided
+      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
+      
+      if (!token) {
+        throw new Error('Token de autenticação não fornecido');
+      }
+
+      // Check if N8n webhook is configured
+      if (!N8N_CONFIG.WEBHOOK_URL.includes('railway.app')) {
+        console.warn('⚠️ N8n webhook not configured. Using development fallback.');
+        
+        // Development fallback - create mock post
+        const mockPost: Post = {
+          id: `dev-${Date.now()}`,
+          title: data.title,
+          content: data.content,
+          created_at: new Date().toISOString(),
+          user_id: 'dev-user-id',
+        };
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        return mockPost;
+      }
+
+      const response = await apiClient.post<Post>('/posts', data, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
       });
       
-      if (response.data.status === 'success') {
-        return response.data.data;
-      } else {
-        throw new Error(response.data.message || 'Failed to create post');
-      }
+      return response.data;
     } catch (error) {
       console.error('Error creating post:', error);
       
-      // In development, provide a fallback for CORS issues
-      if (import.meta.env.DEV && axios.isAxiosError(error)) {
-        if (error.code === 'ERR_NETWORK' || error.message.includes('CORS') || error.code === 'ERR_CANCELED') {
-          console.warn('CORS/Network error detected. Using fallback for development.');
-          
-          // Create a mock response that simulates the n8n response
-          const mockPost: Post = {
-            id: `mock-${Date.now()}`,
-            title: data.title,
-            content: data.content,
-            created_at: new Date().toISOString(),
-            user_id: 'mock-user-id',
-          };
-          
-          // Show a warning toast but still return the mock data
-          setTimeout(() => {
-            if (typeof window !== 'undefined' && window.alert) {
-              alert('⚠️ CORS Error: Using mock data for development. In production, this would be saved to the database.');
-            }
-          }, 100);
-          
-          return mockPost;
-        }
-      }
-      
       if (axios.isAxiosError(error)) {
-        // Handle authentication errors
-        if (error.response?.status === 401) {
-          throw new Error('Authentication required. Please login to create posts.');
+        // Handle network errors (N8n not accessible)
+        if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+          throw new Error('Erro de conexão: Verifique se o N8n está configurado e acessível.');
         }
         
-        // Handle CORS errors specifically
-        if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
-          throw new Error('CORS Error: Unable to connect to the server. Please check your network connection and try again.');
+        // Handle authentication errors
+        if (error.response?.status === 401) {
+          throw new Error('Não autorizado. Faça login para criar posts.');
         }
         
         // Handle other HTTP errors
         if (error.response) {
           const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
-          throw new Error(`Failed to create post: ${message}`);
+          throw new Error(`Falha ao criar post: ${message}`);
         }
         
         // Handle network errors
-        const message = error.message || 'Network error occurred';
-        throw new Error(`Failed to create post: ${message}`);
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao criar post: ${message}`);
       }
-      throw new Error('Failed to create post: Unknown error');
+      throw new Error('Falha ao criar post: Erro desconhecido');
     }
   },
 
@@ -219,113 +271,170 @@ export const api = {
     search?: string;
   }): Promise<{ posts: Post[]; total: number; page: number; totalPages: number }> {
     try {
-      // For now, we'll use a mock implementation since the n8n workflow only has POST
-      // In a real implementation, you would add GET endpoints to your n8n workflow
-      const mockPosts: Post[] = [
-        {
-          id: "1",
-          title: "Welcome to Nexta",
-          content: "This is your first blog post! This application demonstrates a complete CRUD blog system with a beautiful, modern interface. You can create, read, update, and delete posts seamlessly. The design features a gradient-based theme with smooth animations and responsive layouts that work perfectly on all devices. Once you connect Supabase, all these operations will persist to a real database with user authentication and advanced features.",
-          created_at: new Date().toISOString(),
+      const params = new URLSearchParams();
+      
+      if (options?.page) params.append('page', options.page.toString());
+      if (options?.limit) params.append('limit', options.limit.toString());
+      if (options?.search) params.append('search', options.search);
+      
+      // Add timestamp to prevent cache
+      params.append('_t', Date.now().toString());
+      
+      const response = await apiClient.get<Post[]>(`/posts?${params.toString()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
-        {
-          id: "2", 
-          title: "Getting Started with Your Blog",
-          content: "Ready to start blogging? Here are some tips to get you started: 1) Write engaging titles that capture attention 2) Create valuable content that helps your readers 3) Use proper formatting with headings and lists 4) Add images to make posts more visual 5) Engage with your audience through comments. Remember, consistency is key - try to post regularly to build your audience. Don't forget to connect Supabase to enable user authentication, data persistence, and advanced features like comments and user profiles.",
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        }
-      ];
-
-      let filteredPosts = [...mockPosts];
+      });
       
-      // Apply search filter
-      if (options?.search) {
-        const searchTerm = options.search.toLowerCase();
-        filteredPosts = filteredPosts.filter(post => 
-          post.title.toLowerCase().includes(searchTerm) ||
-          post.content.toLowerCase().includes(searchTerm)
-        );
-      }
+      // The N8n workflow returns an array of posts directly
+      const posts = Array.isArray(response.data) ? response.data : [];
       
-      const total = filteredPosts.length;
+      // Calculate pagination info
+      const total = posts.length;
       const page = options?.page || 1;
       const limit = options?.limit || 10;
       const totalPages = Math.ceil(total / limit);
       
-      // Apply pagination
-      const startIndex = (page - 1) * limit;
-      const paginatedPosts = filteredPosts.slice(startIndex, startIndex + limit);
-      
       return {
-        posts: paginatedPosts,
+        posts,
         total,
         page,
         totalPages,
       };
     } catch (error) {
       console.error('Error fetching posts:', error);
-      throw new Error('Failed to fetch posts');
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao buscar posts: ${message}`);
+        }
+        
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao buscar posts: ${message}`);
+      }
+      throw new Error('Falha ao buscar posts: Erro desconhecido');
     }
   },
 
   // Get a specific post by ID
   async getPost(id: string): Promise<Post | null> {
     try {
-      // For now, we'll use a mock implementation since the n8n workflow only has POST
-      // In a real implementation, you would add GET endpoints to your n8n workflow
-      const mockPosts: Post[] = [
-        {
-          id: "1",
-          title: "Welcome to Nexta",
-          content: "This is your first blog post! This application demonstrates a complete CRUD blog system with a beautiful, modern interface. You can create, read, update, and delete posts seamlessly. The design features a gradient-based theme with smooth animations and responsive layouts that work perfectly on all devices. Once you connect Supabase, all these operations will persist to a real database with user authentication and advanced features.",
-          created_at: new Date().toISOString(),
+      const response = await apiClient.get<Post>(`/posts/${id}?_t=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
-        {
-          id: "2", 
-          title: "Getting Started with Your Blog",
-          content: "Ready to start blogging? Here are some tips to get you started: 1) Write engaging titles that capture attention 2) Create valuable content that helps your readers 3) Use proper formatting with headings and lists 4) Add images to make posts more visual 5) Engage with your audience through comments. Remember, consistency is key - try to post regularly to build your audience. Don't forget to connect Supabase to enable user authentication, data persistence, and advanced features like comments and user profiles.",
-          created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        }
-      ];
-      
-      const post = mockPosts.find(p => p.id === id);
-      return post || null;
+      });
+      return response.data;
     } catch (error) {
       console.error('Error fetching post:', error);
-      throw new Error('Failed to fetch post');
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          return null;
+        }
+        
+        if (error.response) {
+          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao buscar post: ${message}`);
+        }
+        
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao buscar post: ${message}`);
+      }
+      throw new Error('Falha ao buscar post: Erro desconhecido');
     }
   },
 
-  // Update an existing post
-  async updatePost(id: string, data: UpdatePostData): Promise<Post | null> {
+  // Update an existing post (requires authentication)
+  async updatePost(id: string, data: UpdatePostData, token: string): Promise<Post | null> {
     try {
-      // For now, we'll use a mock implementation since the n8n workflow only has POST
-      // In a real implementation, you would add PUT/PATCH endpoints to your n8n workflow
-      const mockPost: Post = {
-        id,
-        title: data.title,
-        content: data.content,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      // Debug: Check if token is provided
+      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
       
-      return mockPost;
+      if (!token) {
+        throw new Error('Token de autenticação não fornecido');
+      }
+
+      const response = await apiClient.patch<Post>(`/posts/${id}`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      });
+      
+      return response.data;
     } catch (error) {
       console.error('Error updating post:', error);
-      throw new Error('Failed to update post');
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('Não autorizado. Faça login para atualizar posts.');
+        }
+        
+        if (error.response?.status === 404) {
+          throw new Error('Post não encontrado.');
+        }
+        
+        if (error.response) {
+          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao atualizar post: ${message}`);
+        }
+        
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao atualizar post: ${message}`);
+      }
+      throw new Error('Falha ao atualizar post: Erro desconhecido');
     }
   },
 
-  // Delete a post
-  async deletePost(id: string): Promise<boolean> {
+  // Delete a post (requires authentication)
+  async deletePost(id: string, token: string): Promise<boolean> {
     try {
-      // For now, we'll use a mock implementation since the n8n workflow only has POST
-      // In a real implementation, you would add DELETE endpoints to your n8n workflow
-      console.log(`Mock delete for post with id: ${id}`);
+      // Debug: Check if token is provided
+      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
+      
+      if (!token) {
+        throw new Error('Token de autenticação não fornecido');
+      }
+
+      await apiClient.delete(`/posts/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      });
+      
       return true;
     } catch (error) {
       console.error('Error deleting post:', error);
-      throw new Error('Failed to delete post');
+      
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error('Não autorizado. Faça login para deletar posts.');
+        }
+        
+        if (error.response?.status === 404) {
+          throw new Error('Post não encontrado.');
+        }
+        
+        if (error.response) {
+          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          throw new Error(`Falha ao deletar post: ${message}`);
+        }
+        
+        const message = error.message || 'Erro de rede ocorreu';
+        throw new Error(`Falha ao deletar post: ${message}`);
+      }
+      throw new Error('Falha ao deletar post: Erro desconhecido');
     }
   },
 };

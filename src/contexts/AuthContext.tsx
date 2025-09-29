@@ -60,8 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await auth.register(data);
       
-      // After successful registration, automatically login
-      await login({ email: data.email, password: data.password });
+      // Registration successful - don't auto-login, user needs to confirm email
+      // The response contains user info but no token since email is not confirmed
+      console.log('Registration successful, email confirmation required');
     } catch (error) {
       throw error;
     }
@@ -83,6 +84,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
   };
+
+  // Debug: Log auth state changes
+  useEffect(() => {
+    console.log('🔐 Auth state changed:', {
+      isAuthenticated: !!user && !!token,
+      hasUser: !!user,
+      hasToken: !!token,
+      tokenPreview: token ? `${token.slice(0, 12)}...` : 'null',
+      userEmail: user?.email || 'null'
+    });
+  }, [user, token]);
 
   return (
     <AuthContext.Provider value={value}>
