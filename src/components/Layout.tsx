@@ -15,7 +15,7 @@ const Layout = ({ children }: LayoutProps) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gradient-surface">
+    <div className="min-h-screen bg-gradient-surface flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-border shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -30,7 +30,6 @@ const Layout = ({ children }: LayoutProps) => {
               </span>
             </Link>
 
-            {/* Navigation */}
             <div className="flex items-center space-x-2">
               <Button
                 variant={isActive("/") ? "default" : "ghost"}
@@ -131,8 +130,7 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 flex items-center justify-center">
         {children}
       </main>
 

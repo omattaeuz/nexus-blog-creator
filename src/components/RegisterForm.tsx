@@ -118,7 +118,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-md">
+    <div className="w-full max-w-md px-4">
       <Card className="bg-gradient-surface shadow-glow border-border/50">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">

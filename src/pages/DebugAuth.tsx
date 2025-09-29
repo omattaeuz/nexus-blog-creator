@@ -335,7 +335,7 @@ const DebugAuth = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="w-full max-w-6xl px-4">
       <Card className="bg-gradient-surface shadow-glow border-border/50">
         <CardHeader>
           <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center">
