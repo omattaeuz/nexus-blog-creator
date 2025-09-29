@@ -21,18 +21,18 @@ interface PostCardProps {
 
 const PostCard = ({ post, onDelete }: PostCardProps) => {
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
+    if (window.confirm("Tem certeza que deseja excluir este post?")) {
       onDelete?.(post.id);
       toast({
-        title: "Post deleted",
-        description: "The post has been successfully deleted.",
+        title: "Post excluído",
+        description: "O post foi excluído com sucesso.",
         variant: "destructive",
       });
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("pt-BR", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -53,7 +53,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           </CardTitle>
           {post.updated_at && post.updated_at !== post.created_at && (
             <Badge variant="secondary" className="ml-2">
-              Updated
+              Atualizado
             </Badge>
           )}
         </div>
@@ -88,7 +88,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
             className="hover:bg-primary hover:text-primary-foreground transition-all duration-300"
           >
             <Link to={`/posts/${post.id}`}>
-              Read More
+              Ler Mais
             </Link>
           </Button>
 

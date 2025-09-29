@@ -6,10 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Edit, Trash2, ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { token } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +19,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) {
-        setError("Post ID is required");
+        setError("ID do post é obrigatório");
         setLoading(false);
         return;
       }
@@ -25,15 +27,15 @@ const PostDetail = () => {
       try {
         const fetchedPost = await api.getPost(id);
         if (!fetchedPost) {
-          setError("Post not found");
+          setError("Post não encontrado");
         } else {
           setPost(fetchedPost);
         }
       } catch (err) {
-        setError("Failed to fetch post");
+        setError("Falha ao carregar post");
         toast({
-          title: "Error",
-          description: "Failed to load post. Please try again.",
+          title: "Erro",
+          description: "Falha ao carregar post. Tente novamente.",
           variant: "destructive",
         });
       } finally {
@@ -47,19 +49,19 @@ const PostDetail = () => {
   const handleDelete = async () => {
     if (!post) return;
 
-    if (window.confirm("Are you sure you want to delete this post? This action cannot be undone.")) {
+    if (window.confirm("Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.")) {
       try {
-        await api.deletePost(post.id);
+        await api.deletePost(post.id, token);
         toast({
-          title: "Post deleted",
-          description: "The post has been successfully deleted.",
+          title: "Post excluído",
+          description: "O post foi excluído com sucesso.",
           variant: "destructive",
         });
         navigate("/posts");
       } catch (error) {
         toast({
-          title: "Error",
-          description: "Failed to delete post. Please try again.",
+          title: "Erro",
+          description: "Falha ao excluir post. Tente novamente.",
           variant: "destructive",
         });
       }
@@ -67,7 +69,7 @@ const PostDetail = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString("pt-BR", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -83,7 +85,7 @@ const PostDetail = () => {
           <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md">
             <CardContent className="p-12 text-center">
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Loading post...</p>
+              <p className="text-muted-foreground">Carregando post...</p>
             </CardContent>
           </Card>
         </div>
@@ -101,10 +103,10 @@ const PostDetail = () => {
                 <AlertCircle className="h-8 w-8" />
               </div>
               <h2 className="text-2xl font-semibold mb-4 text-foreground">
-                {error || "Post not found"}
+                {error || "Post não encontrado"}
               </h2>
               <p className="text-muted-foreground mb-6">
-                The post you're looking for doesn't exist or has been removed.
+                O post que você está procurando não existe ou foi removido.
               </p>
               <Button
                 onClick={() => navigate("/posts")}
@@ -112,7 +114,7 @@ const PostDetail = () => {
                 className="transition-all duration-300"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Posts
+                Voltar aos Posts
               </Button>
             </CardContent>
           </Card>
@@ -132,7 +134,7 @@ const PostDetail = () => {
             className="hover:bg-secondary transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Posts
+            Voltar aos Posts
           </Button>
         </div>
 
@@ -143,9 +145,9 @@ const PostDetail = () => {
               <CardTitle className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
                 {post.title}
               </CardTitle>
-              {post.updatedAt && post.updatedAt !== post.createdAt && (
+              {post.updated_at && post.updated_at !== post.created_at && (
                 <Badge variant="secondary" className="ml-4 shrink-0">
-                  Updated
+                  Atualizado
                 </Badge>
               )}
             </div>
@@ -154,18 +156,12 @@ const PostDetail = () => {
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Calendar className="h-4 w-4" />
-                <span>Published {formatDate(post.createdAt)}</span>
+                <span>Publicado {formatDate(post.created_at)}</span>
               </div>
-              {post.author && (
-                <div className="flex items-center space-x-1">
-                  <User className="h-4 w-4" />
-                  <span>by {post.author}</span>
-                </div>
-              )}
-              {post.updatedAt && post.updatedAt !== post.createdAt && (
+              {post.updated_at && post.updated_at !== post.created_at && (
                 <div className="flex items-center space-x-1">
                   <Calendar className="h-4 w-4" />
-                  <span>Updated {formatDate(post.updatedAt)}</span>
+                  <span>Atualizado {formatDate(post.updated_at)}</span>
                 </div>
               )}
             </div>
@@ -189,7 +185,7 @@ const PostDetail = () => {
                 >
                   <Link to={`/posts/${post.id}/edit`} className="flex items-center space-x-2">
                     <Edit className="h-4 w-4" />
-                    <span>Edit Post</span>
+                    <span>Editar Post</span>
                   </Link>
                 </Button>
 
@@ -199,7 +195,7 @@ const PostDetail = () => {
                   className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Post
+                  Excluir Post
                 </Button>
               </div>
 
@@ -209,7 +205,7 @@ const PostDetail = () => {
                 className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
               >
                 <Link to="/posts">
-                  View All Posts
+                  Ver Todos os Posts
                 </Link>
               </Button>
             </div>

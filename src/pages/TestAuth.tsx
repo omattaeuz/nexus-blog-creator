@@ -44,13 +44,13 @@ const TestAuth = () => {
     setIsLoading(true);
     try {
       logAuth('Testing login with Supabase SDK', { email: testEmail, password: '***' });
-      const { user, session, error } = await authHelpers.signIn(testEmail, testPassword);
+      const result = await authHelpers.signIn(testEmail, testPassword);
       
-      if (error) throw error;
+      if (!result.user) throw new Error('Login failed');
       
       addResult('Login Test', true, 'Login realizado com sucesso', {
-        user: user?.email,
-        sessionId: session?.access_token?.substring(0, 20) + '...'
+        user: result.user?.email,
+        sessionId: result.session?.access_token?.substring(0, 20) + '...'
       });
     } catch (error: any) {
       addResult('Login Test', false, error.message, error);
@@ -63,14 +63,14 @@ const TestAuth = () => {
     setIsLoading(true);
     try {
       const testEmail = `test-${Date.now()}@example.com`;
-      const { user, error } = await authHelpers.signUp(testEmail, 'testpassword123');
+      const result = await authHelpers.signUp(testEmail, 'testpassword123');
       
-      if (error) throw error;
+      if (!result.user) throw new Error('Registration failed');
       
       addResult('Register Test', true, 'Registro realizado com sucesso', {
-        user: user?.email,
+        user: result.user?.email,
         email: testEmail,
-        needsConfirmation: !user?.email_confirmed_at
+        needsConfirmation: !result.user?.email_confirmed_at
       });
     } catch (error: any) {
       addResult('Register Test', false, error.message, error);

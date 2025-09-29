@@ -100,17 +100,6 @@ const Layout = ({ children }: LayoutProps) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    asChild
-                    className="transition-all duration-300"
-                  >
-                    <Link to="/config" className="flex items-center">
-                      <Settings className="h-4 w-4" />
-                      <span className="hidden sm:inline ml-2">Config</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
                     onClick={handleLogoutClick}
                     className="transition-all duration-300 hover:bg-destructive hover:text-destructive-foreground"
                   >

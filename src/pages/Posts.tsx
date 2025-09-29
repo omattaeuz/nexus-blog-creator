@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,81 +7,92 @@ import { Badge } from "@/components/ui/badge";
 import PostCard from "@/components/PostCard";
 import { api, type Post } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
-import { Search, PlusCircle, Loader2, BookOpen } from "lucide-react";
+import { usePosts } from "@/hooks/usePosts";
+import { Search, PlusCircle, Loader2, BookOpen, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { logApi, logError } from "@/lib/logger";
 
 const Posts = () => {
   const { token } = useAuth();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
+  
+  // Use the custom hook for posts management
+  const {
+    posts,
+    loading,
+    error,
+    total,
+    totalPages,
+    currentPage,
+    hasNextPage,
+    hasPreviousPage,
+    searchPosts,
+    goToPage,
+    refreshPosts,
+  } = usePosts({
+    page: 1,
+    limit: 6,
+    search: "",
+    autoFetch: true,
+  });
 
-  const postsPerPage = 6;
-
-  const fetchPosts = async (page: number = 1, search: string = "") => {
-    try {
-      setLoading(true);
-      const response = await api.getPosts({
-        page,
-        limit: postsPerPage,
-        search: search.trim(),
-      });
-      
-      setPosts(response.posts);
-      setTotalPages(response.totalPages);
-      setTotal(response.total);
-      setCurrentPage(response.page);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch posts. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  // Handle search with debouncing
+  const handleSearch = async (value: string) => {
+    setSearchTerm(value);
+    await searchPosts(value);
   };
 
-  useEffect(() => {
-    fetchPosts(1, searchTerm);
-  }, [searchTerm]);
+  // Handle refresh
+  const handleRefresh = async () => {
+    await refreshPosts();
+    toast({
+      title: "Posts atualizados",
+      description: "Lista de posts foi atualizada com sucesso.",
+    });
+  };
 
   const handleDelete = async (id: string) => {
     if (!token) {
       toast({
-        title: "Error",
-        description: "Authentication required to delete posts.",
+        title: "Erro",
+        description: "Autenticação necessária para excluir posts.",
         variant: "destructive",
       });
       return;
     }
 
     try {
+      logApi('Deleting post', { postId: id });
       await api.deletePost(id, token);
-      await fetchPosts(currentPage, searchTerm);
       toast({
-        title: "Success",
-        description: "Post deleted successfully.",
+        title: "Sucesso",
+        description: "Post excluído com sucesso.",
       });
+      // Refresh the posts list
+      await refreshPosts();
     } catch (error) {
+      logError('Failed to delete post', { postId: id, error: error instanceof Error ? error.message : 'Unknown error' });
       toast({
-        title: "Error",
-        description: "Failed to delete post. Please try again.",
+        title: "Erro",
+        description: "Falha ao excluir post. Tente novamente.",
         variant: "destructive",
       });
     }
   };
 
-  const handlePageChange = (page: number) => {
-    fetchPosts(page, searchTerm);
+  const handlePageChange = async (page: number) => {
+    await goToPage(page);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    // Debounce search - only search after user stops typing
+    const timeoutId = setTimeout(() => {
+      handleSearch(value);
+    }, 500);
+    
+    return () => clearTimeout(timeoutId);
   };
 
   return (
@@ -110,7 +121,7 @@ const Posts = () => {
                   type="text"
                   placeholder="Buscar posts..."
                   value={searchTerm}
-                  onChange={handleSearch}
+                  onChange={handleSearchInput}
                   className="pl-10 transition-all duration-300 focus:ring-primary"
                 />
               </div>
@@ -120,6 +131,15 @@ const Posts = () => {
                 <Badge variant="secondary" className="px-3 py-1">
                   {total} {total === 1 ? 'post' : 'posts'}
                 </Badge>
+                <Button
+                  variant="outline"
+                  onClick={handleRefresh}
+                  disabled={loading}
+                  className="flex items-center space-x-2"
+                >
+                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  <span>Atualizar</span>
+                </Button>
                 <Button
                   asChild
                   className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
@@ -139,7 +159,7 @@ const Posts = () => {
           <Card className="bg-gradient-surface shadow-md">
             <CardContent className="p-12 text-center">
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Loading posts...</p>
+              <p className="text-muted-foreground">Carregando posts...</p>
             </CardContent>
           </Card>
         )}
@@ -165,12 +185,12 @@ const Posts = () => {
                 <BookOpen className="h-8 w-8" />
               </div>
               <h3 className="text-2xl font-semibold mb-4 text-foreground">
-                {searchTerm ? 'No posts found' : 'No posts yet'}
+                {searchTerm ? 'Nenhum post encontrado' : 'Ainda não há posts'}
               </h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 {searchTerm 
-                  ? `We couldn't find any posts matching "${searchTerm}". Try a different search term.`
-                  : 'Be the first to share your story! Create your first blog post to get started.'
+                  ? `Não encontramos posts correspondentes a "${searchTerm}". Tente um termo de busca diferente.`
+                  : 'Seja o primeiro a compartilhar sua história! Crie seu primeiro post para começar.'
                 }
               </p>
               {!searchTerm && (
@@ -181,7 +201,7 @@ const Posts = () => {
                 >
                   <Link to="/posts/new" className="flex items-center space-x-2">
                     <PlusCircle className="h-5 w-5" />
-                    <span>Create Your First Post</span>
+                    <span>Criar Seu Primeiro Post</span>
                   </Link>
                 </Button>
               )}
@@ -198,10 +218,10 @@ const Posts = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
+                  disabled={!hasPreviousPage}
                   className="transition-all duration-300"
                 >
-                  Previous
+                  Anterior
                 </Button>
                 
                 <div className="flex items-center space-x-1">
@@ -222,10 +242,10 @@ const Posts = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
+                  disabled={!hasNextPage}
                   className="transition-all duration-300"
                 >
-                  Next
+                  Próximo
                 </Button>
               </div>
             </CardContent>

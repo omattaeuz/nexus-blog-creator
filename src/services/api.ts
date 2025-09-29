@@ -315,47 +315,167 @@ export const api = {
     page?: number;
     limit?: number;
     search?: string;
+    token?: string;
   }): Promise<{ posts: Post[]; total: number; page: number; totalPages: number }> {
     try {
+      // Build query parameters for server-side pagination and search
       const params = new URLSearchParams();
-      
-      if (options?.page) params.append('page', options.page.toString());
-      if (options?.limit) params.append('limit', options.limit.toString());
-      if (options?.search) params.append('search', options.search);
-      
-      // Add timestamp to prevent cache
       params.append('_t', Date.now().toString());
       
-      const response = await apiClient.get<Post[]>(`/posts?${params.toString()}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
+      // Add pagination params
+      if (options?.page) params.append('page', options.page.toString());
+      if (options?.limit) params.append('limit', options.limit.toString());
+      if (options?.search && options.search.trim()) params.append('search', options.search.trim());
+      
+      // Prepare headers with optional authorization
+      const headers: Record<string, string> = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      };
+      
+      // Add authorization header if token is provided
+      if (options?.token) headers['Authorization'] = `Bearer ${options.token}`;
+      
+      logApi('Fetching posts from N8N', { 
+        page: options?.page, 
+        limit: options?.limit, 
+        search: options?.search,
+        hasToken: !!options?.token
       });
       
-      // The N8n workflow returns an array of posts directly
-      const posts = Array.isArray(response.data) ? response.data : [];
+      const response = await apiClient.get<Post[] | { posts: Post[]; total: number; page: number; totalPages: number }>(`/posts?${params.toString()}`, {
+        headers,
+      });
       
-      // Calculate pagination info
-      const total = posts.length;
-      const page = options?.page || 1;
-      const limit = options?.limit || 10;
-      const totalPages = Math.ceil(total / limit);
+      logApi('Posts response received', { 
+        dataType: typeof response.data, 
+        isArray: Array.isArray(response.data),
+        length: Array.isArray(response.data) ? response.data.length : 'not array',
+        responseHeaders: response.headers
+      });
       
-      return {
-        posts,
-        total,
-        page,
-        totalPages,
-      };
+      // Check if server returned paginated response
+      const isPaginatedResponse = response.data && 
+        typeof response.data === 'object' && 
+        !Array.isArray(response.data) &&
+        ('posts' in response.data || 'data' in response.data);
+      
+      if (isPaginatedResponse) {
+        // Server-side pagination and search
+        const serverData = response.data as {
+          posts?: Post[];
+          data?: Post[];
+          total: number;
+          page: number;
+          totalPages: number;
+        };
+        
+        // Handle both 'posts' and 'data' field names
+        const posts = serverData.posts || serverData.data || [];
+        
+        const serverResponse = {
+          posts,
+          total: serverData.total,
+          page: serverData.page,
+          totalPages: serverData.totalPages,
+        };
+        
+        logApi('Server-side pagination used', {
+          postsCount: posts.length,
+          total: serverResponse.total,
+          page: serverResponse.page,
+          totalPages: serverResponse.totalPages,
+          fieldUsed: serverData.posts ? 'posts' : 'data'
+        });
+        
+        return serverResponse;
+      } else {
+        // Handle different response formats
+        let allPosts: Post[] = [];
+        
+        if (Array.isArray(response.data)) {
+          // Array of posts
+          allPosts = response.data;
+        } else if (response.data && typeof response.data === 'object') {
+          // Single post object - convert to array
+          if ('id' in response.data && 'title' in response.data && 'content' in response.data) {
+            allPosts = [response.data as unknown as Post];
+          }
+        }
+        
+        logApi('Processing posts response', {
+          responseType: Array.isArray(response.data) ? 'array' : 'object',
+          postsCount: allPosts.length,
+          hasId: response.data && 'id' in response.data,
+          hasTitle: response.data && 'title' in response.data
+        });
+        
+        // Apply search filter if provided and not handled by server
+        let filteredPosts = allPosts;
+        if (options?.search && options.search.trim() && !options?.page) {
+          const searchTerm = options.search.toLowerCase().trim();
+          filteredPosts = allPosts.filter(post => 
+            post.title.toLowerCase().includes(searchTerm) ||
+            post.content.toLowerCase().includes(searchTerm)
+          );
+        }
+        
+        // Apply pagination
+        const page = options?.page || 1;
+        const limit = options?.limit || 10;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+        
+        // Calculate pagination info
+        const total = filteredPosts.length;
+        const totalPages = Math.ceil(total / limit);
+        
+        logApi('Client-side pagination used', { 
+          totalPosts: allPosts.length,
+          filteredPosts: filteredPosts.length,
+          paginatedPosts: paginatedPosts.length,
+          page,
+          totalPages
+        });
+        
+        return {
+          posts: paginatedPosts,
+          total,
+          page,
+          totalPages,
+        };
+      }
     } catch (error) {
-      logError('Error fetching posts:', error);
+      logError('Error fetching posts', { error: error instanceof Error ? error.message : 'Unknown error' });
       
       if (axios.isAxiosError(error)) {
+        // Handle authentication errors
+        if (error.response?.status === 401) {
+          throw new Error('Não autorizado. Faça login para acessar os posts.');
+        }
+        
+        // Handle network errors (N8n not accessible)
+        if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+          throw new Error('Erro de conexão: Verifique se o N8n está configurado e acessível.');
+        }
+        
+        // Handle other HTTP errors
         if (error.response) {
-          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
-          throw new Error(`Falha ao buscar posts: ${message}`);
+          const status = error.response.status;
+          const message = error.response.data?.message || error.response.data?.error || `HTTP ${status}: ${error.response.statusText}`;
+          
+          switch (status) {
+            case 403:
+              throw new Error('Acesso negado. Você não tem permissão para acessar este recurso.');
+            case 404:
+              throw new Error('Recurso não encontrado.');
+            case 500:
+              throw new Error('Erro interno do servidor. Tente novamente mais tarde.');
+            default:
+              throw new Error(`Falha ao buscar posts: ${message}`);
+          }
         }
         
         const message = error.message || 'Erro de rede ocorreu';
@@ -380,9 +500,7 @@ export const api = {
       logError('Error fetching post:', error);
       
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          return null;
-        }
+        if (error.response?.status === 404) return null;
         
         if (error.response) {
           const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
@@ -402,9 +520,7 @@ export const api = {
       // Debug: Check if token is provided
       logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
-      if (!token) {
-        throw new Error('Token de autenticação não fornecido');
-      }
+      if (!token) throw new Error('Token de autenticação não fornecido');
 
       const response = await apiClient.patch<Post>(`/posts/${id}`, data, {
         headers: {

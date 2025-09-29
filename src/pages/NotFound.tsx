@@ -23,11 +23,11 @@ const NotFound = () => {
         </h1>
         
         <h2 className="text-2xl font-semibold mb-4 text-foreground">
-          Page Not Found
+          Página Não Encontrada
         </h2>
         
         <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-          Oops! The page you're looking for doesn't exist. It might have been moved or deleted.
+          Oops! A página que você está procurando não existe. Ela pode ter sido movida ou excluída.
         </p>
         
         <Button
@@ -37,7 +37,7 @@ const NotFound = () => {
         >
           <Link to="/" className="flex items-center space-x-2">
             <Home className="h-5 w-5" />
-            <span>Return Home</span>
+            <span>Voltar ao Início</span>
           </Link>
         </Button>
       </div>
