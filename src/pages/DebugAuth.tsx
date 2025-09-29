@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Bug, CheckCircle, XCircle, RefreshCw, Key, User } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { logAuth, logError } from '@/lib/logger';
 
 const DebugAuth = () => {
   const [testEmail, setTestEmail] = useState('qualquercoisa479@gmail.com');
@@ -27,7 +28,7 @@ const DebugAuth = () => {
   const testDirectLogin = async () => {
     setIsLoading(true);
     try {
-      console.log('🔍 Testing direct login with Supabase SDK...');
+      logAuth('Testing direct login with Supabase SDK');
       
       // Test with signInWithPassword
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -59,7 +60,7 @@ const DebugAuth = () => {
   const testPasswordReset = async () => {
     setIsLoading(true);
     try {
-      console.log('🔄 Testing password reset...');
+      logAuth('🔄 Testing password reset...');
       
       const { data, error } = await supabase.auth.resetPasswordForEmail(testEmail, {
         redirectTo: `${window.location.origin}/reset-password`
@@ -87,7 +88,7 @@ const DebugAuth = () => {
 
     setIsLoading(true);
     try {
-      console.log('🔑 Testing password update...');
+      logAuth('🔑 Testing password update...');
       
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword
@@ -111,7 +112,7 @@ const DebugAuth = () => {
   const testUserInfo = async () => {
     setIsLoading(true);
     try {
-      console.log('👤 Testing user info retrieval...');
+      logAuth('👤 Testing user info retrieval...');
       
       const { data: { user }, error } = await supabase.auth.getUser();
 
@@ -140,7 +141,7 @@ const DebugAuth = () => {
   const testSessionInfo = async () => {
     setIsLoading(true);
     try {
-      console.log('🔐 Testing session info...');
+      logAuth('🔐 Testing session info...');
       
       const { data: { session }, error } = await supabase.auth.getSession();
 
@@ -171,7 +172,7 @@ const DebugAuth = () => {
       const testEmail = `debug-test-${Date.now()}@example.com`;
       const testPassword = 'TestPassword123!';
       
-      console.log('👤 Testing new user creation...');
+      logAuth('👤 Testing new user creation...');
       
       const { data, error } = await supabase.auth.signUp({
         email: testEmail,
@@ -198,7 +199,7 @@ const DebugAuth = () => {
   const testCredentialsProblem = async () => {
     setIsLoading(true);
     try {
-      console.log('🔍 Testing credentials problem with multiple approaches...');
+      logAuth('🔍 Testing credentials problem with multiple approaches...');
       
       // Approach 1: Direct signInWithPassword
       const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
@@ -274,7 +275,7 @@ const DebugAuth = () => {
   const testPasswordResetFlow = async () => {
     setIsLoading(true);
     try {
-      console.log('🔄 Testing complete password reset flow...');
+      logAuth('🔄 Testing complete password reset flow...');
       
       // Step 1: Send password reset email
       const { data: resetData, error: resetError } = await supabase.auth.resetPasswordForEmail(testEmail, {

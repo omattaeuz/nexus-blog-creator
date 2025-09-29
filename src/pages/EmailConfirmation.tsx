@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { logAuth, logError } from '@/lib/logger';
 
 const EmailConfirmation = () => {
   const [searchParams] = useSearchParams();
@@ -14,21 +15,21 @@ const EmailConfirmation = () => {
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        console.log('📧 Processing email confirmation...');
+        logAuth('📧 Processing email confirmation...');
         
         // The Supabase SDK automatically handles the email confirmation
         // when the user is redirected to this page with the confirmation tokens
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('❌ Error getting session:', error);
+          logError('❌ Error getting session:', error);
           setStatus('error');
           setMessage('Erro ao confirmar email. Link pode ter expirado.');
           return;
         }
 
         if (data.session && data.session.user) {
-          console.log('✅ Email confirmed successfully:', data.session.user.email);
+          logAuth('✅ Email confirmed successfully:', data.session.user.email);
           setStatus('success');
           setMessage('Email confirmado com sucesso! Você foi automaticamente logado.');
 
@@ -46,7 +47,7 @@ const EmailConfirmation = () => {
           const type = params.get('type');
 
           if (type === 'signup' && accessToken && refreshToken) {
-            console.log('🔄 Processing tokens from URL...');
+            logAuth('🔄 Processing tokens from URL...');
             
             // Set the session with the tokens from the URL
             const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
@@ -55,14 +56,14 @@ const EmailConfirmation = () => {
             });
 
             if (sessionError) {
-              console.error('❌ Error setting session:', sessionError);
+              logError('❌ Error setting session:', sessionError);
               setStatus('error');
               setMessage('Erro ao processar confirmação. Tente novamente.');
               return;
             }
 
             if (sessionData.session && sessionData.session.user) {
-              console.log('✅ Session set successfully:', sessionData.session.user.email);
+              logAuth('✅ Session set successfully:', sessionData.session.user.email);
               setStatus('success');
               setMessage('Email confirmado com sucesso! Você foi automaticamente logado.');
 
@@ -80,7 +81,7 @@ const EmailConfirmation = () => {
           }
         }
       } catch (error) {
-        console.error('❌ Error confirming email:', error);
+        logError('❌ Error confirming email:', error);
         setStatus('error');
         setMessage('Erro ao confirmar email. Tente novamente.');
       }

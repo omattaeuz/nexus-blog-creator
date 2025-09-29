@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import LogoutConfirmation from "./LogoutConfirmation";
+import { logError } from "@/lib/logger";
 
 interface LayoutProps {
   children: ReactNode;
@@ -24,7 +25,7 @@ const Layout = ({ children }: LayoutProps) => {
     try {
       await logout();
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      logError('Erro ao fazer logout', { error: error instanceof Error ? error.message : 'Unknown error' });
     }
   };
 

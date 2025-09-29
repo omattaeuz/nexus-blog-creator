@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, Loader2, Key, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/hooks/use-toast';
+import { logAuth, logError } from '@/lib/logger';
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -22,8 +23,6 @@ const ResetPassword = () => {
   useEffect(() => {
     const handlePasswordReset = async () => {
       try {
-        console.log('🔑 Processing password reset...');
-        
         // Check if we have the necessary tokens in the URL
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
@@ -33,8 +32,6 @@ const ResetPassword = () => {
         const type = params.get('type');
 
         if (type === 'recovery' && accessToken && refreshToken) {
-          console.log('🔄 Setting session with recovery tokens...');
-          
           // Set the session with the recovery tokens
           const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
@@ -42,14 +39,14 @@ const ResetPassword = () => {
           });
 
           if (sessionError) {
-            console.error('❌ Error setting session:', sessionError);
+            logError('Error setting session', { error: sessionError.message });
             setStatus('error');
             setMessage('Erro ao processar link de reset. Link pode ter expirado.');
             return;
           }
 
           if (sessionData.session && sessionData.session.user) {
-            console.log('✅ Session set successfully:', sessionData.session.user.email);
+            logAuth('Session set successfully', { email: sessionData.session.user.email });
             setStatus('ready');
             setMessage('Digite sua nova senha abaixo.');
           } else {
@@ -61,7 +58,7 @@ const ResetPassword = () => {
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session && session.user) {
-            console.log('✅ User already authenticated:', session.user.email);
+            logAuth('User already authenticated', { email: session.user.email });
             setStatus('ready');
             setMessage('Digite sua nova senha abaixo.');
           } else {
@@ -70,7 +67,7 @@ const ResetPassword = () => {
           }
         }
       } catch (error) {
-        console.error('❌ Error processing password reset:', error);
+        logError('Error processing password reset', { error: error instanceof Error ? error.message : 'Unknown error' });
         setStatus('error');
         setMessage('Erro ao processar reset de senha.');
       }
@@ -103,14 +100,14 @@ const ResetPassword = () => {
     setIsLoading(true);
     
     try {
-      console.log('🔑 Updating password...');
+      logAuth('Updating password');
       
       const { data, error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
       if (error) {
-        console.error('❌ Error updating password:', error);
+        logError('Error updating password', { error: error.message });
         setStatus('error');
         setMessage(`Erro ao atualizar senha: ${error.message}`);
         toast({
@@ -122,7 +119,7 @@ const ResetPassword = () => {
       }
 
       if (data.user) {
-        console.log('✅ Password updated successfully:', data.user.email);
+        logAuth('Password updated successfully', { email: data.user.email });
         setStatus('success');
         setMessage('Senha atualizada com sucesso! Você será redirecionado para a página de posts.');
         
@@ -138,7 +135,7 @@ const ResetPassword = () => {
         }, 3000);
       }
     } catch (error: any) {
-      console.error('❌ Exception updating password:', error);
+      logError('Exception updating password', { error: error instanceof Error ? error.message : 'Unknown error' });
       setStatus('error');
       setMessage('Erro inesperado ao atualizar senha.');
       toast({

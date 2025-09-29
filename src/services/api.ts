@@ -3,6 +3,7 @@
 
 import axios from 'axios';
 import { N8N_CONFIG } from '@/config/n8n';
+import { logApi, logError } from '@/lib/logger';
 
 interface Post {
   id: string;
@@ -71,13 +72,15 @@ const apiClient = axios.create({
 // Add request interceptor for logging
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(`🚀 Making ${config.method?.toUpperCase()} request to: ${config.url}`);
-    console.log('📤 Request data:', config.data);
-    console.log('🔑 Headers:', config.headers);
+    logApi(`Making ${config.method?.toUpperCase()} request`, { 
+      url: config.url, 
+      data: config.data, 
+      headers: config.headers 
+    });
     return config;
   },
   (error) => {
-    console.error('❌ Request error:', error);
+    logError('Request error', { error: error.message });
     return Promise.reject(error);
   }
 );
@@ -85,7 +88,7 @@ apiClient.interceptors.request.use(
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log('✅ Response received:', {
+    logApi('Response received', {
       status: response.status,
       statusText: response.statusText,
       url: response.config.url,
@@ -96,13 +99,13 @@ apiClient.interceptors.response.use(
     
     // Check if N8N is returning workflow started message instead of actual data
     if (response.data && typeof response.data === 'object' && response.data.message === 'Workflow was started') {
-      console.warn('⚠️ N8N returned "Workflow was started" - check Response Mode = Last Node');
+      logError('N8N returned "Workflow was started" - check Response Mode = Last Node');
     }
     
     return response;
   },
   (error) => {
-    console.error('❌ Response error:', {
+    logError('Response error', {
       status: error.response?.status,
       statusText: error.response?.statusText,
       url: error.config?.url,
@@ -142,7 +145,7 @@ export const auth = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error registering user:', error);
+      logError('Error registering user:', error);
       if (axios.isAxiosError(error)) {
         if (error.response) {
           const message = error.response.data?.msg || `HTTP ${error.response.status}: ${error.response.statusText}`;
@@ -158,7 +161,7 @@ export const auth = {
   // Login user
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      console.log('🔐 Attempting login for:', data.email);
+      logApi('Attempting login', { email: data.email });
       
       const response = await supabaseClient.post<AuthResponse>(
         '/auth/v1/token?grant_type=password',
@@ -166,14 +169,14 @@ export const auth = {
         { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
       );
       
-      console.log('✅ Login successful:', response.data);
+      logApi('Login successful', { data: response.data });
       return response.data;
     } catch (error) {
-      console.error('❌ Error logging in:', error);
+      logError('Error logging in', { error: error instanceof Error ? error.message : 'Unknown error' });
       
       if (axios.isAxiosError(error)) {
         if (error.response) {
-          console.error('📋 Full error response:', {
+          logError('Full error response', {
             status: error.response.status,
             statusText: error.response.statusText,
             data: error.response.data,
@@ -216,7 +219,7 @@ export const auth = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error getting current user:', error);
+      logError('Error getting current user:', error);
       throw new Error('Falha ao obter usuário atual');
     }
   },
@@ -224,15 +227,16 @@ export const auth = {
   // Test function to verify Supabase connection
   async testConnection(): Promise<void> {
     try {
-      console.log('🧪 Testing Supabase connection...');
-      console.log('📍 Supabase URL:', SUPABASE_URL);
-      console.log('🔑 API Key (first 20 chars):', SUPABASE_ANON_KEY.substring(0, 20) + '...');
+      logApi('Testing Supabase connection', { 
+        url: SUPABASE_URL, 
+        apiKeyPreview: SUPABASE_ANON_KEY.substring(0, 20) + '...' 
+      });
       
       // Test a simple request to verify connection
       const response = await supabaseClient.get('/auth/v1/settings');
-      console.log('✅ Supabase connection test successful:', response.status);
+      logApi('Supabase connection test successful', { status: response.status });
     } catch (error) {
-      console.error('❌ Supabase connection test failed:', error);
+      logError('Supabase connection test failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;
     }
   }
@@ -243,7 +247,7 @@ export const api = {
   async createPost(data: CreatePostData, token: string): Promise<Post> {
     try {
       // Debug: Check if token is provided
-      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
+      logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
       if (!token) {
         throw new Error('Token de autenticação não fornecido');
@@ -251,7 +255,7 @@ export const api = {
 
       // Check if N8n webhook is configured
       if (!N8N_CONFIG.WEBHOOK_URL.includes('railway.app')) {
-        console.warn('⚠️ N8n webhook not configured. Using development fallback.');
+        logError('N8n webhook not configured. Using development fallback.');
         
         // Development fallback - create mock post
         const mockPost: Post = {
@@ -279,7 +283,7 @@ export const api = {
       
       return response.data;
     } catch (error) {
-      console.error('Error creating post:', error);
+      logError('Error creating post:', error);
       
       if (axios.isAxiosError(error)) {
         // Handle network errors (N8n not accessible)
@@ -346,7 +350,7 @@ export const api = {
         totalPages,
       };
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      logError('Error fetching posts:', error);
       
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -373,7 +377,7 @@ export const api = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching post:', error);
+      logError('Error fetching post:', error);
       
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
@@ -396,7 +400,7 @@ export const api = {
   async updatePost(id: string, data: UpdatePostData, token: string): Promise<Post | null> {
     try {
       // Debug: Check if token is provided
-      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
+      logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
       if (!token) {
         throw new Error('Token de autenticação não fornecido');
@@ -413,7 +417,7 @@ export const api = {
       
       return response.data;
     } catch (error) {
-      console.error('Error updating post:', error);
+      logError('Error updating post:', error);
       
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
@@ -440,7 +444,7 @@ export const api = {
   async deletePost(id: string, token: string): Promise<boolean> {
     try {
       // Debug: Check if token is provided
-      console.log('➡️ Authorization header?', token ? `Bearer ${token.slice(0, 12)}...` : 'MISSING TOKEN!');
+      logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
       if (!token) {
         throw new Error('Token de autenticação não fornecido');
@@ -457,7 +461,7 @@ export const api = {
       
       return true;
     } catch (error) {
-      console.error('Error deleting post:', error);
+      logError('Error deleting post:', error);
       
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 401) {
