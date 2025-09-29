@@ -1,92 +1,107 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Loader2, LogIn, Eye, EyeOff, KeyRound } from "lucide-react";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { EmailInput } from "@/components/ui/EmailInput";
+import { SubmitButton } from "@/components/ui/SubmitButton";
+import { Loader2, LogIn, KeyRound } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { type LoginData } from "@/services/api";
+import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
+import { usePasswordVisibility } from "@/hooks/usePasswordVisibility";
+import { useAsyncOperation } from "@/hooks/useAsyncOperation";
+import { logAuth, logError } from "@/lib/logger";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, LOADING_MESSAGES, ROUTES } from "@/lib/constants";
+import { type LoginData } from "@/types";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  
+  // Form state
   const [formData, setFormData] = useState<LoginData>({
     email: "",
     password: "",
   });
 
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
+  // Custom hooks
+  const { showPassword, togglePassword } = usePasswordVisibility();
+  const { errors, validateForm, clearError } = useFormValidation<LoginData>({
+    email: commonValidationRules.email,
+    password: commonValidationRules.password,
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      email: "",
-      password: "",
-    };
+  // Async operations
+  const loginOperation = useAsyncOperation(login, {
+    onSuccess: () => {
+      logAuth('Login successful', { email: formData.email });
+      toast({
+        title: SUCCESS_MESSAGES.LOGIN_SUCCESS,
+        description: "Você foi logado com sucesso.",
+      });
+      navigate(ROUTES.POSTS);
+    },
+    onError: (error) => {
+      logError('Login failed', { email: formData.email, error: error.message });
+      toast({
+        title: "Falha no Login",
+        description: error.message || ERROR_MESSAGES.UNEXPECTED_ERROR,
+        variant: "destructive",
+      });
+    },
+  });
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email é obrigatório";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Por favor, digite um email válido";
+  const resetPasswordOperation = useAsyncOperation(
+    async (email: string) => {
+      logAuth('Sending password reset email', { email });
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}${ROUTES.RESET_PASSWORD}`
+      });
+      if (error) throw error;
+      return data;
+    },
+    {
+      onSuccess: () => {
+        logAuth('Password reset email sent successfully');
+        toast({
+          title: SUCCESS_MESSAGES.PASSWORD_RESET_SENT,
+          description: "Verifique sua caixa de entrada e clique no link para resetar sua senha.",
+        });
+      },
+      onError: (error) => {
+        logError('Password reset email failed', { error: error.message });
+        toast({
+          title: "Erro ao Enviar Email",
+          description: `Erro: ${error.message}`,
+          variant: "destructive",
+        });
+      },
     }
+  );
 
-    if (!formData.password.trim()) {
-      newErrors.password = "Senha é obrigatória";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "A senha deve ter pelo menos 6 caracteres";
-    }
-
-    setErrors(newErrors);
-    return !newErrors.email && !newErrors.password;
-  };
-
+  // Event handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    if (!validateForm(formData)) {
       toast({
-        title: "Erro de Validação",
+        title: ERROR_MESSAGES.VALIDATION_ERROR,
         description: "Por favor, corrija os erros no formulário",
         variant: "destructive",
       });
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      await login(formData);
-      
-      toast({
-        title: "Bem-vindo de volta!",
-        description: "Você foi logado com sucesso.",
-      });
-      
-      navigate("/posts");
-    } catch (error) {
-      toast({
-        title: "Falha no Login",
-        description: error instanceof Error ? error.message : "Falha ao fazer login. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    await loginOperation.execute(formData);
   };
 
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      clearError(field);
     }
   };
 
@@ -100,51 +115,16 @@ const LoginForm = () => {
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!commonValidationRules.email.pattern?.test(formData.email)) {
       toast({
         title: "Email Inválido",
-        description: "Por favor, digite um email válido.",
+        description: ERROR_MESSAGES.INVALID_EMAIL,
         variant: "destructive",
       });
       return;
     }
 
-    setIsResettingPassword(true);
-    
-    try {
-      console.log('🔄 Enviando email de reset para:', formData.email);
-      
-      const { data, error } = await supabase.auth.resetPasswordForEmail(formData.email, {
-        redirectTo: `${window.location.origin}/reset-password`
-      });
-
-      if (error) {
-        console.error('❌ Erro ao enviar email de reset:', error);
-        toast({
-          title: "Erro ao Enviar Email",
-          description: `Erro: ${error.message}`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log('✅ Email de reset enviado com sucesso');
-      toast({
-        title: "Email Enviado!",
-        description: "Verifique sua caixa de entrada e clique no link para resetar sua senha.",
-        variant: "default",
-      });
-
-    } catch (error: any) {
-      console.error('❌ Exceção ao enviar email de reset:', error);
-      toast({
-        title: "Erro Inesperado",
-        description: "Ocorreu um erro inesperado. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsResettingPassword(false);
-    }
+    await resetPasswordOperation.execute(formData.email);
   };
 
   return (
@@ -161,65 +141,30 @@ const LoginForm = () => {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="Digite seu email..."
-                className={`transition-all duration-300 ${
-                  errors.email 
-                    ? "border-destructive focus:ring-destructive" 
-                    : "focus:ring-primary"
-                }`}
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
-              )}
-            </div>
+            <EmailInput
+              id="email"
+              label="Email"
+              value={formData.email}
+              onChange={(value) => handleInputChange("email", value)}
+              placeholder="Digite seu email..."
+              error={errors.email}
+              disabled={loginOperation.isLoading}
+              required
+            />
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground font-medium">
-                Senha
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                  placeholder="Digite sua senha..."
-                  className={`pr-10 transition-all duration-300 ${
-                    errors.password 
-                      ? "border-destructive focus:ring-destructive" 
-                      : "focus:ring-primary"
-                  }`}
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password}</p>
-              )}
-            </div>
+            <PasswordInput
+              id="password"
+              label="Senha"
+              value={formData.password}
+              onChange={(value) => handleInputChange("password", value)}
+              placeholder="Digite sua senha..."
+              showPassword={showPassword}
+              onToggleVisibility={togglePassword}
+              error={errors.password}
+              disabled={loginOperation.isLoading}
+              required
+              minLength={6}
+            />
 
             <div className="text-right">
               <Button
@@ -227,10 +172,10 @@ const LoginForm = () => {
                 variant="link"
                 size="sm"
                 onClick={handleForgotPassword}
-                disabled={isLoading || isResettingPassword}
+                disabled={loginOperation.isLoading || resetPasswordOperation.isLoading}
                 className="text-muted-foreground hover:text-primary p-0 h-auto"
               >
-                {isResettingPassword ? (
+                {resetPasswordOperation.isLoading ? (
                   <>
                     <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                     Enviando...
@@ -245,25 +190,20 @@ const LoginForm = () => {
             </div>
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+            <SubmitButton
+              isLoading={loginOperation.isLoading}
+              loadingText="Entrando..."
+              icon={<LogIn className="h-4 w-4" />}
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <LogIn className="h-4 w-4 mr-2" />
-              )}
-                Entrar
-            </Button>
+              Entrar
+            </SubmitButton>
 
             {/* Register Link */}
             <div className="text-center">
               <p className="text-muted-foreground">
                 Não tem uma conta?{" "}
                 <Link 
-                  to="/register" 
+                  to={ROUTES.REGISTER} 
                   className="text-primary hover:underline font-medium"
                 >
                   Cadastre-se

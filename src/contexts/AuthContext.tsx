@@ -1,23 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase, authHelpers } from '@/lib/supabase';
+import { logAuth, logError } from '@/lib/logger';
+import { ERROR_MESSAGES } from '@/lib/constants';
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User, LoginData, RegisterData } from '@/types';
 
-// Local types for compatibility
-interface User {
-  id: string;
-  email: string;
-  created_at: string;
-}
-
-interface RegisterData {
-  email: string;
-  password: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
+// Remove duplicate types - now imported from @/types
 
 interface AuthContextType {
   user: User | null;
@@ -58,13 +46,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Error getting session:', error);
+          logError('Error getting session', { error: error.message });
         } else if (session) {
+          logAuth('Session restored', { email: session.user.email });
           setUser(convertSupabaseUser(session.user));
           setToken(session.access_token);
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        logError('Error initializing auth', { error: error instanceof Error ? error.message : 'Unknown error' });
       } finally {
         setIsLoading(false);
       }
@@ -75,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('🔐 Auth state changed:', event, session?.user?.email);
+        logAuth('Auth state changed', { event, email: session?.user?.email });
         
         if (session) {
           setUser(convertSupabaseUser(session.user));
@@ -94,51 +83,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (data: LoginData): Promise<void> => {
     try {
-      console.log('🔐 Attempting login with Supabase SDK:', data.email);
+      logAuth('Attempting login', { email: data.email });
       const result = await authHelpers.signIn(data.email, data.password);
       
       if ('error' in result && result.error) {
-        console.error('❌ Login error:', result.error);
-        throw new Error((result.error as any).message || 'Login failed');
+        logError('Login error', { error: (result.error as any).message || 'Login failed' });
+        throw new Error((result.error as any).message || ERROR_MESSAGES.UNEXPECTED_ERROR);
       }
       
       if (result.user && result.session) {
-        console.log('✅ Login successful:', result.user.email);
+        logAuth('Login successful', { email: result.user.email });
         // State will be updated by the auth state change listener
       }
     } catch (error) {
-      console.error('❌ Login failed:', error);
+      logError('Login failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;
     }
   };
 
   const register = async (data: RegisterData): Promise<void> => {
     try {
-      console.log('📝 Attempting registration with Supabase SDK:', data.email);
+      logAuth('Attempting registration', { email: data.email });
       const result = await authHelpers.signUp(data.email, data.password);
       
       if ('error' in result && result.error) {
-        console.error('❌ Registration error:', result.error);
-        throw new Error((result.error as any).message || 'Registration failed');
+        logError('Registration error', { error: (result.error as any).message || 'Registration failed' });
+        throw new Error((result.error as any).message || ERROR_MESSAGES.UNEXPECTED_ERROR);
       }
       
       if (result.user) {
-        console.log('✅ Registration successful, email confirmation required:', result.user.email);
+        logAuth('Registration successful, email confirmation required', { email: result.user.email });
         // Don't set user state here - wait for email confirmation
       }
     } catch (error) {
-      console.error('❌ Registration failed:', error);
+      logError('Registration failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;
     }
   };
 
   const logout = async (): Promise<void> => {
     try {
-      console.log('🚪 Logging out...');
+      logAuth('Logging out');
       await authHelpers.signOut();
       // State will be updated by the auth state change listener
     } catch (error) {
-      console.error('❌ Logout error:', error);
+      logError('Logout error', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;
     }
   };
@@ -155,7 +144,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Debug: Log auth state changes
   useEffect(() => {
-    console.log('🔐 Auth state changed:', {
+    logAuth('Auth state changed', {
       isAuthenticated: !!user && !!token,
       hasUser: !!user,
       hasToken: !!token,
