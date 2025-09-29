@@ -1,5 +1,23 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth, type User, type AuthResponse, type RegisterData, type LoginData } from '@/services/api';
+import { supabase, authHelpers } from '@/lib/supabase';
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+
+// Local types for compatibility
+interface User {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+interface RegisterData {
+  email: string;
+  password: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -22,57 +40,107 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing token on mount
+  // Convert Supabase user to local User type
+  const convertSupabaseUser = (supabaseUser: SupabaseUser | null): User | null => {
+    if (!supabaseUser) return null;
+    return {
+      id: supabaseUser.id,
+      email: supabaseUser.email || '',
+      created_at: supabaseUser.created_at
+    };
+  };
+
+  // Initialize auth state
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('auth_user');
-    
-    if (storedToken && storedUser) {
+    const initializeAuth = async () => {
       try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        // Get initial session
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+        } else if (session) {
+          setUser(convertSupabaseUser(session.user));
+          setToken(session.access_token);
+        }
       } catch (error) {
-        console.error('Error parsing stored user data:', error);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+        console.error('Error initializing auth:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    
-    setIsLoading(false);
+    };
+
+    initializeAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('🔐 Auth state changed:', event, session?.user?.email);
+        
+        if (session) {
+          setUser(convertSupabaseUser(session.user));
+          setToken(session.access_token);
+        } else {
+          setUser(null);
+          setToken(null);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (data: LoginData): Promise<void> => {
     try {
-      const response: AuthResponse = await auth.login(data);
+      console.log('🔐 Attempting login with Supabase SDK:', data.email);
+      const result = await authHelpers.signIn(data.email, data.password);
       
-      setToken(response.access_token);
-      setUser(response.user);
+      if ('error' in result && result.error) {
+        console.error('❌ Login error:', result.error);
+        throw new Error((result.error as any).message || 'Login failed');
+      }
       
-      // Store in localStorage
-      localStorage.setItem('auth_token', response.access_token);
-      localStorage.setItem('auth_user', JSON.stringify(response.user));
+      if (result.user && result.session) {
+        console.log('✅ Login successful:', result.user.email);
+        // State will be updated by the auth state change listener
+      }
     } catch (error) {
+      console.error('❌ Login failed:', error);
       throw error;
     }
   };
 
   const register = async (data: RegisterData): Promise<void> => {
     try {
-      const response = await auth.register(data);
+      console.log('📝 Attempting registration with Supabase SDK:', data.email);
+      const result = await authHelpers.signUp(data.email, data.password);
       
-      // Registration successful - don't auto-login, user needs to confirm email
-      // The response contains user info but no token since email is not confirmed
-      console.log('Registration successful, email confirmation required');
+      if ('error' in result && result.error) {
+        console.error('❌ Registration error:', result.error);
+        throw new Error((result.error as any).message || 'Registration failed');
+      }
+      
+      if (result.user) {
+        console.log('✅ Registration successful, email confirmation required:', result.user.email);
+        // Don't set user state here - wait for email confirmation
+      }
     } catch (error) {
+      console.error('❌ Registration failed:', error);
       throw error;
     }
   };
 
-  const logout = (): void => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
+  const logout = async (): Promise<void> => {
+    try {
+      console.log('🚪 Logging out...');
+      await authHelpers.signOut();
+      // State will be updated by the auth state change listener
+    } catch (error) {
+      console.error('❌ Logout error:', error);
+      throw error;
+    }
   };
 
   const value: AuthContextType = {

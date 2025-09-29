@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Loader2, LogIn, Eye, EyeOff } from "lucide-react";
+import { Loader2, LogIn, Eye, EyeOff, KeyRound } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { type LoginData } from "@/services/api";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<LoginData>({
     email: "",
@@ -88,6 +90,63 @@ const LoginForm = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!formData.email.trim()) {
+      toast({
+        title: "Email Obrigatório",
+        description: "Por favor, digite seu email para resetar a senha.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      toast({
+        title: "Email Inválido",
+        description: "Por favor, digite um email válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsResettingPassword(true);
+    
+    try {
+      console.log('🔄 Enviando email de reset para:', formData.email);
+      
+      const { data, error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) {
+        console.error('❌ Erro ao enviar email de reset:', error);
+        toast({
+          title: "Erro ao Enviar Email",
+          description: `Erro: ${error.message}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('✅ Email de reset enviado com sucesso');
+      toast({
+        title: "Email Enviado!",
+        description: "Verifique sua caixa de entrada e clique no link para resetar sua senha.",
+        variant: "default",
+      });
+
+    } catch (error: any) {
+      console.error('❌ Exceção ao enviar email de reset:', error);
+      toast({
+        title: "Erro Inesperado",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
       <Card className="bg-gradient-surface shadow-glow border-border/50">
@@ -102,7 +161,6 @@ const LoginForm = () => {
 
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground font-medium">
                 Email
@@ -125,7 +183,6 @@ const LoginForm = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-foreground font-medium">
                 Senha
@@ -162,6 +219,29 @@ const LoginForm = () => {
               {errors.password && (
                 <p className="text-sm text-destructive mt-1">{errors.password}</p>
               )}
+            </div>
+
+            <div className="text-right">
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                onClick={handleForgotPassword}
+                disabled={isLoading || isResettingPassword}
+                className="text-muted-foreground hover:text-primary p-0 h-auto"
+              >
+                {isResettingPassword ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="h-3 w-3 mr-1" />
+                    Esqueci minha senha
+                  </>
+                )}
+              </Button>
             </div>
 
             {/* Submit Button */}

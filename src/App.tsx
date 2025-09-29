@@ -14,6 +14,10 @@ import PostDetail from "@/pages/PostDetail";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Config from "@/pages/Config";
+import EmailConfirmation from "@/pages/EmailConfirmation";
+import TestAuth from "@/pages/TestAuth";
+import DebugAuth from "@/pages/DebugAuth";
+import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +36,10 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/config" element={<Config />} />
+              <Route path="/email-confirmation" element={<EmailConfirmation />} />
+              <Route path="/test-auth" element={<TestAuth />} />
+              <Route path="/debug-auth" element={<DebugAuth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               
               {/* Protected routes */}
               <Route path="/posts" element={

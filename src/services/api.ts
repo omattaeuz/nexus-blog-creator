@@ -126,6 +126,8 @@ const supabaseClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+
   },
 });
 
@@ -156,21 +158,45 @@ export const auth = {
   // Login user
   async login(data: LoginData): Promise<AuthResponse> {
     try {
-      const response = await supabaseClient.post<AuthResponse>('/auth/v1/token?grant_type=password', {
-        email: data.email,
-        password: data.password,
-      });
+      console.log('🔐 Attempting login for:', data.email);
+      
+      const response = await supabaseClient.post<AuthResponse>(
+        '/auth/v1/token?grant_type=password',
+        { email: data.email, password: data.password },
+        { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` } }
+      );
+      
+      console.log('✅ Login successful:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('❌ Error logging in:', error);
+      
       if (axios.isAxiosError(error)) {
         if (error.response) {
+          console.error('📋 Full error response:', {
+            status: error.response.status,
+            statusText: error.response.statusText,
+            data: error.response.data,
+            headers: error.response.headers
+          });
+          
           // Handle specific error cases
           if (error.response.data?.error_code === 'email_not_confirmed') {
             throw new Error('Email não confirmado. Verifique sua caixa de entrada e clique no link de confirmação.');
           }
           
-          const message = error.response.data?.msg || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          if (error.response.data?.error === 'invalid_credentials') {
+            throw new Error('Email ou senha incorretos. Verifique suas credenciais e tente novamente.');
+          }
+          
+          if (error.response.data?.error === 'invalid_grant') {
+            throw new Error('Credenciais inválidas. Verifique seu email e senha.');
+          }
+          
+          const message = error.response.data?.error_description || 
+                         error.response.data?.msg || 
+                         error.response.data?.error ||
+                         `HTTP ${error.response.status}: ${error.response.statusText}`;
           throw new Error(`Falha ao fazer login: ${message}`);
         }
         const message = error.message || 'Erro de rede ocorreu';
@@ -192,6 +218,22 @@ export const auth = {
     } catch (error) {
       console.error('Error getting current user:', error);
       throw new Error('Falha ao obter usuário atual');
+    }
+  },
+
+  // Test function to verify Supabase connection
+  async testConnection(): Promise<void> {
+    try {
+      console.log('🧪 Testing Supabase connection...');
+      console.log('📍 Supabase URL:', SUPABASE_URL);
+      console.log('🔑 API Key (first 20 chars):', SUPABASE_ANON_KEY.substring(0, 20) + '...');
+      
+      // Test a simple request to verify connection
+      const response = await supabaseClient.get('/auth/v1/settings');
+      console.log('✅ Supabase connection test successful:', response.status);
+    } catch (error) {
+      console.error('❌ Supabase connection test failed:', error);
+      throw error;
     }
   }
 };
