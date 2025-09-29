@@ -159,7 +159,7 @@ const Home = () => {
                     size="lg"
                     variant="secondary"
                     asChild
-                    className="text-lg px-8 py-6 transition-all duration-300"
+                    className="text-lg px-8 py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
                   >
                     <Link to="/posts/new">
                       <PlusCircle className="h-5 w-5 mr-2" />
@@ -170,7 +170,7 @@ const Home = () => {
                     size="lg"
                     variant="outline"
                     asChild
-                    className="text-lg px-8 py-6 transition-all duration-300 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+                    className="text-lg px-8 py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
                   >
                     <Link to="/posts">
                       <BookOpen className="h-5 w-5 mr-2" />
