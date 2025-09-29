@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
  * Custom hook for handling async operations with consistent loading and error states
  * Provides a standardized pattern for API calls and async operations
  */
-export interface AsyncOperationState<T = any> {
+export interface AsyncOperationState<T = unknown> {
   data: T | null;
   isLoading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ export interface AsyncOperationState<T = any> {
 }
 
 export interface UseAsyncOperationReturn<T> extends AsyncOperationState<T> {
-  execute: (...args: any[]) => Promise<T | null>;
+  execute: (...args: unknown[]) => Promise<T | null>;
   reset: () => void;
   setData: (data: T | null) => void;
   setError: (error: string | null) => void;
@@ -24,8 +24,8 @@ export interface UseAsyncOperationReturn<T> extends AsyncOperationState<T> {
  * @param options - Configuration options
  * @returns Async operation state and utilities
  */
-export function useAsyncOperation<T = any>(
-  asyncFunction: (...args: any[]) => Promise<T>,
+export function useAsyncOperation<T = unknown>(
+  asyncFunction: (...args: unknown[]) => Promise<T>,
   options: {
     onSuccess?: (data: T) => void;
     onError?: (error: Error) => void;
@@ -39,7 +39,7 @@ export function useAsyncOperation<T = any>(
     isSuccess: false,
   });
 
-  const execute = useCallback(async (...args: any[]): Promise<T | null> => {
+  const execute = useCallback(async (...args: unknown[]): Promise<T | null> => {
     try {
       // Reset state if configured to do so
       if (options.resetOnExecute) {

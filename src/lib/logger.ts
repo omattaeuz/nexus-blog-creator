@@ -8,7 +8,7 @@ export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 export interface LogEntry {
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: unknown;
   timestamp: string;
   context?: string;
 }
@@ -32,14 +32,14 @@ class Logger {
     return levels[level] >= levels[this.logLevel];
   }
 
-  private formatMessage(level: LogLevel, message: string, data?: any, context?: string): string {
+  private formatMessage(level: LogLevel, message: string, data?: unknown, context?: string): string {
     const timestamp = new Date().toISOString();
     const contextStr = context ? `[${context}]` : '';
     const dataStr = data ? ` ${JSON.stringify(data, null, 2)}` : '';
     return `${timestamp} ${level.toUpperCase()} ${contextStr} ${message}${dataStr}`;
   }
 
-  private log(level: LogLevel, message: string, data?: any, context?: string): void {
+  private log(level: LogLevel, message: string, data?: unknown, context?: string): void {
     if (!this.shouldLog(level)) return;
 
     const formattedMessage = this.formatMessage(level, message, data, context);

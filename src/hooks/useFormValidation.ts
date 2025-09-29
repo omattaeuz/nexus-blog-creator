@@ -34,7 +34,7 @@ export interface UseFormValidationReturn<T> {
  * @param rules - Validation rules for each field
  * @returns Validation utilities and error state
  */
-export function useFormValidation<T extends Record<string, any>>(
+export function useFormValidation<T extends Record<string, unknown>>(
   rules: ValidationRules
 ): UseFormValidationReturn<T> {
   const [errors, setErrors] = useState<ValidationErrors>({});

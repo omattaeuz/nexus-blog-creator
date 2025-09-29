@@ -87,8 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const result = await authHelpers.signIn(data.email, data.password);
       
       if ('error' in result && result.error) {
-        logError('Login error', { error: (result.error as any).message || 'Login failed' });
-        throw new Error((result.error as any).message || ERROR_MESSAGES.UNEXPECTED_ERROR);
+        const errorMessage = result.error instanceof Error ? result.error.message : 'Login failed';
+        logError('Login error', { error: errorMessage });
+        throw new Error(errorMessage || ERROR_MESSAGES.UNEXPECTED_ERROR);
       }
       
       if (result.user && result.session) {
@@ -107,8 +108,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const result = await authHelpers.signUp(data.email, data.password);
       
       if ('error' in result && result.error) {
-        logError('Registration error', { error: (result.error as any).message || 'Registration failed' });
-        throw new Error((result.error as any).message || ERROR_MESSAGES.UNEXPECTED_ERROR);
+        const errorMessage = result.error instanceof Error ? result.error.message : 'Registration failed';
+        logError('Registration error', { error: errorMessage });
+        throw new Error(errorMessage || ERROR_MESSAGES.UNEXPECTED_ERROR);
       }
       
       if (result.user) {
