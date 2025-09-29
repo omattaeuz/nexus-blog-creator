@@ -1,8 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import LogoutConfirmation from "./LogoutConfirmation";
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,8 +12,25 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirmation(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirmation(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-surface flex flex-col">
@@ -92,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={logout}
+                    onClick={handleLogoutClick}
                     className="transition-all duration-300 hover:bg-destructive hover:text-destructive-foreground"
                   >
                     <LogOut className="h-4 w-4" />
@@ -142,6 +160,14 @@ const Layout = ({ children }: LayoutProps) => {
           </div>
         </div>
       </footer>
+
+      {/* Logout Confirmation Dialog */}
+      <LogoutConfirmation
+        isOpen={showLogoutConfirmation}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        userEmail={user?.email}
+      />
     </div>
   );
 };
