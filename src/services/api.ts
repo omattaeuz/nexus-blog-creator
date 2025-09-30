@@ -58,6 +58,36 @@ interface PostsResponse {
 // Configure axios with base URL for n8n webhook
 const baseURL = N8N_CONFIG.WEBHOOK_URL;
 
+// CORS proxy fallback for development
+const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+
+// Helper function to make requests with CORS proxy fallback
+const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
+  try {
+    // Try direct request first
+    return await apiClient.get(url, options);
+  } catch (error) {
+    if (axios.isAxiosError(error) && 
+        (error.code === 'ERR_NETWORK' || error.message.includes('CORS'))) {
+      logError('CORS error detected, trying with proxy', { url });
+      
+      // Try with CORS proxy
+      const proxyUrl = `${CORS_PROXY}${baseURL}${url}`;
+      const proxyClient = axios.create({
+        timeout: 15000,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          ...options.headers,
+        },
+      });
+      
+      return await proxyClient.get(proxyUrl, options);
+    }
+    throw error;
+  }
+};
+
 const apiClient = axios.create({
   baseURL,
   timeout: 10000,
@@ -66,6 +96,9 @@ const apiClient = axios.create({
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
     'Expires': '0',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
   },
 });
 
@@ -486,20 +519,63 @@ export const api = {
   },
 
   // Get a specific post by ID
-  async getPost(id: string): Promise<Post | null> {
+  async getPost(id: string, token?: string): Promise<Post | null> {
     try {
-      const response = await apiClient.get<Post>(`/posts/${id}?_t=${Date.now()}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
-      });
-      return response.data;
+      // First try the direct endpoint (if it exists in N8N)
+      try {
+        const response = await makeRequestWithCorsFallback(`/posts/${id}?_t=${Date.now()}`, {
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+          },
+        });
+        return response.data;
+      } catch (directError) {
+        logError('Direct post endpoint failed, trying fallback method', { 
+          error: directError instanceof Error ? directError.message : 'Unknown error',
+          postId: id 
+        });
+        
+        // Fallback: Get all posts and filter by ID
+        // This is a temporary solution until the N8N workflow is updated with individual post endpoint
+        logApi('Using fallback method: fetching all posts and filtering by ID', { postId: id });
+        
+        const { posts } = await this.getPosts({ 
+          page: 1, 
+          limit: 1000, // Get a large number to ensure we find the post
+          token 
+        });
+        
+        const post = posts.find(p => p.id === id);
+        
+        if (!post) {
+          logError('Post not found in posts list', { postId: id, totalPosts: posts.length });
+          return null;
+        }
+        
+        logApi('Post found using fallback method', { 
+          postId: id, 
+          title: post.title,
+          foundInPosts: posts.length 
+        });
+        
+        return post;
+      }
     } catch (error) {
       logError('Error fetching post:', error);
       
       if (axios.isAxiosError(error)) {
+        // Handle CORS errors specifically
+        if (error.code === 'ERR_NETWORK' || error.message.includes('Network Error')) {
+          // Check if it's a CORS error
+          if (error.message.includes('CORS') || error.message.includes('Access-Control-Allow-Origin')) {
+            throw new Error('Erro de CORS: O servidor não está configurado para aceitar requisições deste domínio. Entre em contato com o administrador.');
+          }
+          throw new Error('Erro de conexão: Verifique se o servidor está acessível.');
+        }
+        
         if (error.response?.status === 404) return null;
         
         if (error.response) {

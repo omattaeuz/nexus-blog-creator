@@ -25,7 +25,7 @@ const PostDetail = () => {
       }
 
       try {
-        const fetchedPost = await api.getPost(id);
+        const fetchedPost = await api.getPost(id, token);
         if (!fetchedPost) {
           setError("Post não encontrado");
         } else {
