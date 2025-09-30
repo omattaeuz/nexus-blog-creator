@@ -81,11 +81,11 @@ const PostDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
           <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md">
-            <CardContent className="p-12 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Carregando post...</p>
+            <CardContent className="p-8 sm:p-12 text-center">
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-primary" />
+              <p className="text-sm sm:text-base text-muted-foreground">Carregando post...</p>
             </CardContent>
           </Card>
         </div>
@@ -96,16 +96,16 @@ const PostDetail = () => {
   if (error || !post) {
     return (
       <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-4 py-20">
+        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
           <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md border-destructive/20">
-            <CardContent className="p-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-destructive/10 text-destructive">
-                <AlertCircle className="h-8 w-8" />
+            <CardContent className="p-6 sm:p-8 md:p-12 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6 rounded-xl bg-destructive/10 text-destructive">
+                <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
               </div>
-              <h2 className="text-2xl font-semibold mb-4 text-foreground">
+              <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-foreground">
                 {error || "Post não encontrado"}
               </h2>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-4">
                 O post que você está procurando não existe ou foi removido.
               </p>
               <Button
@@ -125,9 +125,9 @@ const PostDetail = () => {
 
   return (
     <div className="min-h-screen bg-gradient-surface">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Back Button */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate("/posts")}
@@ -140,50 +140,50 @@ const PostDetail = () => {
 
         {/* Post Content */}
         <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-glow border-border/50">
-          <CardHeader className="pb-6">
-            <div className="flex items-start justify-between mb-4">
-              <CardTitle className="text-3xl md:text-4xl font-bold text-foreground leading-tight">
+          <CardHeader className="pb-4 sm:pb-6 p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-3 sm:mb-4 gap-3">
+              <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground leading-tight">
                 {post.title}
               </CardTitle>
               {post.updated_at && post.updated_at !== post.created_at && (
-                <Badge variant="secondary" className="ml-4 shrink-0">
+                <Badge variant="secondary" className="self-start sm:ml-4 shrink-0">
                   Atualizado
                 </Badge>
               )}
             </div>
 
             {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center space-x-1">
-                <Calendar className="h-4 w-4" />
+                <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>Publicado {formatDate(post.created_at)}</span>
               </div>
               {post.updated_at && post.updated_at !== post.created_at && (
                 <div className="flex items-center space-x-1">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Atualizado {formatDate(post.updated_at)}</span>
                 </div>
               )}
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-6 sm:space-y-8 p-4 sm:p-6">
             {/* Post Content */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-foreground leading-relaxed whitespace-pre-wrap">
+            <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
+              <div className="text-foreground leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
                 {post.content}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-6 border-t border-border">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-border">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 <Button
                   variant="outline"
                   asChild
-                  className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
+                  className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 flex-1 sm:flex-none"
                 >
-                  <Link to={`/posts/${post.id}/edit`} className="flex items-center space-x-2">
+                  <Link to={`/posts/${post.id}/edit`} className="flex items-center justify-center space-x-2">
                     <Edit className="h-4 w-4" />
                     <span>Editar Post</span>
                   </Link>
@@ -192,7 +192,7 @@ const PostDetail = () => {
                 <Button
                   variant="outline"
                   onClick={handleDelete}
-                  className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
+                  className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300 flex-1 sm:flex-none"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Excluir Post
@@ -202,9 +202,9 @@ const PostDetail = () => {
               <Button
                 variant="default"
                 asChild
-                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 w-full sm:w-auto"
               >
-                <Link to="/posts">
+                <Link to="/posts" className="flex items-center justify-center">
                   Ver Todos os Posts
                 </Link>
               </Button>

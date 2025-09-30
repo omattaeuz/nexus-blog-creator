@@ -45,54 +45,54 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
   };
 
   return (
-    <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50">
+    <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50 h-full flex flex-col">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <CardTitle className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+        <div className="flex items-start justify-between gap-2">
+          <CardTitle className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
             {post.title}
           </CardTitle>
           {post.updated_at && post.updated_at !== post.created_at && (
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="secondary" className="ml-2 flex-shrink-0 text-xs">
               Atualizado
             </Badge>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 flex flex-col">
         {/* Content Preview */}
-        <p className="text-muted-foreground leading-relaxed">
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
           {truncateContent(post.content)}
         </p>
 
         {/* Metadata */}
-        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
-            <Calendar className="h-4 w-4" />
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>{formatDate(post.created_at)}</span>
           </div>
           {post.author && (
             <div className="flex items-center space-x-1">
-              <User className="h-4 w-4" />
-              <span>{post.author}</span>
+              <User className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="truncate">{post.author}</span>
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2 pt-2">
           <Button
             variant="outline"
             size="sm"
             asChild
-            className="hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+            className="hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex-1 sm:flex-none"
           >
-            <Link to={`/posts/${post.id}`}>
+            <Link to={`/posts/${post.id}`} className="text-center">
               Ler Mais
             </Link>
           </Button>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-center sm:justify-end gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -101,6 +101,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
             >
               <Link to={`/posts/${post.id}/edit`}>
                 <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
               </Link>
             </Button>
 
@@ -111,6 +112,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
               className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
             >
               <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Excluir</span>
             </Button>
           </div>
         </div>

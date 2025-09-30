@@ -101,16 +101,16 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-4xl">
       <Card className="bg-gradient-surface shadow-glow border-border/50">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <CardHeader className="text-center p-4 sm:p-6">
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             {isEdit ? "Editar Post" : "Criar Novo Post"}
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Title Field */}
             <div className="space-y-2">
               <Label htmlFor="title" className="text-foreground font-medium">
@@ -144,7 +144,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 value={formData.content}
                 onChange={(e) => handleInputChange("content", e.target.value)}
                 placeholder="Escreva o conteúdo do seu post aqui..."
-                rows={12}
+                rows={8}
                 className={`transition-all duration-300 resize-none ${
                   errors.content 
                     ? "border-destructive focus:ring-destructive" 
@@ -158,13 +158,13 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end space-x-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/posts")}
                 disabled={isLoading}
-                className="transition-all duration-300"
+                className="transition-all duration-300 order-2 sm:order-1"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancelar
@@ -173,7 +173,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 order-1 sm:order-2"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />

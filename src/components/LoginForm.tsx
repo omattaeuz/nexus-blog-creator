@@ -128,19 +128,19 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md px-4">
+    <div className="w-full max-w-md mx-auto px-3 sm:px-4">
       <Card className="bg-gradient-surface shadow-glow border-border/50">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+        <CardHeader className="text-center p-4 sm:p-6">
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Bem-vindo de Volta
           </CardTitle>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2">
             Entre na sua conta para continuar
           </p>
         </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <CardContent className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <EmailInput
               id="email"
               label="Email"
@@ -200,7 +200,7 @@ const LoginForm = () => {
 
             {/* Register Link */}
             <div className="text-center">
-              <p className="text-muted-foreground">
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Não tem uma conta?{" "}
                 <Link 
                   to={ROUTES.REGISTER} 

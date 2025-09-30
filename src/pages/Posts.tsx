@@ -97,23 +97,23 @@ const Posts = () => {
 
   return (
     <div className="min-h-screen bg-gradient-surface">
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               Blogs
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Descubra histórias, insights e ideias da nossa comunidade de escritores
           </p>
         </div>
 
         {/* Search and Actions */}
-        <Card className="mb-8 bg-gradient-surface shadow-md border-border/50">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <Card className="mb-6 sm:mb-8 bg-gradient-surface shadow-md border-border/50">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -127,28 +127,30 @@ const Posts = () => {
               </div>
 
               {/* Stats and CTA */}
-              <div className="flex items-center gap-4">
-                <Badge variant="secondary" className="px-3 py-1">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                <Badge variant="secondary" className="px-3 py-1 text-center sm:text-left">
                   {total} {total === 1 ? 'post' : 'posts'}
                 </Badge>
-                <Button
-                  variant="outline"
-                  onClick={handleRefresh}
-                  disabled={loading}
-                  className="flex items-center space-x-2"
-                >
-                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                  <span>Atualizar</span>
-                </Button>
-                <Button
-                  asChild
-                  className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
-                >
-                  <Link to="/posts/new" className="flex items-center space-x-2">
-                    <PlusCircle className="h-4 w-4" />
-                    <span>Novo Post</span>
-                  </Link>
-                </Button>
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    className="flex items-center space-x-2 flex-1 sm:flex-none"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                    <span className="hidden sm:inline">Atualizar</span>
+                  </Button>
+                  <Button
+                    asChild
+                    className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 flex-1 sm:flex-none"
+                  >
+                    <Link to="/posts/new" className="flex items-center justify-center space-x-2">
+                      <PlusCircle className="h-4 w-4" />
+                      <span>Novo Post</span>
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -157,16 +159,16 @@ const Posts = () => {
         {/* Loading State */}
         {loading && (
           <Card className="bg-gradient-surface shadow-md">
-            <CardContent className="p-12 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Carregando posts...</p>
+            <CardContent className="p-8 sm:p-12 text-center">
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-primary" />
+              <p className="text-sm sm:text-base text-muted-foreground">Carregando posts...</p>
             </CardContent>
           </Card>
         )}
 
         {/* Posts Grid */}
         {!loading && posts.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
             {posts.map((post) => (
               <PostCard
                 key={post.id}
@@ -180,14 +182,14 @@ const Posts = () => {
         {/* Empty State */}
         {!loading && posts.length === 0 && (
           <Card className="bg-gradient-surface shadow-md">
-            <CardContent className="p-12 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl bg-gradient-primary text-primary-foreground shadow-glow">
-                <BookOpen className="h-8 w-8" />
+            <CardContent className="p-6 sm:p-8 md:p-12 text-center">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6 rounded-xl bg-gradient-primary text-primary-foreground shadow-glow">
+                <BookOpen className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
               </div>
-              <h3 className="text-2xl font-semibold mb-4 text-foreground">
+              <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-foreground">
                 {searchTerm ? 'Nenhum post encontrado' : 'Ainda não há posts'}
               </h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 max-w-md mx-auto px-4">
                 {searchTerm 
                   ? `Não encontramos posts correspondentes a "${searchTerm}". Tente um termo de busca diferente.`
                   : 'Seja o primeiro a compartilhar sua história! Crie seu primeiro post para começar.'
@@ -200,7 +202,7 @@ const Posts = () => {
                   className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
                 >
                   <Link to="/posts/new" className="flex items-center space-x-2">
-                    <PlusCircle className="h-5 w-5" />
+                    <PlusCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>Criar Seu Primeiro Post</span>
                   </Link>
                 </Button>
@@ -212,26 +214,26 @@ const Posts = () => {
         {/* Pagination */}
         {!loading && totalPages > 1 && (
           <Card className="bg-gradient-surface shadow-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-center space-x-2">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!hasPreviousPage}
-                  className="transition-all duration-300"
+                  className="transition-all duration-300 w-full sm:w-auto"
                 >
                   Anterior
                 </Button>
                 
-                <div className="flex items-center space-x-1">
+                <div className="flex items-center justify-center flex-wrap gap-1 max-w-xs sm:max-w-none">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                     <Button
                       key={page}
                       variant={page === currentPage ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handlePageChange(page)}
-                      className="transition-all duration-300"
+                      className="transition-all duration-300 min-w-[2.5rem]"
                     >
                       {page}
                     </Button>
@@ -243,7 +245,7 @@ const Posts = () => {
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!hasNextPage}
-                  className="transition-all duration-300"
+                  className="transition-all duration-300 w-full sm:w-auto"
                 >
                   Próximo
                 </Button>
