@@ -9,4 +9,16 @@ describe('Basic Tests', () => {
     expect(typeof window).toBe('object')
     expect(typeof document).toBe('object')
   })
+
+  it('should have testing library available', () => {
+    expect(typeof document.querySelector).toBe('function')
+    expect(typeof document.createElement).toBe('function')
+  })
+
+  it('should have vitest globals available', () => {
+    expect(typeof vi).toBe('object')
+    expect(typeof describe).toBe('function')
+    expect(typeof it).toBe('function')
+    expect(typeof expect).toBe('function')
+  })
 })

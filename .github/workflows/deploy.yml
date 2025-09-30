@@ -44,14 +44,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run linter
-        run: pnpm run lint
-
-      - name: Run type check
-        run: pnpm run type-check
-
-      - name: Build project
-        run: pnpm run build
+      - name: Run CI pipeline (lint + type-check + tests + build)
+        run: pnpm run test:ci
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
