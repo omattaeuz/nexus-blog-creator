@@ -47,8 +47,10 @@ jobs:
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-args: '--prod=false --yes'
+        vercel-args: '--prod=false'
         working-directory: ./
+      env:
+        CI: true
 
   deploy-production:
     needs: test
@@ -62,5 +64,7 @@ jobs:
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-args: '--prod --yes'
+        vercel-args: '--prod'
         working-directory: ./
+      env:
+        CI: true
