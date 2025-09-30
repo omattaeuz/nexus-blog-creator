@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostCard from "@/components/PostCard";
 import { api, type Post } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
 import { Search, PlusCircle, Loader2, BookOpen, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";

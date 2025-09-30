@@ -1,23 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase, authHelpers } from '@/lib/supabase';
 import { logAuth, logError } from '@/lib/logger';
 import { ERROR_MESSAGES } from '@/lib/constants';
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import type { User, LoginData, RegisterData } from '@/types';
-
-// Remove duplicate types - now imported from @/types
-
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (data: LoginData) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext, type AuthContextType } from './auth-context-definition';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -144,16 +131,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
   };
 
-  // Debug: Log auth state changes
-  useEffect(() => {
-    logAuth('Auth state changed', {
-      isAuthenticated: !!user && !!token,
-      hasUser: !!user,
-      hasToken: !!token,
-      tokenPreview: token ? `${token.slice(0, 12)}...` : 'null',
-      userEmail: user?.email || 'null'
-    });
-  }, [user, token]);
 
   return (
     <AuthContext.Provider value={value}>
@@ -162,9 +139,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
-  
-  return context;
-};

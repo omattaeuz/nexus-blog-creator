@@ -4,7 +4,7 @@ import PostForm from "@/components/PostForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, AlertCircle } from "lucide-react";
 import { api, type Post, type UpdatePostData } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 import { toast } from "@/hooks/use-toast";
 
 const EditPost = () => {

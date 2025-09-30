@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 /**
  * Custom hook for handling async operations with consistent loading and error states
@@ -39,10 +39,20 @@ export function useAsyncOperation<T = unknown>(
     isSuccess: false,
   });
 
+  // Use refs to store the latest callback functions
+  const onSuccessRef = useRef(options.onSuccess);
+  const onErrorRef = useRef(options.onError);
+  const resetOnExecuteRef = useRef(options.resetOnExecute);
+
+  // Update refs when options change
+  onSuccessRef.current = options.onSuccess;
+  onErrorRef.current = options.onError;
+  resetOnExecuteRef.current = options.resetOnExecute;
+
   const execute = useCallback(async (...args: unknown[]): Promise<T | null> => {
     try {
       // Reset state if configured to do so
-      if (options.resetOnExecute) {
+      if (resetOnExecuteRef.current) {
         setState(prev => ({
           ...prev,
           isLoading: true,
@@ -67,8 +77,8 @@ export function useAsyncOperation<T = unknown>(
       });
 
       // Call success callback if provided
-      if (options.onSuccess) {
-        options.onSuccess(result);
+      if (onSuccessRef.current) {
+        onSuccessRef.current(result);
       }
 
       return result;
@@ -84,13 +94,13 @@ export function useAsyncOperation<T = unknown>(
       }));
 
       // Call error callback if provided
-      if (options.onError && error instanceof Error) {
-        options.onError(error);
+      if (onErrorRef.current && error instanceof Error) {
+        onErrorRef.current(error);
       }
 
       return null;
     }
-  }, [asyncFunction, options]);
+  }, [asyncFunction]);
 
   const reset = useCallback(() => {
     setState({

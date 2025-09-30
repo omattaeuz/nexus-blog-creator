@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 import LogoutConfirmation from "./LogoutConfirmation";
 import { logError } from "@/lib/logger";
 

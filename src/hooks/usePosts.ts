@@ -1,7 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api, type Post } from '@/services/api';
-import { useAsyncOperation } from './useAsyncOperation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/useAuth';
 import { logApi, logError } from '@/lib/logger';
 
 interface UsePostsOptions {
@@ -39,17 +38,36 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   const [currentPage, setCurrentPage] = useState(initialOptions.page || 1);
   const [searchTerm, setSearchTerm] = useState(initialOptions.search || '');
   const [limit] = useState(initialOptions.limit || 6);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchOperation = useAsyncOperation(
-    async (options: UsePostsOptions = {}) => {
+  // Use ref to store the latest values without causing re-renders
+  const currentPageRef = useRef(currentPage);
+  const searchTermRef = useRef(searchTerm);
+  const limitRef = useRef(limit);
+  const tokenRef = useRef(token);
+  const initialOptionsRef = useRef(initialOptions);
+
+  // Update refs when values change
+  currentPageRef.current = currentPage;
+  searchTermRef.current = searchTerm;
+  limitRef.current = limit;
+  tokenRef.current = token;
+  initialOptionsRef.current = initialOptions;
+
+  const fetchPosts = useCallback(async (options: UsePostsOptions = {}) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
       const fetchOptions = {
-        page: options.page || currentPage,
-        limit: options.limit || limit,
-        search: options.search !== undefined ? options.search : searchTerm,
-        token: token, // Include authentication token
+        page: options.page || currentPageRef.current,
+        limit: options.limit || limitRef.current,
+        search: options.search !== undefined ? options.search : searchTermRef.current,
+        token: tokenRef.current,
       };
 
-      logApi('Fetching posts', { ...fetchOptions, hasToken: !!token });
+      logApi('Fetching posts', { ...fetchOptions, hasToken: !!tokenRef.current });
       
       const response = await api.getPosts(fetchOptions);
       
@@ -61,22 +79,17 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
       if (options.search !== undefined) {
         setSearchTerm(options.search);
       }
-      
-      return response;
-    },
-    {
-      onError: (error) => {
-        logError('Failed to fetch posts', { error: error.message });
-        setPosts([]);
-        setTotal(0);
-        setTotalPages(0);
-      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch posts';
+      logError('Failed to fetch posts', { error: errorMessage });
+      setError(errorMessage);
+      setPosts([]);
+      setTotal(0);
+      setTotalPages(0);
+    } finally {
+      setIsLoading(false);
     }
-  );
-
-  const fetchPosts = useCallback(async (options: UsePostsOptions = {}) => {
-    await fetchOperation.execute(options);
-  }, [fetchOperation, currentPage, limit, searchTerm]);
+  }, []);
 
   const refreshPosts = useCallback(async () => {
     await fetchPosts({ page: currentPage, search: searchTerm });
@@ -98,8 +111,8 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
 
   // Auto-fetch on mount if enabled
   useEffect(() => {
-    if (initialOptions.autoFetch !== false) {
-      fetchPosts(initialOptions);
+    if (initialOptionsRef.current.autoFetch !== false) {
+      fetchPosts(initialOptionsRef.current);
     }
   }, []); // Only run on mount
 
@@ -108,8 +121,8 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
 
   return {
     posts,
-    loading: fetchOperation.isLoading,
-    error: fetchOperation.error,
+    loading: isLoading,
+    error,
     total,
     totalPages,
     currentPage,

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Edit, Trash2, ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();

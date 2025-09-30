@@ -7,7 +7,7 @@ import { EmailInput } from "@/components/ui/EmailInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { Loader2, LogIn, KeyRound } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 import { supabase } from "@/lib/supabase";
 import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
 import { usePasswordVisibility } from "@/hooks/usePasswordVisibility";

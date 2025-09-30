@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PlusCircle, BookOpen, Users, Zap, Shield, Palette, LogIn, UserPlus } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 import TypewriterText from "@/components/TypewriterText";
 
 const Home = () => {

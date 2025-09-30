@@ -1,6 +1,6 @@
 import PostForm from "@/components/PostForm";
 import { api, type CreatePostData } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/useAuth";
 
 const CreatePost = () => {
   const { token } = useAuth();
