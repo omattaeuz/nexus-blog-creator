@@ -602,3 +602,4 @@ export const api = {
 };
 
 export type { Post, CreatePostData, UpdatePostData, User, AuthResponse, RegisterData, LoginData };
+
