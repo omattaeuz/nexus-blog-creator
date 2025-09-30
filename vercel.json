@@ -1,11 +1,6 @@
 {
-  "buildCommand": "npm run build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm build",
   "outputDirectory": "dist",
-  "framework": "vite",
-  "installCommand": "npm ci",
-  "env": {
-    "VITE_SUPABASE_URL": "@vite_supabase_url",
-    "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key",
-    "VITE_N8N_WEBHOOK_URL": "@vite_n8n_webhook_url"
-  }
+  "framework": "vite"
 }
