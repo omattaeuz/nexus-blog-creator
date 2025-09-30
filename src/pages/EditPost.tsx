@@ -98,7 +98,11 @@ const EditPost = () => {
     );
   }
 
-  return <PostForm initialData={post} onSubmit={handleSubmit} isEdit />;
+  return (
+    <div className="min-h-screen flex items-center justify-center py-8">
+      <PostForm initialData={post} onSubmit={handleSubmit} isEdit />
+    </div>
+  );
 };
 
 export default EditPost;

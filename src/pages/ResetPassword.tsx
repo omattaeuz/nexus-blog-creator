@@ -177,8 +177,9 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="w-full max-w-md px-4">
-      <Card className={`w-full max-w-md ${getStatusColor()}`}>
+    <div className="min-h-screen flex items-center justify-center py-8">
+      <div className="w-full max-w-md px-4">
+        <Card className={`w-full max-w-md ${getStatusColor()}`}>
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             {getStatusIcon()}
@@ -319,7 +320,8 @@ const ResetPassword = () => {
             </form>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };

@@ -12,7 +12,11 @@ const CreatePost = () => {
     await api.createPost(data, token);
   };
 
-  return <PostForm onSubmit={handleSubmit} />;
+  return (
+    <div className="min-h-screen flex items-center justify-center py-8">
+      <PostForm onSubmit={handleSubmit} />
+    </div>
+  );
 };
 
 export default CreatePost;
