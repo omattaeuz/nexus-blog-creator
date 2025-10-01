@@ -6,7 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Loader2, Save, X } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
+import { VALIDATION_CONSTANTS, ERROR_MESSAGES } from "@/lib/constants";
+import { showValidationError, showPostSuccess, showUnexpectedError } from "@/lib/toast-helpers";
 
 interface Post {
   id?: string;
@@ -28,42 +30,26 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     content: initialData?.content || "",
   });
 
-  const [errors, setErrors] = useState({
-    title: "",
-    content: "",
+  // Use form validation hook
+  const { errors, validateForm, clearError } = useFormValidation({
+    title: {
+      ...commonValidationRules.title,
+      minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
+      maxLength: VALIDATION_CONSTANTS.MAX_TITLE_LENGTH,
+    },
+    content: {
+      ...commonValidationRules.content,
+      minLength: VALIDATION_CONSTANTS.MIN_CONTENT_LENGTH,
+      maxLength: VALIDATION_CONSTANTS.MAX_CONTENT_LENGTH,
+    },
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      title: "",
-      content: "",
-    };
-
-    if (!formData.title.trim()) {
-      newErrors.title = "Título é obrigatório";
-    } else if (formData.title.trim().length < 3) {
-      newErrors.title = "O título deve ter pelo menos 3 caracteres";
-    }
-
-    if (!formData.content.trim()) {
-      newErrors.content = "Conteúdo é obrigatório";
-    } else if (formData.content.trim().length < 10) {
-      newErrors.content = "O conteúdo deve ter pelo menos 10 caracteres";
-    }
-
-    setErrors(newErrors);
-    return !newErrors.title && !newErrors.content;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      toast({
-        title: "Erro de Validação",
-        description: "Por favor, corrija os erros no formulário",
-        variant: "destructive",
-      });
+    if (!validateForm(formData)) {
+      showValidationError();
       return;
     }
 
@@ -75,18 +61,11 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
         content: formData.content.trim(),
       });
       
-      toast({
-        title: isEdit ? "Post atualizado" : "Post criado",
-        description: `Seu post foi ${isEdit ? "atualizado" : "criado"} com sucesso.`,
-      });
+      showPostSuccess(isEdit);
       
       navigate("/posts");
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: `Falha ao ${isEdit ? "atualizar" : "criar"} post. Tente novamente.`,
-        variant: "destructive",
-      });
+      showUnexpectedError(`Falha ao ${isEdit ? "atualizar" : "criar"} post. Tente novamente.`);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +75,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      clearError(field);
     }
   };
 

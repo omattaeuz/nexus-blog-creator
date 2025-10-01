@@ -7,6 +7,7 @@ import { Calendar, Edit, Trash2, ArrowLeft, User, Loader2, AlertCircle } from "l
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/useAuth";
+import { formatDate } from "@/lib/formatters";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,15 +69,6 @@ const PostDetail = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("pt-BR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   if (loading) {
     return (

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirme a reautenticação</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a202c;
+            background-color: #fafbff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #ffffff, #fafbff);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.1), 0 4px 6px -4px rgba(139, 92, 246, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+        .content {
+            padding: 32px 24px;
+        }
+        .content h2 {
+            color: #1a202c;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 16px 0;
+        }
+        .content p {
+            color: #4a5568;
+            font-size: 16px;
+            margin: 0 0 24px 0;
+        }
+        .code-container {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 24px 0;
+            box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.2);
+        }
+        .code {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+        }
+        .footer {
+            background-color: #f7fafc;
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+        .footer p {
+            color: #718096;
+            font-size: 14px;
+            margin: 0;
+        }
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .security-note {
+            background-color: #fef5e7;
+            border: 1px solid #f6ad55;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        .security-note p {
+            margin: 0;
+            font-size: 14px;
+            color: #744210;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 24px 20px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .content {
+                padding: 24px 20px;
+            }
+            .content h2 {
+                font-size: 20px;
+            }
+            .code {
+                font-size: 24px;
+                letter-spacing: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge">🔐 Código de segurança</div>
+            <h1>Confirme a reautenticação</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Digite o código de verificação</h2>
+            <p>Olá! 👋</p>
+            <p>Para continuar, você precisa confirmar sua identidade. Use o código abaixo:</p>
+            
+            <div class="code-container">
+                <p class="code">{{ .Token }}</p>
+            </div>
+            
+            <div class="security-note">
+                <p><strong>⚠️ Importante:</strong> Este código é válido por tempo limitado. Não compartilhe este código com ninguém.</p>
+            </div>
+            
+            <p style="font-size: 14px; color: #718096; text-align: center;">
+                Se você não solicitou esta verificação, ignore este email ou entre em contato conosco.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Transforme suas ideias em artigos que alcançam o mundo.</p>
+        </div>
+    </div>
+</body>
+</html>

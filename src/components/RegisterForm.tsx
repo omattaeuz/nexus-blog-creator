@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, UserPlus, Eye, EyeOff, Mail, CheckCircle, ArrowRight } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { EmailInput } from "@/components/ui/EmailInput";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { SubmitButton } from "@/components/ui/SubmitButton";
+import { Loader2, UserPlus, Mail, CheckCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
+import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
+import { usePasswordVisibility } from "@/hooks/usePasswordVisibility";
+import { useAsyncOperation } from "@/hooks/useAsyncOperation";
+import { ERROR_MESSAGES } from "@/lib/constants";
+import { showValidationError, showUnexpectedError } from "@/lib/toast-helpers";
 import { type RegisterData } from "@/services/api";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
@@ -24,87 +26,57 @@ const RegisterForm = () => {
     confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
+  // Custom hooks
+  const { showPassword, showConfirmPassword, togglePassword, toggleConfirmPassword } = usePasswordVisibility();
+  const { errors, validateForm, clearError } = useFormValidation<RegisterData & { confirmPassword: string }>({
+    email: commonValidationRules.email,
+    password: commonValidationRules.password,
+    confirmPassword: {
+      ...commonValidationRules.confirmPassword,
+      custom: (value: string) => {
+        if (value !== formData.password) {
+          return ERROR_MESSAGES.PASSWORDS_DONT_MATCH;
+        }
+        return null;
+      }
+    },
   });
 
-  const validateForm = () => {
-    const newErrors = {
-      email: "",
-      password: "",
-      confirmPassword: "",
-    };
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email é obrigatório";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Por favor, digite um email válido";
-    }
-
-    if (!formData.password.trim()) {
-      newErrors.password = "Senha é obrigatória";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "A senha deve ter pelo menos 6 caracteres";
-    }
-
-    if (!formData.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Por favor, confirme sua senha";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "As senhas não coincidem";
-    }
-
-    setErrors(newErrors);
-    return !newErrors.email && !newErrors.password && !newErrors.confirmPassword;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      toast({
-        title: "Erro de Validação",
-        description: "Por favor, corrija os erros no formulário",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      await register({
-        email: formData.email,
-        password: formData.password,
-      });
-      
-      // Store the registered email and show success modal
+  // Async operations
+  const registerOperation = useAsyncOperation(register, {
+    onSuccess: () => {
       setRegisteredEmail(formData.email);
       setShowSuccessModal(true);
-      
-      // Clear the form
       setFormData({
         email: "",
         password: "",
         confirmPassword: "",
       });
-    } catch (error) {
-      toast({
-        title: "Falha no Cadastro",
-        description: error instanceof Error ? error.message : "Falha ao criar conta. Tente novamente.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    },
+    onError: (error) => {
+      showUnexpectedError(error.message || "Falha ao criar conta. Tente novamente.");
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm(formData)) {
+      showValidationError();
+      return;
     }
+
+    await registerOperation.execute({
+      email: formData.email,
+      password: formData.password,
+    });
   };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [field]: "" }));
+      clearError(field as keyof typeof formData);
     }
   };
 
@@ -131,120 +103,53 @@ const RegisterForm = () => {
 
         <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground font-medium">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="Digite seu email..."
-                className={`transition-all duration-300 ${
-                  errors.email 
-                    ? "border-destructive focus:ring-destructive" 
-                    : "focus:ring-primary"
-                }`}
-                disabled={isLoading}
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
-              )}
-            </div>
+            <EmailInput
+              id="email"
+              label="Email"
+              value={formData.email}
+              onChange={(value) => handleInputChange("email", value)}
+              placeholder="Digite seu email..."
+              error={errors.email}
+              disabled={registerOperation.isLoading}
+              required
+            />
 
-            {/* Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground font-medium">
-                Senha
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
-                  placeholder="Crie uma senha..."
-                  className={`pr-10 transition-all duration-300 ${
-                    errors.password 
-                      ? "border-destructive focus:ring-destructive" 
-                      : "focus:ring-primary"
-                  }`}
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-              {errors.password && (
-                <p className="text-sm text-destructive mt-1">{errors.password}</p>
-              )}
-            </div>
+            <PasswordInput
+              id="password"
+              label="Senha"
+              value={formData.password}
+              onChange={(value) => handleInputChange("password", value)}
+              placeholder="Crie uma senha..."
+              showPassword={showPassword}
+              onToggleVisibility={togglePassword}
+              error={errors.password}
+              disabled={registerOperation.isLoading}
+              required
+              minLength={6}
+            />
 
-            {/* Confirm Password Field */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-foreground font-medium">
-                Confirmar Senha
-              </Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                  placeholder="Confirme sua senha..."
-                  className={`pr-10 transition-all duration-300 ${
-                    errors.confirmPassword 
-                      ? "border-destructive focus:ring-destructive" 
-                      : "focus:ring-primary"
-                  }`}
-                  disabled={isLoading}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isLoading}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </Button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-sm text-destructive mt-1">{errors.confirmPassword}</p>
-              )}
-            </div>
+            <PasswordInput
+              id="confirmPassword"
+              label="Confirmar Senha"
+              value={formData.confirmPassword}
+              onChange={(value) => handleInputChange("confirmPassword", value)}
+              placeholder="Confirme sua senha..."
+              showPassword={showConfirmPassword}
+              onToggleVisibility={toggleConfirmPassword}
+              error={errors.confirmPassword}
+              disabled={registerOperation.isLoading}
+              required
+              minLength={6}
+            />
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={isLoading}
+            <SubmitButton
+              isLoading={registerOperation.isLoading}
+              loadingText="Criando conta..."
+              icon={<UserPlus className="h-4 w-4 mr-2" />}
               className="w-full bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <UserPlus className="h-4 w-4 mr-2" />
-              )}
-                Criar Conta
-            </Button>
+              Criar Conta
+            </SubmitButton>
 
             {/* Login Link */}
             <div className="text-center">
