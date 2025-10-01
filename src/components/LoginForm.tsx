@@ -100,9 +100,7 @@ const LoginForm = () => {
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
-    if (errors[field]) {
-      clearError(field);
-    }
+    if (errors[field]) clearError(field);
   };
 
   const handleForgotPassword = async () => {

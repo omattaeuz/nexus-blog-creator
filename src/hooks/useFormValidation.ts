@@ -44,32 +44,22 @@ export function useFormValidation<T extends Record<string, unknown>>(
     if (!rule) return null;
 
     // Required validation
-    if (rule.required && (!value || value.trim() === '')) {
-      return `${String(field)} é obrigatório`;
-    }
+    if (rule.required && (!value || value.trim() === '')) return `${String(field)} é obrigatório`;
 
     // Skip other validations if value is empty and not required
     if (!value || value.trim() === '') return null;
 
     // Min length validation
-    if (rule.minLength && value.length < rule.minLength) {
-      return `${String(field)} deve ter pelo menos ${rule.minLength} caracteres`;
-    }
+    if (rule.minLength && value.length < rule.minLength) return `${String(field)} deve ter pelo menos ${rule.minLength} caracteres`;
 
     // Max length validation
-    if (rule.maxLength && value.length > rule.maxLength) {
-      return `${String(field)} deve ter no máximo ${rule.maxLength} caracteres`;
-    }
+    if (rule.maxLength && value.length > rule.maxLength) return `${String(field)} deve ter no máximo ${rule.maxLength} caracteres`;
 
     // Pattern validation
-    if (rule.pattern && !rule.pattern.test(value)) {
-      return `${String(field)} tem formato inválido`;
-    }
+    if (rule.pattern && !rule.pattern.test(value)) return `${String(field)} tem formato inválido`;
 
     // Custom validation
-    if (rule.custom) {
-      return rule.custom(value);
-    }
+    if (rule.custom) return rule.custom(value);
 
     return null;
   }, [rules]);
@@ -79,7 +69,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
     let isValid = true;
 
     Object.keys(rules).forEach((field) => {
-      const error = validateField(field as keyof T, data[field] || '');
+      const error = validateField(field as keyof T, String(data[field] || ''));
       if (error) {
         newErrors[field] = error;
         isValid = false;
@@ -122,9 +112,8 @@ export const commonValidationRules = {
     required: true,
     pattern: /\S+@\S+\.\S+/,
     custom: (value: string) => {
-      if (!/\S+@\S+\.\S+/.test(value)) {
-        return 'Por favor, digite um email válido';
-      }
+      if (!/\S+@\S+\.\S+/.test(value)) return 'Por favor, digite um email válido';
+      
       return null;
     }
   },
@@ -132,18 +121,16 @@ export const commonValidationRules = {
     required: true,
     minLength: 6,
     custom: (value: string) => {
-      if (value.length < 6) {
-        return 'A senha deve ter pelo menos 6 caracteres';
-      }
+      if (value.length < 6) return 'A senha deve ter pelo menos 6 caracteres';
+
       return null;
     }
   },
   confirmPassword: {
     required: true,
     custom: (value: string, originalPassword?: string) => {
-      if (originalPassword && value !== originalPassword) {
-        return 'As senhas não coincidem';
-      }
+      if (originalPassword && value !== originalPassword) return 'As senhas não coincidem';
+      
       return null;
     }
   },

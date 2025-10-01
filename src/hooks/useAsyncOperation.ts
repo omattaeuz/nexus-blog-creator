@@ -77,9 +77,7 @@ export function useAsyncOperation<T = unknown>(
       });
 
       // Call success callback if provided
-      if (onSuccessRef.current) {
-        onSuccessRef.current(result);
-      }
+      if (onSuccessRef.current) onSuccessRef.current(result);
 
       return result;
     } catch (error) {
@@ -94,9 +92,7 @@ export function useAsyncOperation<T = unknown>(
       }));
 
       // Call error callback if provided
-      if (onErrorRef.current && error instanceof Error) {
-        onErrorRef.current(error);
-      }
+      if (onErrorRef.current && error instanceof Error) onErrorRef.current(error);
 
       return null;
     }
@@ -134,7 +130,6 @@ export function useAsyncOperation<T = unknown>(
  */
 export function useFormSubmission<T extends Record<string, any>>(
   submitFunction: (data: T) => Promise<any>,
-  validationRules: any,
   options: {
     onSuccess?: (data: any) => void;
     onError?: (error: Error) => void;
@@ -149,9 +144,8 @@ export function useFormSubmission<T extends Record<string, any>>(
   const handleSubmit = useCallback(async (data: T, validateForm: (data: T) => boolean) => {
     // Validate form first
     if (!validateForm(data)) {
-      if (options.onValidationError) {
-        options.onValidationError({});
-      }
+      if (options.onValidationError) options.onValidationError({});
+
       return false;
     }
 

@@ -100,10 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error(errorMessage || ERROR_MESSAGES.UNEXPECTED_ERROR);
       }
       
-      if (result.user) {
-        logAuth('Registration successful, email confirmation required', { email: result.user.email });
-        // Don't set user state here - wait for email confirmation
-      }
+      if (result.user) logAuth('Registration successful, email confirmation required', { email: result.user.email });
     } catch (error) {
       logError('Registration failed', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;
@@ -114,7 +111,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       logAuth('Logging out');
       await authHelpers.signOut();
-      // State will be updated by the auth state change listener
     } catch (error) {
       logError('Logout error', { error: error instanceof Error ? error.message : 'Unknown error' });
       throw error;

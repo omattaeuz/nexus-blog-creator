@@ -19,12 +19,12 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-export interface LoginData {
+export interface LoginData extends Record<string, unknown> {
   email: string;
   password: string;
 }
 
-export interface RegisterData {
+export interface RegisterData extends Record<string, unknown> {
   email: string;
   password: string;
 }

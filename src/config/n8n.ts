@@ -11,9 +11,7 @@ const getWebhookUrl = () => {
   // Fallback to localStorage
   if (typeof window !== 'undefined') {
     const stored = localStorage.getItem('n8n_webhook_url');
-    if (stored && stored.includes('railway.app')) {
-      return stored;
-    }
+    if (stored && stored.includes('railway.app')) return stored;
   }
   
   // Default fallback

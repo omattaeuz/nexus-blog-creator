@@ -73,10 +73,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      clearError(field);
-    }
+    if (errors[field]) clearError(field);
   };
 
   return (
@@ -90,7 +87,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
 
         <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-            {/* Title Field */}
             <div className="space-y-2">
               <Label htmlFor="title" className="text-foreground font-medium">
                 Título
@@ -113,7 +109,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               )}
             </div>
 
-            {/* Content Field */}
             <div className="space-y-2">
               <Label htmlFor="content" className="text-foreground font-medium">
                 Conteúdo
@@ -136,7 +131,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               )}
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 pt-4">
               <Button
                 type="button"

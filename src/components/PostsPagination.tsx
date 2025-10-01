@@ -48,12 +48,8 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
       let end = Math.min(totalPages, currentPage + 2);
       
       // Adjust if we're near the beginning or end
-      if (currentPage <= 3) {
-        end = Math.min(totalPages, 5);
-      }
-      if (currentPage > totalPages - 3) {
-        start = Math.max(1, totalPages - 4);
-      }
+      if (currentPage <= 3) end = Math.min(totalPages, 5);
+      if (currentPage > totalPages - 3) start = Math.max(1, totalPages - 4);
       
       for (let i = start; i <= end; i++) {
         pages.push(i);
@@ -67,7 +63,6 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
 
   return (
     <div className={cn("flex items-center justify-center gap-2", className)}>
-      {/* Previous Button */}
       <Button
         variant="outline"
         size="sm"
@@ -79,7 +74,6 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
         <span className="hidden sm:inline">Anterior</span>
       </Button>
 
-      {/* Page Numbers */}
       <div className="flex items-center gap-1">
         {pageNumbers.map((page) => (
           <Button
@@ -97,7 +91,6 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
         ))}
       </div>
 
-      {/* Next Button */}
       <Button
         variant="outline"
         size="sm"

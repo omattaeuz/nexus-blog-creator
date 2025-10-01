@@ -37,11 +37,9 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-surface flex flex-col">
-      {/* Header */}
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-border shadow-sm">
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <nav className="flex items-center justify-between">
-            {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-primary shadow-glow group-hover:shadow-lg transition-all duration-300">
                 <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-primary-foreground" />
@@ -51,7 +49,6 @@ const Layout = ({ children }: LayoutProps) => {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-2">
               <Button
                 variant={isActive("/") ? "default" : "ghost"}
@@ -93,7 +90,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </>
               )}
 
-              {/* Auth buttons */}
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2 ml-4 pl-4 border-l border-border">
                   <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -138,7 +134,6 @@ const Layout = ({ children }: LayoutProps) => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
@@ -149,7 +144,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[280px] sm:w-[350px]">
                   <div className="flex flex-col space-y-4 mt-8">
-                    {/* Logo in mobile menu */}
                     <div className="flex items-center space-x-2 pb-4 border-b border-border">
                       <div className="p-2 rounded-xl bg-gradient-primary shadow-glow">
                         <BookOpen className="h-5 w-5 text-primary-foreground" />
@@ -159,7 +153,6 @@ const Layout = ({ children }: LayoutProps) => {
                       </span>
                     </div>
 
-                    {/* Navigation Links */}
                     <div className="flex flex-col space-y-2">
                       <Button
                         variant={isActive("/") ? "default" : "ghost"}
@@ -205,7 +198,6 @@ const Layout = ({ children }: LayoutProps) => {
                       )}
                     </div>
 
-                    {/* Auth Section */}
                     <div className="pt-4 border-t border-border">
                       {isAuthenticated ? (
                         <div className="space-y-3">
@@ -267,7 +259,6 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border bg-surface/50">
         <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
           <div className="text-center text-muted-foreground">
@@ -276,7 +267,6 @@ const Layout = ({ children }: LayoutProps) => {
         </div>
       </footer>
 
-      {/* Logout Confirmation Dialog */}
       <LogoutConfirmation
         isOpen={showLogoutConfirmation}
         onClose={handleLogoutCancel}

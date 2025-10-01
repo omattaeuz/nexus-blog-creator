@@ -99,8 +99,7 @@ const makeRequestWithCorsHandling = async (method: string, url: string, data?: a
 
     return response;
   } catch (error) {
-    if (axios.isAxiosError(error) && 
-        (error.code === 'ERR_NETWORK' || error.message.includes('CORS'))) {
+    if (axios.isAxiosError(error) && (error.code === 'ERR_NETWORK' || error.message.includes('CORS'))) {
       logError('CORS error detected, trying with proxy', { url, method });
       
       // Try with CORS proxy as fallback
@@ -323,9 +322,7 @@ export const auth = {
   async getCurrentUser(token: string): Promise<User> {
     try {
       const response = await supabaseClient.get<User>('/auth/v1/user', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}`}
       });
       return response.data;
     } catch (error) {
@@ -359,9 +356,7 @@ export const api = {
       // Debug: Check if token is provided
       logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
-      if (!token) {
-        throw new Error('Token de autenticação não fornecido');
-      }
+      if (!token) throw new Error('Token de autenticação não fornecido');
 
       // Check if N8n webhook is configured
       if (!N8N_CONFIG.WEBHOOK_URL.includes('railway.app')) {

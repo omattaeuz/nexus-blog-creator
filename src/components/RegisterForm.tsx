@@ -20,7 +20,7 @@ const RegisterForm = () => {
   const { register } = useAuth();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState("");
-  const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
+  const [formData, setFormData] = useState<RegisterData & { confirmPassword: string } & Record<string, unknown>>({
     email: "",
     password: "",
     confirmPassword: "",
@@ -28,15 +28,14 @@ const RegisterForm = () => {
 
   // Custom hooks
   const { showPassword, showConfirmPassword, togglePassword, toggleConfirmPassword } = usePasswordVisibility();
-  const { errors, validateForm, clearError } = useFormValidation<RegisterData & { confirmPassword: string }>({
+  const { errors, validateForm, clearError } = useFormValidation<RegisterData & { confirmPassword: string } & Record<string, unknown>>({
     email: commonValidationRules.email,
     password: commonValidationRules.password,
     confirmPassword: {
       ...commonValidationRules.confirmPassword,
       custom: (value: string) => {
-        if (value !== formData.password) {
-          return ERROR_MESSAGES.PASSWORDS_DONT_MATCH;
-        }
+        if (value !== formData.password) return ERROR_MESSAGES.PASSWORDS_DONT_MATCH;
+
         return null;
       }
     },
@@ -75,9 +74,7 @@ const RegisterForm = () => {
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
-    if (errors[field as keyof typeof errors]) {
-      clearError(field as keyof typeof formData);
-    }
+    if (errors[field as keyof typeof errors]) clearError(field as keyof typeof formData);
   };
 
   const handleGoToLogin = () => {
@@ -151,7 +148,6 @@ const RegisterForm = () => {
               Criar Conta
             </SubmitButton>
 
-            {/* Login Link */}
             <div className="text-center">
               <p className="text-sm sm:text-base text-muted-foreground">
                 Já tem uma conta?{" "}
@@ -167,7 +163,6 @@ const RegisterForm = () => {
         </CardContent>
       </Card>
 
-      {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
         <DialogContent className="sm:max-w-md mx-4">
           <DialogHeader className="text-center">
@@ -183,13 +178,11 @@ const RegisterForm = () => {
           </DialogHeader>
           
           <div className="space-y-4 sm:space-y-6">
-            {/* Email Display */}
             <div className="flex items-center justify-center p-3 sm:p-4 bg-muted/50 rounded-lg border">
               <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2" />
               <span className="font-medium text-foreground text-sm sm:text-base truncate">{registeredEmail}</span>
             </div>
 
-            {/* Instructions */}
             <div className="space-y-3">
               <h4 className="font-semibold text-foreground text-sm sm:text-base">Próximos passos:</h4>
               <div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
@@ -208,7 +201,6 @@ const RegisterForm = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleGoToLogin}
@@ -226,7 +218,6 @@ const RegisterForm = () => {
               </Button>
             </div>
 
-            {/* Help Text */}
             <p className="text-xs text-muted-foreground text-center">
               Não recebeu o email? Verifique sua pasta de spam ou aguarde alguns minutos.
             </p>

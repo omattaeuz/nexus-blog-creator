@@ -24,7 +24,6 @@ const N8nConfig = () => {
     setTestResult(null);
 
     try {
-      // Test with a simple GET request to check if the webhook is accessible
       const response = await fetch(webhookUrl, {
         method: 'GET',
         headers: {
@@ -54,7 +53,6 @@ const N8nConfig = () => {
   };
 
   const handleSaveConfig = () => {
-    // In a real app, you would save this to localStorage or a config file
     localStorage.setItem('n8n_webhook_url', webhookUrl);
     alert('Configuração salva! Reinicie a aplicação para aplicar as mudanças.');
   };

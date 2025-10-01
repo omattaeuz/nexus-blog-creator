@@ -49,12 +49,10 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
       </CardHeader>
 
       <CardContent className="space-y-4 flex-1 flex flex-col">
-        {/* Content Preview */}
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
           {truncateContent(post.content)}
         </p>
 
-        {/* Metadata */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -68,7 +66,6 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           )}
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2 pt-2">
           <Button
             variant="outline"

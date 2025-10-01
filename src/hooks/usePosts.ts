@@ -102,9 +102,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   }, [fetchPosts, currentPage, searchTerm]);
 
   const goToPage = useCallback(async (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      await fetchPosts({ page, search: searchTerm });
-    }
+    if (page >= 1 && page <= totalPages) await fetchPosts({ page, search: searchTerm });
   }, [fetchPosts, searchTerm, totalPages]);
 
   const searchPosts = useCallback(async (search: string) => {
@@ -142,9 +140,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
 
   // Auto-fetch on mount if enabled
   useEffect(() => {
-    if (initialOptionsRef.current.autoFetch !== false) {
-      fetchPosts(initialOptionsRef.current);
-    }
+    if (initialOptionsRef.current.autoFetch !== false) fetchPosts(initialOptionsRef.current);
   }, []); // Only run on mount
 
   const hasNextPage = currentPage < totalPages;

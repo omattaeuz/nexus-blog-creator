@@ -27,9 +27,7 @@ const LoadingSpinner = ({
     </div>
   );
 
-  if (variant === "minimal") {
-    return spinner;
-  }
+  if (variant === "minimal") return spinner;
 
   return (
     <Card className="bg-gradient-surface shadow-md">
