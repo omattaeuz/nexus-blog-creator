@@ -179,7 +179,7 @@ describe('ComponentName', () => {
 - Usar `act` para operações que causam re-renders
 - Usar `waitFor` para operações assíncronas
 
-## 🔧 Troubleshooting
+## 🔧 Solução de Problemas
 
 ### Problemas Comuns
 1. **Mocks não funcionando**: Verificar se estão no arquivo `mocks.ts`

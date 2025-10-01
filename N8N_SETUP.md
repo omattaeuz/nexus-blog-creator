@@ -1,114 +1,114 @@
-# N8n Workflow Setup Guide
+# Guia de Configuração do Workflow N8n
 
-This guide will help you set up the N8n workflow for the blog application.
+Este guia irá ajudá-lo a configurar o workflow N8n para a aplicação de blog.
 
-## Prerequisites
+## Pré-requisitos
 
-1. An N8n instance (self-hosted or cloud)
-2. A Supabase project
-3. The provided N8n workflow JSON
+1. Uma instância N8n (self-hosted ou cloud)
+2. Um projeto Supabase
+3. O JSON do workflow N8n fornecido
 
-## Step 1: Import the N8n Workflow
+## Passo 1: Importar o Workflow N8n
 
-1. Open your N8n instance
-2. Click on "Workflows" in the sidebar
-3. Click "Import from file" or "Import from URL"
-4. Copy and paste the provided workflow JSON
-5. Save the workflow
+1. Abra sua instância N8n
+2. Clique em "Workflows" na barra lateral
+3. Clique em "Import from file" ou "Import from URL"
+4. Copie e cole o JSON do workflow fornecido
+5. Salve o workflow
 
-## Step 2: Configure Supabase
+## Passo 2: Configurar Supabase
 
-The workflow is already configured to use the provided Supabase instance:
+O workflow já está configurado para usar a instância Supabase fornecida:
 - **URL**: `https://yedzidjgfilitaqmjjpc.supabase.co`
-- **Anon Key**: Already configured in the workflow
+- **Anon Key**: Já configurado no workflow
 
-## Step 3: Get Your Webhook URL
+## Passo 3: Obter sua URL do Webhook
 
-1. In your N8n workflow, find the webhook nodes
-2. Click on each webhook node to get its URL
-3. The webhook URLs will look like: `https://your-n8n-instance.com/webhook/your-webhook-id`
+1. No seu workflow N8n, encontre os nós webhook
+2. Clique em cada nó webhook para obter sua URL
+3. As URLs do webhook serão parecidas com: `https://your-n8n-instance.com/webhook/your-webhook-id`
 
-## Step 4: Update Frontend Configuration
+## Passo 4: Atualizar Configuração do Frontend
 
-1. Open `src/config/n8n.ts`
-2. Replace `https://your-n8n-instance.com/webhook` with your actual webhook URL
-3. Save the file
+1. Abra `src/config/n8n.ts`
+2. Substitua `https://your-n8n-instance.com/webhook` pela sua URL real do webhook
+3. Salve o arquivo
 
-## Step 5: Test the Integration
+## Passo 5: Testar a Integração
 
-1. Start your frontend application: `npm run dev`
-2. Register a new user
-3. Create a blog post
-4. Verify that the post appears in your Supabase database
+1. Inicie sua aplicação frontend: `npm run dev`
+2. Registre um novo usuário
+3. Crie um post de blog
+4. Verifique se o post aparece no seu banco de dados Supabase
 
-## API Endpoints
+## Endpoints da API
 
-The workflow provides the following endpoints:
+O workflow fornece os seguintes endpoints:
 
-### Authentication
-- **POST** `/auth/v1/signup` - Register new user
-- **POST** `/auth/v1/token` - Login user
-- **GET** `/auth/v1/user` - Get current user
+### Autenticação
+- **POST** `/auth/v1/signup` - Registrar novo usuário
+- **POST** `/auth/v1/token` - Login do usuário
+- **GET** `/auth/v1/user` - Obter usuário atual
 
 ### Posts
-- **POST** `/posts` - Create post (requires auth)
-- **GET** `/posts` - List posts (with pagination and search)
-- **GET** `/posts/:id` - Get single post
-- **PATCH** `/posts/:id` - Update post (requires auth)
-- **DELETE** `/posts/:id` - Delete post (requires auth)
+- **POST** `/posts` - Criar post (requer auth)
+- **GET** `/posts` - Listar posts (com paginação e busca)
+- **GET** `/posts/:id` - Obter post individual
+- **PATCH** `/posts/:id` - Atualizar post (requer auth)
+- **DELETE** `/posts/:id` - Deletar post (requer auth)
 
 ### CORS
-- **OPTIONS** `/posts` - CORS for posts endpoints
-- **OPTIONS** `/posts/:id` - CORS for individual post endpoints
+- **OPTIONS** `/posts` - CORS para endpoints de posts
+- **OPTIONS** `/posts/:id` - CORS para endpoints de posts individuais
 
-## Workflow Features
+## Recursos do Workflow
 
-### Authentication Flow
-1. User registers/logs in through Supabase Auth
-2. Frontend sends requests with Bearer token
-3. N8n validates token with Supabase
-4. If valid, proceeds with database operations
-5. If invalid, returns 401 Unauthorized
+### Fluxo de Autenticação
+1. Usuário se registra/faz login através do Supabase Auth
+2. Frontend envia requisições com token Bearer
+3. N8n valida token com Supabase
+4. Se válido, prossegue com operações de banco de dados
+5. Se inválido, retorna 401 Unauthorized
 
-### Database Operations
-- All database operations use Supabase service role key
-- Posts are stored with user_id for ownership
-- Pagination and search are supported
-- CORS headers are properly configured
+### Operações de Banco de Dados
+- Todas as operações de banco usam a chave de service role do Supabase
+- Posts são armazenados com user_id para propriedade
+- Paginação e busca são suportadas
+- Headers CORS são configurados corretamente
 
-### Error Handling
-- 401 for authentication errors
-- 404 for not found
-- Proper error messages in Portuguese
-- CORS support for all endpoints
+### Tratamento de Erros
+- 401 para erros de autenticação
+- 404 para não encontrado
+- Mensagens de erro adequadas em português
+- Suporte CORS para todos os endpoints
 
-## Troubleshooting
+## Solução de Problemas
 
-### Common Issues
+### Problemas Comuns
 
-1. **CORS Errors**: Make sure the webhook URLs are correctly configured
-2. **Authentication Errors**: Verify Supabase configuration
-3. **Database Errors**: Check Supabase service role key
-4. **Network Errors**: Verify N8n instance is accessible
+1. **Erros CORS**: Certifique-se de que as URLs do webhook estão configuradas corretamente
+2. **Erros de Autenticação**: Verifique a configuração do Supabase
+3. **Erros de Banco de Dados**: Verifique a chave de service role do Supabase
+4. **Erros de Rede**: Verifique se a instância N8n está acessível
 
-### Debug Steps
+### Passos de Debug
 
-1. Check N8n execution logs
-2. Verify webhook URLs in browser network tab
-3. Test endpoints with Postman or curl
-4. Check Supabase logs for database errors
+1. Verifique os logs de execução do N8n
+2. Verifique as URLs do webhook na aba de rede do navegador
+3. Teste endpoints com Postman ou curl
+4. Verifique os logs do Supabase para erros de banco de dados
 
-## Security Notes
+## Notas de Segurança
 
-- The Supabase service role key has full database access
-- User authentication is handled by Supabase
-- CORS is configured for the frontend domain
-- All sensitive operations require authentication
+- A chave de service role do Supabase tem acesso total ao banco de dados
+- A autenticação do usuário é gerenciada pelo Supabase
+- CORS está configurado para o domínio do frontend
+- Todas as operações sensíveis requerem autenticação
 
-## Support
+## Suporte
 
-If you encounter issues:
-1. Check the N8n execution logs
-2. Verify all configuration values
-3. Test individual endpoints
-4. Check browser console for errors
+Se você encontrar problemas:
+1. Verifique os logs de execução do N8n
+2. Verifique todos os valores de configuração
+3. Teste endpoints individuais
+4. Verifique o console do navegador para erros

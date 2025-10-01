@@ -68,7 +68,7 @@ VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 ### ⚡ Benefícios da Integração
 
-1. **Qualidade Garantida**: Nenhum código quebra os testes chega à produção
+1. **Qualidade Garantida**: Nenhum código que quebra os testes chega à produção
 2. **Feedback Rápido**: Desenvolvedores sabem imediatamente se há problemas
 3. **Deploy Seguro**: Apenas builds que passam em todos os testes são deployados
 4. **Cobertura Completa**: 82 testes cobrem as funcionalidades críticas

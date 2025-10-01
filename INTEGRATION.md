@@ -1,4 +1,4 @@
-# Integração Frontend com n8n Backend - Nexta
+# Integração Frontend com n8n Backend - Nexus Blog Creator
 
 ## Resumo da Integração
 
@@ -208,7 +208,7 @@ const baseURL = 'https://primary-production-e91c.up.railway.app/webhook';
 - Mensagens de erro mais claras
 - Logs detalhados para debugging
 
-## Troubleshooting
+## Solução de Problemas
 
 ### Erro de CORS ✅ RESOLVIDO
 - **Solução**: URL direta para n8n
