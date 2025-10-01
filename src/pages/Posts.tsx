@@ -87,23 +87,11 @@ const Posts = () => {
   };
 
   const handlePageChange = async (page: number) => {
-    console.log('Changing to page:', page);
     await goToPage(page);
   };
 
-  // Debug logs
-  console.log('Posts page state:', { 
-    posts: posts.length, 
-    total, 
-    totalPages, 
-    currentPage, 
-    itemsPerPage,
-    loading 
-  });
-
   // Force show pagination for testing
   const shouldShowPagination = !loading && posts.length > 0;
-  console.log('Should show pagination:', shouldShowPagination, { postsLength: posts.length, totalPages });
 
   const handleItemsPerPageChange = async (value: string) => {
     const newLimit = parseInt(value, 10);

@@ -180,12 +180,3 @@ export function createCorsInterceptor(corsConfig: CorsConfig = DEFAULT_CORS_CONF
     },
   };
 }
-
-/**
- * Logs CORS-related information for debugging
- */
-export function logCorsInfo(message: string, data: any) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[CORS] ${message}`, data);
-  }
-}

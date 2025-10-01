@@ -24,16 +24,12 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
   onPageChange,
   className,
 }) => {
-  // Debug logs
-  console.log('PostsPagination props:', { currentPage, totalPages });
   
   // Don't render if there are no pages
   if (totalPages < 1) return null;
 
   const handlePageClick = (page: number) => {
-    if (page >= 1 && page <= totalPages && page !== currentPage) {
-      onPageChange(page);
-    }
+    if (page >= 1 && page <= totalPages && page !== currentPage) onPageChange(page);
   };
 
   // Generate page numbers to show

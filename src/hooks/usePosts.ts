@@ -84,17 +84,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
       setTotalPages(response.totalPages);
       setCurrentPage(response.page);
       
-      // Debug logs
-      console.log('usePosts fetch response:', {
-        posts: response.posts.length,
-        total: response.total,
-        totalPages: response.totalPages,
-        page: response.page
-      });
-      
-      if (options.search !== undefined) {
-        setSearchTerm(options.search);
-      }
+      if (options.search !== undefined) setSearchTerm(options.search);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch posts';
       logError('Failed to fetch posts', { error: errorMessage });

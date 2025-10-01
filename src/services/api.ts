@@ -1,10 +1,7 @@
-// API service for blog posts
-// Integrated with n8n backend workflow
-
 import axios from 'axios';
 import { N8N_CONFIG } from '@/config/n8n';
 import { logApi, logError } from '@/lib/logger';
-import { createCorsInterceptor, logCorsInfo } from '@/lib/cors-handler';
+import { createCorsInterceptor } from '@/lib/cors-handler';
 
 interface Post {
   id: string;
@@ -79,6 +76,7 @@ const makeRequestWithCorsHandling = async (method: string, url: string, data?: a
 
     // Make the request
     let response;
+
     switch (method.toLowerCase()) {
       case 'get':
         response = await apiClient.get(url, requestOptions);
@@ -120,6 +118,7 @@ const makeRequestWithCorsHandling = async (method: string, url: string, data?: a
       });
       
       let proxyResponse;
+      
       switch (method.toLowerCase()) {
         case 'get':
           proxyResponse = await proxyClient.get(proxyUrl, options);
@@ -756,4 +755,8 @@ export const api = {
 };
 
 export type { Post, CreatePostData, UpdatePostData, User, AuthResponse, RegisterData, LoginData };
+
+  function logCorsInfo(arg0: string, arg1: { url: string; }) {
+    throw new Error('Function not implemented.');
+  }
 
