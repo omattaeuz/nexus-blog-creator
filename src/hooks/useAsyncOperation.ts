@@ -130,6 +130,7 @@ export function useAsyncOperation<T = unknown>(
  */
 export function useFormSubmission<T extends Record<string, any>>(
   submitFunction: (data: T) => Promise<any>,
+  validationRules: any = {},
   options: {
     onSuccess?: (data: any) => void;
     onError?: (error: Error) => void;
