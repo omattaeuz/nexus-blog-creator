@@ -17,13 +17,21 @@ interface UsePostsReturn {
   total: number;
   totalPages: number;
   currentPage: number;
+  itemsPerPage: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  startItem: number;
+  endItem: number;
   fetchPosts: (options?: UsePostsOptions) => Promise<void>;
   refreshPosts: () => Promise<void>;
   goToPage: (page: number) => Promise<void>;
+  goToFirstPage: () => Promise<void>;
+  goToLastPage: () => Promise<void>;
+  goToNextPage: () => Promise<void>;
+  goToPreviousPage: () => Promise<void>;
   searchPosts: (searchTerm: string) => Promise<void>;
   clearSearch: () => Promise<void>;
+  setItemsPerPage: (limit: number) => Promise<void>;
 }
 
 /**
@@ -37,7 +45,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(initialOptions.page || 1);
   const [searchTerm, setSearchTerm] = useState(initialOptions.search || '');
-  const [limit] = useState(initialOptions.limit || 6);
+  const [limit, setLimit] = useState(initialOptions.limit || 6);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,6 +84,14 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
       setTotalPages(response.totalPages);
       setCurrentPage(response.page);
       
+      // Debug logs
+      console.log('usePosts fetch response:', {
+        posts: response.posts.length,
+        total: response.total,
+        totalPages: response.totalPages,
+        page: response.page
+      });
+      
       if (options.search !== undefined) {
         setSearchTerm(options.search);
       }
@@ -109,6 +125,31 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     await fetchPosts({ page: 1, search: '' });
   }, [fetchPosts]);
 
+  const goToFirstPage = useCallback(async () => {
+    await fetchPosts({ page: 1, search: searchTerm });
+  }, [fetchPosts, searchTerm]);
+
+  const goToLastPage = useCallback(async () => {
+    await fetchPosts({ page: totalPages, search: searchTerm });
+  }, [fetchPosts, searchTerm, totalPages]);
+
+  const goToNextPage = useCallback(async () => {
+    if (currentPage < totalPages) {
+      await fetchPosts({ page: currentPage + 1, search: searchTerm });
+    }
+  }, [fetchPosts, currentPage, totalPages, searchTerm]);
+
+  const goToPreviousPage = useCallback(async () => {
+    if (currentPage > 1) {
+      await fetchPosts({ page: currentPage - 1, search: searchTerm });
+    }
+  }, [fetchPosts, currentPage, searchTerm]);
+
+  const setItemsPerPage = useCallback(async (newLimit: number) => {
+    setLimit(newLimit);
+    await fetchPosts({ page: 1, limit: newLimit, search: searchTerm });
+  }, [fetchPosts, searchTerm]);
+
   // Auto-fetch on mount if enabled
   useEffect(() => {
     if (initialOptionsRef.current.autoFetch !== false) {
@@ -118,6 +159,8 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
 
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
+  const startItem = total > 0 ? (currentPage - 1) * limit + 1 : 0;
+  const endItem = Math.min(currentPage * limit, total);
 
   return {
     posts,
@@ -126,12 +169,20 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     total,
     totalPages,
     currentPage,
+    itemsPerPage: limit,
     hasNextPage,
     hasPreviousPage,
+    startItem,
+    endItem,
     fetchPosts,
     refreshPosts,
     goToPage,
+    goToFirstPage,
+    goToLastPage,
+    goToNextPage,
+    goToPreviousPage,
     searchPosts,
     clearSearch,
+    setItemsPerPage,
   };
 }

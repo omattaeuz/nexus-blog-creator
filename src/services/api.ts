@@ -4,6 +4,7 @@
 import axios from 'axios';
 import { N8N_CONFIG } from '@/config/n8n';
 import { logApi, logError } from '@/lib/logger';
+import { createCorsInterceptor, logCorsInfo } from '@/lib/cors-handler';
 
 interface Post {
   id: string;
@@ -61,31 +62,93 @@ const baseURL = N8N_CONFIG.WEBHOOK_URL;
 // CORS proxy fallback for development
 const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
-// Helper function to make requests with CORS proxy fallback
-const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
+// Helper function to make requests with CORS handling
+const makeRequestWithCorsHandling = async (method: string, url: string, data?: any, options: any = {}) => {
   try {
-    // Try direct request first
-    return await apiClient.get(url, options);
+    // Add CORS headers to the request
+    const requestOptions = {
+      ...options,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
+        'Access-Control-Max-Age': '86400',
+        ...options.headers,
+      },
+    };
+
+    // Make the request
+    let response;
+    switch (method.toLowerCase()) {
+      case 'get':
+        response = await apiClient.get(url, requestOptions);
+        break;
+      case 'post':
+        response = await apiClient.post(url, data, requestOptions);
+        break;
+      case 'put':
+        response = await apiClient.put(url, data, requestOptions);
+        break;
+      case 'patch':
+        response = await apiClient.patch(url, data, requestOptions);
+        break;
+      case 'delete':
+        response = await apiClient.delete(url, requestOptions);
+        break;
+      default:
+        throw new Error(`Unsupported method: ${method}`);
+    }
+
+    return response;
   } catch (error) {
     if (axios.isAxiosError(error) && 
         (error.code === 'ERR_NETWORK' || error.message.includes('CORS'))) {
-      logError('CORS error detected, trying with proxy', { url });
+      logError('CORS error detected, trying with proxy', { url, method });
       
-      // Try with CORS proxy
+      // Try with CORS proxy as fallback
       const proxyUrl = `${CORS_PROXY}${baseURL}${url}`;
       const proxyClient = axios.create({
         timeout: 15000,
         headers: {
           'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin',
           ...options.headers,
         },
       });
       
-      return await proxyClient.get(proxyUrl, options);
+      let proxyResponse;
+      switch (method.toLowerCase()) {
+        case 'get':
+          proxyResponse = await proxyClient.get(proxyUrl, options);
+          break;
+        case 'post':
+          proxyResponse = await proxyClient.post(proxyUrl, data, options);
+          break;
+        case 'put':
+          proxyResponse = await proxyClient.put(proxyUrl, data, options);
+          break;
+        case 'patch':
+          proxyResponse = await proxyClient.patch(proxyUrl, data, options);
+          break;
+        case 'delete':
+          proxyResponse = await proxyClient.delete(proxyUrl, options);
+          break;
+        default:
+          throw new Error(`Unsupported method: ${method}`);
+      }
+      
+      return proxyResponse;
     }
     throw error;
   }
+};
+
+// Legacy function for backward compatibility
+const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
+  return makeRequestWithCorsHandling('get', url, undefined, options);
 };
 
 const apiClient = axios.create({
@@ -96,15 +159,24 @@ const apiClient = axios.create({
     'Cache-Control': 'no-cache, no-store, must-revalidate',
     'Pragma': 'no-cache',
     'Expires': '0',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
   },
 });
 
-// Add request interceptor for logging
+// Create CORS interceptor
+const corsInterceptor = createCorsInterceptor();
+
+// Add request interceptor for CORS handling and logging
 apiClient.interceptors.request.use(
   (config) => {
+    // Handle CORS using the interceptor
+    const corsResult = corsInterceptor.request(config);
+    
+    // If it's a preflight response, return it directly
+    if (corsResult && typeof corsResult === 'object' && 'status' in corsResult) {
+      logCorsInfo('Handling preflight request', { url: config.url });
+      return corsResult as any;
+    }
+
     logApi(`Making ${config.method?.toUpperCase()} request`, { 
       url: config.url, 
       data: config.data, 
@@ -118,9 +190,12 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Add response interceptor for error handling
+// Add response interceptor for CORS handling and error handling
 apiClient.interceptors.response.use(
   (response) => {
+    // Handle CORS using the interceptor
+    const corsResult = corsInterceptor.response(response);
+    
     logApi('Response received', {
       status: response.status,
       statusText: response.statusText,
@@ -135,9 +210,12 @@ apiClient.interceptors.response.use(
       logError('N8N returned "Workflow was started" - check Response Mode = Last Node');
     }
     
-    return response;
+    return corsResult;
   },
   (error) => {
+    // Handle CORS using the interceptor
+    const corsResult = corsInterceptor.error(error);
+
     logError('Response error', {
       status: error.response?.status,
       statusText: error.response?.statusText,
@@ -147,7 +225,7 @@ apiClient.interceptors.response.use(
       message: error.message,
       code: error.code
     });
-    return Promise.reject(error);
+    return Promise.reject(corsResult);
   }
 );
 
@@ -305,7 +383,7 @@ export const api = {
         return mockPost;
       }
 
-      const response = await apiClient.post<Post>('/posts', data, {
+      const response = await makeRequestWithCorsHandling('post', '/posts', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -377,7 +455,7 @@ export const api = {
         hasToken: !!options?.token
       });
       
-      const response = await apiClient.get<Post[] | { posts: Post[]; total: number; page: number; totalPages: number }>(`/posts?${params.toString()}`, {
+      const response = await makeRequestWithCorsHandling('get', `/posts?${params.toString()}`, undefined, {
         headers,
       });
       
@@ -523,14 +601,14 @@ export const api = {
     try {
       // First try the direct endpoint (if it exists in N8N)
       try {
-        const response = await makeRequestWithCorsFallback(`/posts/${id}?_t=${Date.now()}`, {
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0',
-            ...(token && { 'Authorization': `Bearer ${token}` }),
-          },
-        });
+      const response = await makeRequestWithCorsHandling('get', `/posts/${id}?_t=${Date.now()}`, undefined, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+      });
         return response.data;
       } catch (directError) {
         logError('Direct post endpoint failed, trying fallback method', { 
@@ -598,7 +676,7 @@ export const api = {
       
       if (!token) throw new Error('Token de autenticação não fornecido');
 
-      const response = await apiClient.patch<Post>(`/posts/${id}`, data, {
+      const response = await makeRequestWithCorsHandling('patch', `/posts/${id}`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -642,7 +720,7 @@ export const api = {
         throw new Error('Token de autenticação não fornecido');
       }
 
-      await apiClient.delete(`/posts/${id}`, {
+      await makeRequestWithCorsHandling('delete', `/posts/${id}`, undefined, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Cache-Control': 'no-cache, no-store, must-revalidate',

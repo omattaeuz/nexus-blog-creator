@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PostCard from "@/components/PostCard";
+import PostsPagination from "@/components/PostsPagination";
 import { api, type Post } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
-import { Search, PlusCircle, Loader2, BookOpen, RefreshCw } from "lucide-react";
+import { Search, PlusCircle, Loader2, BookOpen, RefreshCw, Settings } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { logApi, logError } from "@/lib/logger";
 
@@ -24,11 +26,15 @@ const Posts = () => {
     total,
     totalPages,
     currentPage,
+    itemsPerPage,
     hasNextPage,
     hasPreviousPage,
+    startItem,
+    endItem,
     searchPosts,
     goToPage,
     refreshPosts,
+    setItemsPerPage,
   } = usePosts({
     page: 1,
     limit: 6,
@@ -81,7 +87,31 @@ const Posts = () => {
   };
 
   const handlePageChange = async (page: number) => {
+    console.log('Changing to page:', page);
     await goToPage(page);
+  };
+
+  // Debug logs
+  console.log('Posts page state:', { 
+    posts: posts.length, 
+    total, 
+    totalPages, 
+    currentPage, 
+    itemsPerPage,
+    loading 
+  });
+
+  // Force show pagination for testing
+  const shouldShowPagination = !loading && posts.length > 0;
+  console.log('Should show pagination:', shouldShowPagination, { postsLength: posts.length, totalPages });
+
+  const handleItemsPerPageChange = async (value: string) => {
+    const newLimit = parseInt(value, 10);
+    await setItemsPerPage(newLimit);
+    toast({
+      title: "Configuração atualizada",
+      description: `Mostrando ${newLimit} posts por página.`,
+    });
   };
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,11 +156,40 @@ const Posts = () => {
                 />
               </div>
 
-              {/* Stats and CTA */}
+              {/* Stats and Controls */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                <Badge variant="secondary" className="px-3 py-1 text-center sm:text-left">
-                  {total} {total === 1 ? 'post' : 'posts'}
-                </Badge>
+                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <Badge variant="secondary" className="px-3 py-1 text-center sm:text-left">
+                      {total} {total === 1 ? 'post' : 'posts'}
+                    </Badge>
+                    
+                    {totalPages > 1 && (
+                      <Badge variant="outline" className="px-3 py-1 text-center sm:text-left">
+                        Página {currentPage} de {totalPages}
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {/* Items per page selector */}
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4 text-muted-foreground" />
+                    <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
+                      <SelectTrigger className="w-20 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="3">3</SelectItem>
+                        <SelectItem value="6">6</SelectItem>
+                        <SelectItem value="9">9</SelectItem>
+                        <SelectItem value="12">12</SelectItem>
+                        <SelectItem value="18">18</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-sm text-muted-foreground">por página</span>
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-2 sm:gap-4">
                   <Button
                     variant="outline"
@@ -211,47 +270,15 @@ const Posts = () => {
           </Card>
         )}
 
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <Card className="bg-gradient-surface shadow-md">
-            <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={!hasPreviousPage}
-                  className="transition-all duration-300 w-full sm:w-auto"
-                >
-                  Anterior
-                </Button>
-                
-                <div className="flex items-center justify-center flex-wrap gap-1 max-w-xs sm:max-w-none">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={page === currentPage ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => handlePageChange(page)}
-                      className="transition-all duration-300 min-w-[2.5rem]"
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={!hasNextPage}
-                  className="transition-all duration-300 w-full sm:w-auto"
-                >
-                  Próximo
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Pagination - Bottom */}
+        {shouldShowPagination && (
+          <div className="mt-8">
+            <PostsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
         )}
       </div>
     </div>
