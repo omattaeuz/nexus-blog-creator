@@ -62,6 +62,8 @@ export const authHelpers = {
         // If session is already expired or invalid, we can still clear local state
         if (error.message.includes('session_not_found') || error.message.includes('Auth session missing')) {
           console.warn('Session already expired, clearing local state');
+          // Manually clear localStorage for expired sessions
+          this.clearLocalStorage();
           return; // Don't throw error for expired sessions
         }
         throw error;
@@ -69,7 +71,25 @@ export const authHelpers = {
     } catch (error) {
       // If logout fails due to session issues, we should still clear local state
       console.warn('Logout failed, but clearing local state anyway');
+      // Manually clear localStorage when logout fails
+      this.clearLocalStorage();
       // Don't re-throw the error to allow the app to continue
+    }
+  },
+
+  // Clear localStorage manually
+  clearLocalStorage() {
+    try {
+      // Clear all Supabase auth related localStorage items
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.includes('supabase') || key.includes('sb-')) {
+          localStorage.removeItem(key);
+        }
+      });
+      console.log('LocalStorage cleared for Supabase auth');
+    } catch (error) {
+      console.warn('Failed to clear localStorage:', error);
     }
   },
 
