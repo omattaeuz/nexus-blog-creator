@@ -421,6 +421,13 @@ export const api = {
     limit?: number;
     search?: string;
     token?: string;
+    filters?: {
+      sortBy: 'created_at' | 'title' | 'updated_at';
+      sortOrder: 'asc' | 'desc';
+      dateFrom?: Date;
+      dateTo?: Date;
+      itemsPerPage: number;
+    };
   }): Promise<{ posts: Post[]; total: number; page: number; totalPages: number }> {
     try {
       // Build query parameters for server-side pagination and search
@@ -431,6 +438,15 @@ export const api = {
       if (options?.page) params.append('page', options.page.toString());
       if (options?.limit) params.append('limit', options.limit.toString());
       if (options?.search && options.search.trim()) params.append('search', options.search.trim());
+      
+      // Add filter params
+      if (options?.filters) {
+        if (options.filters.sortBy) params.append('sortBy', options.filters.sortBy);
+        if (options.filters.sortOrder) params.append('sortOrder', options.filters.sortOrder);
+        if (options.filters.dateFrom) params.append('dateFrom', options.filters.dateFrom.toISOString());
+        if (options.filters.dateTo) params.append('dateTo', options.filters.dateTo.toISOString());
+        if (options.filters.itemsPerPage) params.append('itemsPerPage', options.filters.itemsPerPage.toString());
+      }
       
       // Prepare headers with optional authorization
       const headers: Record<string, string> = {
@@ -466,98 +482,83 @@ export const api = {
         !Array.isArray(response.data) &&
         ('posts' in response.data || 'data' in response.data);
       
-      // Force client-side pagination for now since server doesn't respect limit
-      // if (isPaginatedResponse) {
-      //   // Server-side pagination and search
-      //   const serverData = response.data as {
-      //     posts?: Post[];
-      //     data?: Post[];
-      //     total: number;
-      //     page: number;
-      //     totalPages: number;
-      //   };
-      //   
-      //   // Handle both 'posts' and 'data' field names
-      //   const posts = serverData.posts || serverData.data || [];
-      //   
-      //   const serverResponse = {
-      //     posts,
-      //     total: serverData.total,
-      //     page: serverData.page,
-      //     totalPages: serverData.totalPages,
-      //   };
-      //   
-      //   logApi('Server-side pagination used', {
-      //     postsCount: posts.length,
-      //     total: serverResponse.total,
-      //     page: serverResponse.page,
-      //     totalPages: serverResponse.totalPages,
-      //     fieldUsed: serverData.posts ? 'posts' : 'data'
-      //   });
-      //   
-      //   return serverResponse;
-      // } else {
-        // Handle different response formats
-        let allPosts: Post[] = [];
-        
-        if (Array.isArray(response.data)) {
-          // Array of posts
-          allPosts = response.data;
-        } else if (response.data && typeof response.data === 'object') {
-          // Check if it's a server response with data array
-          if ('data' in response.data && Array.isArray(response.data.data)) {
-            allPosts = response.data.data;
-          } else if ('posts' in response.data && Array.isArray(response.data.posts)) {
-            allPosts = response.data.posts;
-          } else if ('id' in response.data && 'title' in response.data && 'content' in response.data) {
-            // Single post object - convert to array
-            allPosts = [response.data as unknown as Post];
-          }
-        }
-        
-        logApi('Processing posts response', {
-          responseType: Array.isArray(response.data) ? 'array' : 'object',
-          postsCount: allPosts.length,
-          hasId: response.data && 'id' in response.data,
-          hasTitle: response.data && 'title' in response.data
-        });
-        
-        // Apply search filter if provided and not handled by server
-        let filteredPosts = allPosts;
-        if (options?.search && options.search.trim()) {
-          const searchTerm = options.search.toLowerCase().trim();
-          filteredPosts = allPosts.filter(post => 
-            post.title.toLowerCase().includes(searchTerm) ||
-            post.content.toLowerCase().includes(searchTerm)
+      // Get posts array from response
+      let allPosts: Post[] = [];
+      if (isPaginatedResponse) {
+        allPosts = response.data.posts || response.data.data || [];
+      } else if (Array.isArray(response.data)) {
+        allPosts = response.data;
+      } else {
+        allPosts = [];
+      }
+
+      // Apply client-side filtering and sorting
+      let filteredPosts = [...allPosts];
+
+      // Apply date filters
+      if (options?.filters) {
+        if (options.filters.dateFrom) {
+          filteredPosts = filteredPosts.filter(post => 
+            new Date(post.created_at) >= options.filters!.dateFrom!
           );
         }
-        
-        // Apply pagination
-        const page = options?.page || 1;
-        const limit = options?.limit || 6; // Default to 6 posts per page
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
-        
-        // Calculate pagination info
-        const total = filteredPosts.length;
-        const totalPages = Math.ceil(total / limit);
-        
-        logApi('Client-side pagination used', { 
-          totalPosts: allPosts.length,
-          filteredPosts: filteredPosts.length,
-          paginatedPosts: paginatedPosts.length,
-          page,
-          totalPages
+        if (options.filters.dateTo) {
+          filteredPosts = filteredPosts.filter(post => 
+            new Date(post.created_at) <= options.filters!.dateTo!
+          );
+        }
+
+        // Apply sorting
+        filteredPosts.sort((a, b) => {
+          let aValue: any;
+          let bValue: any;
+
+          switch (options.filters!.sortBy) {
+            case 'title':
+              aValue = a.title.toLowerCase();
+              bValue = b.title.toLowerCase();
+              break;
+            case 'updated_at':
+              aValue = new Date(a.updated_at || a.created_at);
+              bValue = new Date(b.updated_at || b.created_at);
+              break;
+            case 'created_at':
+            default:
+              aValue = new Date(a.created_at);
+              bValue = new Date(b.created_at);
+              break;
+          }
+
+          if (options.filters!.sortOrder === 'asc') {
+            return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+          } else {
+            return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+          }
         });
-        
-        return {
-          posts: paginatedPosts,
-          total,
-          page,
-          totalPages,
-        };
-      // }
+      }
+
+      // Apply client-side pagination
+      const total = filteredPosts.length;
+      const page = options?.page || 1;
+      const limit = options?.limit || 6;
+      const totalPages = Math.ceil(total / limit);
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+      logApi('Posts processed', {
+        originalCount: allPosts.length,
+        filteredCount: total,
+        page,
+        totalPages
+      });
+      
+      return {
+        posts: paginatedPosts,
+        total,
+        page,
+        totalPages,
+      };
     } catch (error) {
       logError('Error fetching posts', { error: error instanceof Error ? error.message : 'Unknown error' });
       

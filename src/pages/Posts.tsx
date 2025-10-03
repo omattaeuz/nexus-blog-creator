@@ -6,16 +6,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostCard from "@/components/PostCard";
 import PostsPagination from "@/components/PostsPagination";
+import PostFilters, { type FilterOptions } from "@/components/PostFilters";
 import { api, type Post } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
-import { Search, PlusCircle, Loader2, BookOpen, RefreshCw } from "lucide-react";
+import { Search, PlusCircle, Loader2, BookOpen, RefreshCw, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { logApi, logError } from "@/lib/logger";
 
 const Posts = () => {
   const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   
   // Use the custom hook for posts management
   const {
@@ -30,15 +32,23 @@ const Posts = () => {
     hasPreviousPage,
     startItem,
     endItem,
+    filters,
     searchPosts,
     goToPage,
     refreshPosts,
     setItemsPerPage,
+    updateFilters,
+    clearFilters,
   } = usePosts({
     page: 1,
     limit: 6,
     search: "",
     autoFetch: true,
+    filters: {
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+      itemsPerPage: 6
+    }
   });
 
   // Handle search with debouncing
@@ -87,6 +97,16 @@ const Posts = () => {
 
   const handlePageChange = async (page: number) => {
     await goToPage(page);
+  };
+
+  // Handle filter changes
+  const handleFiltersChange = async (newFilters: FilterOptions) => {
+    await updateFilters(newFilters);
+  };
+
+  // Handle clear filters
+  const handleClearFilters = async () => {
+    await clearFilters();
   };
 
   // Show pagination when there are posts and either multiple pages or more than 6 posts
@@ -154,6 +174,14 @@ const Posts = () => {
                 <div className="flex items-center gap-2 sm:gap-4">
                   <Button
                     variant="outline"
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center space-x-2 flex-1 sm:flex-none"
+                  >
+                    <Filter className="h-4 w-4" />
+                    <span className="hidden sm:inline">Filtros</span>
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={handleRefresh}
                     disabled={loading}
                     className="flex items-center space-x-2 flex-1 sm:flex-none"
@@ -175,6 +203,19 @@ const Posts = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Filters */}
+        {showFilters && (
+          <div className="mb-6 sm:mb-8">
+            <PostFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+              totalPosts={total}
+              loading={loading}
+            />
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
