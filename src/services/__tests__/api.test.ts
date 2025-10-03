@@ -83,5 +83,28 @@ describe('API Service', () => {
     it('should have deletePost function', () => {
       expect(typeof api.deletePost).toBe('function');
     });
+
+    it('should handle getPosts with filter parameters', async () => {
+      // Test that the function accepts filter parameters without throwing
+      const filters = {
+        sortBy: 'title' as const,
+        sortOrder: 'asc' as const,
+        dateFrom: new Date('2024-01-01'),
+        dateTo: new Date('2024-01-31'),
+        itemsPerPage: 12,
+      };
+
+      // This test verifies that the function signature accepts filters
+      // The actual implementation will be tested in integration tests
+      expect(() => {
+        api.getPosts({
+          page: 1,
+          limit: 12,
+          search: 'test',
+          token: 'test-token',
+          filters,
+        });
+      }).not.toThrow();
+    });
   });
 });

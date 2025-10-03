@@ -17,6 +17,8 @@ interface UsePostsOptions {
   search?: string;
   autoFetch?: boolean;
   filters?: FilterOptions;
+  autoRefresh?: boolean;
+  refreshInterval?: number; // in milliseconds
 }
 
 interface UsePostsReturn {
@@ -32,6 +34,7 @@ interface UsePostsReturn {
   startItem: number;
   endItem: number;
   filters: FilterOptions;
+  isAutoRefreshing: boolean;
   fetchPosts: (options?: UsePostsOptions) => Promise<void>;
   refreshPosts: () => Promise<void>;
   goToPage: (page: number) => Promise<void>;
@@ -44,6 +47,8 @@ interface UsePostsReturn {
   setItemsPerPage: (limit: number) => Promise<void>;
   updateFilters: (filters: FilterOptions) => Promise<void>;
   clearFilters: () => Promise<void>;
+  startAutoRefresh: () => void;
+  stopAutoRefresh: () => void;
 }
 
 /**
@@ -60,6 +65,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   const [limit, setLimit] = useState(initialOptions.limit || 6);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAutoRefreshing, setIsAutoRefreshing] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>(
     initialOptions.filters || {
       sortBy: 'created_at',
@@ -67,6 +73,11 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
       itemsPerPage: 6
     }
   );
+
+  // Auto-refresh state
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(initialOptions.autoRefresh ?? true);
+  const [refreshInterval, setRefreshInterval] = useState(initialOptions.refreshInterval || 30000); // 30 seconds default
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use ref to store the latest values without causing re-renders
   const currentPageRef = useRef(currentPage);
@@ -180,10 +191,77 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     await fetchPosts({ page: 1, limit: limit, search: searchTerm, filters: defaultFilters });
   }, [fetchPosts, limit, searchTerm]);
 
+  // Auto-refresh functions
+  const startAutoRefresh = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    setAutoRefreshEnabled(true);
+    setIsAutoRefreshing(true);
+    
+    intervalRef.current = setInterval(async () => {
+      try {
+        await fetchPosts({ 
+          page: currentPageRef.current, 
+          limit: limitRef.current, 
+          search: searchTermRef.current, 
+          filters: filtersRef.current 
+        });
+      } catch (error) {
+        logError('Auto-refresh failed', { error: error instanceof Error ? error.message : 'Unknown error' });
+      }
+    }, refreshInterval);
+    
+    logApi('Auto-refresh started', { interval: refreshInterval });
+  }, [fetchPosts, refreshInterval]);
+
+  const stopAutoRefresh = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    setAutoRefreshEnabled(false);
+    setIsAutoRefreshing(false);
+    
+    logApi('Auto-refresh stopped');
+  }, []);
+
   // Auto-fetch on mount if enabled
   useEffect(() => {
     if (initialOptionsRef.current.autoFetch !== false) fetchPosts(initialOptionsRef.current);
   }, [fetchPosts]); // Include fetchPosts in dependencies
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (autoRefreshEnabled && !isLoading) {
+      startAutoRefresh();
+    } else {
+      stopAutoRefresh();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [autoRefreshEnabled, isLoading, startAutoRefresh, stopAutoRefresh]);
+
+  // Pause auto-refresh when user is interacting (optional enhancement)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopAutoRefresh();
+      } else if (autoRefreshEnabled) {
+        startAutoRefresh();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [autoRefreshEnabled, startAutoRefresh, stopAutoRefresh]);
 
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
@@ -203,6 +281,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     startItem,
     endItem,
     filters,
+    isAutoRefreshing,
     fetchPosts,
     refreshPosts,
     goToPage,
@@ -215,5 +294,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     setItemsPerPage,
     updateFilters,
     clearFilters,
+    startAutoRefresh,
+    stopAutoRefresh,
   };
 }

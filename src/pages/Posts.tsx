@@ -10,7 +10,7 @@ import PostFilters, { type FilterOptions } from "@/components/PostFilters";
 import { api, type Post } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
-import { Search, PlusCircle, Loader2, BookOpen, RefreshCw, Filter } from "lucide-react";
+import { Search, PlusCircle, Loader2, BookOpen, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { logApi, logError } from "@/lib/logger";
 
@@ -33,6 +33,7 @@ const Posts = () => {
     startItem,
     endItem,
     filters,
+    isAutoRefreshing,
     searchPosts,
     goToPage,
     refreshPosts,
@@ -44,6 +45,8 @@ const Posts = () => {
     limit: 6,
     search: "",
     autoFetch: true,
+    autoRefresh: true,
+    refreshInterval: 30000, // 30 seconds
     filters: {
       sortBy: 'created_at',
       sortOrder: 'desc',
@@ -57,14 +60,6 @@ const Posts = () => {
     await searchPosts(value);
   };
 
-  // Handle refresh
-  const handleRefresh = async () => {
-    await refreshPosts();
-    toast({
-      title: "Posts atualizados",
-      description: "Lista de posts foi atualizada com sucesso.",
-    });
-  };
 
   const handleDelete = async (id: string) => {
     if (!token) {
@@ -128,11 +123,19 @@ const Posts = () => {
       <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
-              Blogs
-            </span>
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+              <span className="bg-gradient-primary bg-clip-text text-transparent">
+                Blogs
+              </span>
+            </h1>
+            {isAutoRefreshing && (
+              <div className="flex items-center gap-1 text-green-500">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium">Atualizando</span>
+              </div>
+            )}
+          </div>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Descubra histórias, insights e ideias da nossa comunidade de escritores
           </p>
@@ -167,6 +170,13 @@ const Posts = () => {
                         Página {currentPage} de {totalPages}
                       </Badge>
                     )}
+
+                    {isAutoRefreshing && (
+                      <Badge variant="outline" className="px-3 py-1 text-center sm:text-left text-green-600 border-green-200 bg-green-50">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
+                        Live
+                      </Badge>
+                    )}
                   </div>
                   
                 </div>
@@ -179,15 +189,6 @@ const Posts = () => {
                   >
                     <Filter className="h-4 w-4" />
                     <span className="hidden sm:inline">Filtros</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleRefresh}
-                    disabled={loading}
-                    className="flex items-center space-x-2 flex-1 sm:flex-none"
-                  >
-                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                    <span className="hidden sm:inline">Atualizar</span>
                   </Button>
                   <Button
                     asChild
