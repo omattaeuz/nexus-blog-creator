@@ -56,8 +56,21 @@ export const authHelpers = {
 
   // Sign out
   async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        // If session is already expired or invalid, we can still clear local state
+        if (error.message.includes('session_not_found') || error.message.includes('Auth session missing')) {
+          console.warn('Session already expired, clearing local state');
+          return; // Don't throw error for expired sessions
+        }
+        throw error;
+      }
+    } catch (error) {
+      // If logout fails due to session issues, we should still clear local state
+      console.warn('Logout failed, but clearing local state anyway');
+      // Don't re-throw the error to allow the app to continue
+    }
   },
 
   // Refresh session

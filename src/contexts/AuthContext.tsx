@@ -113,7 +113,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await authHelpers.signOut();
     } catch (error) {
       logError('Logout error', { error: error instanceof Error ? error.message : 'Unknown error' });
-      throw error;
+      // Even if logout fails, clear local state
+      setUser(null);
+      setToken(null);
+      // Don't throw error to allow the app to continue
     }
   };
 
