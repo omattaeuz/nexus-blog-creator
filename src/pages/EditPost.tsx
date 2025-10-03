@@ -43,7 +43,7 @@ const EditPost = () => {
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, token]);
 
   const handleSubmit = async (data: UpdatePostData) => {
     if (!id) throw new Error("Post ID is required");

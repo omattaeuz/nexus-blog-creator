@@ -467,36 +467,36 @@ export const api = {
         ('posts' in response.data || 'data' in response.data);
       
       // Force client-side pagination for now since server doesn't respect limit
-      if (false && isPaginatedResponse) {
-        // Server-side pagination and search
-        const serverData = response.data as {
-          posts?: Post[];
-          data?: Post[];
-          total: number;
-          page: number;
-          totalPages: number;
-        };
-        
-        // Handle both 'posts' and 'data' field names
-        const posts = serverData.posts || serverData.data || [];
-        
-        const serverResponse = {
-          posts,
-          total: serverData.total,
-          page: serverData.page,
-          totalPages: serverData.totalPages,
-        };
-        
-        logApi('Server-side pagination used', {
-          postsCount: posts.length,
-          total: serverResponse.total,
-          page: serverResponse.page,
-          totalPages: serverResponse.totalPages,
-          fieldUsed: serverData.posts ? 'posts' : 'data'
-        });
-        
-        return serverResponse;
-      } else {
+      // if (isPaginatedResponse) {
+      //   // Server-side pagination and search
+      //   const serverData = response.data as {
+      //     posts?: Post[];
+      //     data?: Post[];
+      //     total: number;
+      //     page: number;
+      //     totalPages: number;
+      //   };
+      //   
+      //   // Handle both 'posts' and 'data' field names
+      //   const posts = serverData.posts || serverData.data || [];
+      //   
+      //   const serverResponse = {
+      //     posts,
+      //     total: serverData.total,
+      //     page: serverData.page,
+      //     totalPages: serverData.totalPages,
+      //   };
+      //   
+      //   logApi('Server-side pagination used', {
+      //     postsCount: posts.length,
+      //     total: serverResponse.total,
+      //     page: serverResponse.page,
+      //     totalPages: serverResponse.totalPages,
+      //     fieldUsed: serverData.posts ? 'posts' : 'data'
+      //   });
+      //   
+      //   return serverResponse;
+      // } else {
         // Handle different response formats
         let allPosts: Post[] = [];
         
@@ -557,7 +557,7 @@ export const api = {
           page,
           totalPages,
         };
-      }
+      // }
     } catch (error) {
       logError('Error fetching posts', { error: error instanceof Error ? error.message : 'Unknown error' });
       

@@ -45,7 +45,7 @@ const PostDetail = () => {
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, token]);
 
   const handleDelete = async () => {
     if (!post) return;

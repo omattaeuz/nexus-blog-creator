@@ -142,7 +142,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   // Auto-fetch on mount if enabled
   useEffect(() => {
     if (initialOptionsRef.current.autoFetch !== false) fetchPosts(initialOptionsRef.current);
-  }, []); // Only run on mount
+  }, [fetchPosts]); // Include fetchPosts in dependencies
 
   const hasNextPage = currentPage < totalPages;
   const hasPreviousPage = currentPage > 1;
