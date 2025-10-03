@@ -466,7 +466,8 @@ export const api = {
         !Array.isArray(response.data) &&
         ('posts' in response.data || 'data' in response.data);
       
-      if (isPaginatedResponse) {
+      // Force client-side pagination for now since server doesn't respect limit
+      if (false && isPaginatedResponse) {
         // Server-side pagination and search
         const serverData = response.data as {
           posts?: Post[];
@@ -503,8 +504,13 @@ export const api = {
           // Array of posts
           allPosts = response.data;
         } else if (response.data && typeof response.data === 'object') {
-          // Single post object - convert to array
-          if ('id' in response.data && 'title' in response.data && 'content' in response.data) {
+          // Check if it's a server response with data array
+          if ('data' in response.data && Array.isArray(response.data.data)) {
+            allPosts = response.data.data;
+          } else if ('posts' in response.data && Array.isArray(response.data.posts)) {
+            allPosts = response.data.posts;
+          } else if ('id' in response.data && 'title' in response.data && 'content' in response.data) {
+            // Single post object - convert to array
             allPosts = [response.data as unknown as Post];
           }
         }
@@ -518,7 +524,7 @@ export const api = {
         
         // Apply search filter if provided and not handled by server
         let filteredPosts = allPosts;
-        if (options?.search && options.search.trim() && !options?.page) {
+        if (options?.search && options.search.trim()) {
           const searchTerm = options.search.toLowerCase().trim();
           filteredPosts = allPosts.filter(post => 
             post.title.toLowerCase().includes(searchTerm) ||
@@ -528,7 +534,7 @@ export const api = {
         
         // Apply pagination
         const page = options?.page || 1;
-        const limit = options?.limit || 10;
+        const limit = options?.limit || 6; // Default to 6 posts per page
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedPosts = filteredPosts.slice(startIndex, endIndex);

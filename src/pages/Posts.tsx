@@ -4,13 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import PostCard from "@/components/PostCard";
 import PostsPagination from "@/components/PostsPagination";
 import { api, type Post } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
-import { Search, PlusCircle, Loader2, BookOpen, RefreshCw, Settings } from "lucide-react";
+import { Search, PlusCircle, Loader2, BookOpen, RefreshCw } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { logApi, logError } from "@/lib/logger";
 
@@ -90,18 +89,9 @@ const Posts = () => {
     await goToPage(page);
   };
 
-  // Force show pagination for testing
-  const shouldShowPagination = !loading && posts.length > 0;
-
-  const handleItemsPerPageChange = async (value: string) => {
-    const newLimit = parseInt(value, 10);
-    await setItemsPerPage(newLimit);
-    toast({
-      title: "Configuração atualizada",
-      description: `Mostrando ${newLimit} posts por página.`,
-    });
-  };
-
+  // Show pagination when there are posts and either multiple pages or more than 6 posts
+  const shouldShowPagination = !loading && posts.length > 0 && (totalPages > 1 || posts.length > 6);
+  
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -159,23 +149,6 @@ const Posts = () => {
                     )}
                   </div>
                   
-                  {/* Items per page selector */}
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4 text-muted-foreground" />
-                    <Select value={itemsPerPage.toString()} onValueChange={handleItemsPerPageChange}>
-                      <SelectTrigger className="w-20 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="3">3</SelectItem>
-                        <SelectItem value="6">6</SelectItem>
-                        <SelectItem value="9">9</SelectItem>
-                        <SelectItem value="12">12</SelectItem>
-                        <SelectItem value="18">18</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <span className="text-sm text-muted-foreground">por página</span>
-                  </div>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-4">

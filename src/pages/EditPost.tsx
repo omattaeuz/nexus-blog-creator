@@ -87,8 +87,8 @@ const EditPost = () => {
               </p>
               <button
                 onClick={() => navigate("/posts")}
-                className="text-primary hover:underline text-sm sm:text-base"
-              >
+                className="hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex-1 sm:flex-none"
+                >
                 Voltar aos Posts
               </button>
             </CardContent>

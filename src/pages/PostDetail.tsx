@@ -103,7 +103,7 @@ const PostDetail = () => {
               <Button
                 onClick={() => navigate("/posts")}
                 variant="outline"
-                className="transition-all duration-300"
+                className="hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex-1 sm:flex-none"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Voltar aos Posts
@@ -123,8 +123,8 @@ const PostDetail = () => {
           <Button
             variant="ghost"
             onClick={() => navigate("/posts")}
-            className="hover:bg-secondary transition-all duration-300"
-          >
+            className="hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex-1 sm:flex-none"
+            >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar aos Posts
           </Button>

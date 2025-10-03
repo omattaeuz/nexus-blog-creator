@@ -11,11 +11,11 @@ interface PostsPaginationProps {
 }
 
 /**
- * Simple pagination component for posts
+ * Minimalist pagination component for posts
  * Features:
- * - Previous/Next navigation
- * - Page numbers with current page highlight
- * - Responsive design
+ * - Only arrow icons for navigation
+ * - Dot indicators for pages (max 5 dots)
+ * - No text, no borders
  * - Clean and minimal interface
  */
 export const PostsPagination: React.FC<PostsPaginationProps> = ({
@@ -32,18 +32,18 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
     if (page >= 1 && page <= totalPages && page !== currentPage) onPageChange(page);
   };
 
-  // Generate page numbers to show
-  const getPageNumbers = () => {
-    const pages: number[] = [];
-    const maxVisible = 5; // Show max 5 page numbers
+  // Generate page dots to show (max 5 dots)
+  const getPageDots = () => {
+    const dots: number[] = [];
+    const maxVisible = 5; // Show max 5 dots
     
     if (totalPages <= maxVisible) {
       // Show all pages if total is small
       for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
+        dots.push(i);
       }
     } else {
-      // Show pages around current page
+      // Show dots around current page
       let start = Math.max(1, currentPage - 2);
       let end = Math.min(totalPages, currentPage + 2);
       
@@ -52,53 +52,53 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
       if (currentPage > totalPages - 3) start = Math.max(1, totalPages - 4);
       
       for (let i = start; i <= end; i++) {
-        pages.push(i);
+        dots.push(i);
       }
     }
     
-    return pages;
+    return dots;
   };
 
-  const pageNumbers = getPageNumbers();
+  const pageDots = getPageDots();
 
   return (
-    <div className={cn("flex items-center justify-center gap-2", className)}>
+    <div className={cn("flex items-center justify-center gap-3", className)}>
+      {/* Previous button - only icon */}
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => handlePageClick(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center gap-1"
+        className="h-8 w-8 p-0"
       >
         <ChevronLeft className="h-4 w-4" />
-        <span className="hidden sm:inline">Anterior</span>
       </Button>
 
-      <div className="flex items-center gap-1">
-        {pageNumbers.map((page) => (
-          <Button
+      {/* Page dots */}
+      <div className="flex items-center gap-1.5">
+        {pageDots.map((page) => (
+          <button
             key={page}
-            variant={page === currentPage ? "default" : "ghost"}
-            size="sm"
             onClick={() => handlePageClick(page)}
             className={cn(
-              "min-w-[2.5rem] h-9",
-              page === currentPage && "bg-gradient-primary hover:bg-primary-hover shadow-glow"
+              "h-2 w-2 rounded-full transition-all duration-200",
+              page === currentPage 
+                ? "bg-foreground scale-125" 
+                : "bg-muted-foreground/30"
             )}
-          >
-            {page}
-          </Button>
+            aria-label={`Ir para página ${page}`}
+          />
         ))}
       </div>
 
+      {/* Next button - only icon */}
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => handlePageClick(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center gap-1"
+        className="h-8 w-8 p-0"
       >
-        <span className="hidden sm:inline">Próximo</span>
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>

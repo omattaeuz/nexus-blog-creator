@@ -98,43 +98,44 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
   }, []);
 
   const refreshPosts = useCallback(async () => {
-    await fetchPosts({ page: currentPage, search: searchTerm });
-  }, [fetchPosts, currentPage, searchTerm]);
+    await fetchPosts({ page: currentPage, limit: limit, search: searchTerm });
+  }, [fetchPosts, currentPage, limit, searchTerm]);
 
   const goToPage = useCallback(async (page: number) => {
-    if (page >= 1 && page <= totalPages) await fetchPosts({ page, search: searchTerm });
-  }, [fetchPosts, searchTerm, totalPages]);
+    if (page >= 1 && page <= totalPages) await fetchPosts({ page, limit: limit, search: searchTerm });
+  }, [fetchPosts, limit, searchTerm, totalPages]);
 
   const searchPosts = useCallback(async (search: string) => {
-    await fetchPosts({ page: 1, search });
-  }, [fetchPosts]);
+    await fetchPosts({ page: 1, limit: limit, search });
+  }, [fetchPosts, limit]);
 
   const clearSearch = useCallback(async () => {
-    await fetchPosts({ page: 1, search: '' });
-  }, [fetchPosts]);
+    await fetchPosts({ page: 1, limit: limit, search: '' });
+  }, [fetchPosts, limit]);
 
   const goToFirstPage = useCallback(async () => {
-    await fetchPosts({ page: 1, search: searchTerm });
-  }, [fetchPosts, searchTerm]);
+    await fetchPosts({ page: 1, limit: limit, search: searchTerm });
+  }, [fetchPosts, limit, searchTerm]);
 
   const goToLastPage = useCallback(async () => {
-    await fetchPosts({ page: totalPages, search: searchTerm });
-  }, [fetchPosts, searchTerm, totalPages]);
+    await fetchPosts({ page: totalPages, limit: limit, search: searchTerm });
+  }, [fetchPosts, limit, searchTerm, totalPages]);
 
   const goToNextPage = useCallback(async () => {
     if (currentPage < totalPages) {
-      await fetchPosts({ page: currentPage + 1, search: searchTerm });
+      await fetchPosts({ page: currentPage + 1, limit: limit, search: searchTerm });
     }
-  }, [fetchPosts, currentPage, totalPages, searchTerm]);
+  }, [fetchPosts, currentPage, limit, totalPages, searchTerm]);
 
   const goToPreviousPage = useCallback(async () => {
     if (currentPage > 1) {
-      await fetchPosts({ page: currentPage - 1, search: searchTerm });
+      await fetchPosts({ page: currentPage - 1, limit: limit, search: searchTerm });
     }
-  }, [fetchPosts, currentPage, searchTerm]);
+  }, [fetchPosts, currentPage, limit, searchTerm]);
 
   const setItemsPerPage = useCallback(async (newLimit: number) => {
     setLimit(newLimit);
+    setCurrentPage(1); // Reset to first page when changing items per page
     await fetchPosts({ page: 1, limit: newLimit, search: searchTerm });
   }, [fetchPosts, searchTerm]);
 
