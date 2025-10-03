@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit, Trash2, User } from "lucide-react";
+import { Calendar, Edit, Trash2, User, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, truncateContent } from "@/lib/formatters";
 import DeletePostModal from "./DeletePostModal";
+import ShareButton from "./ShareButton";
 
 interface Post {
   id: string;
@@ -15,6 +16,7 @@ interface Post {
   created_at: string;
   updated_at?: string;
   author?: string;
+  is_public?: boolean;
 }
 
 interface PostCardProps {
@@ -65,11 +67,19 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           <CardTitle className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
             {post.title}
           </CardTitle>
-          {post.updated_at && post.updated_at !== post.created_at && (
-            <Badge variant="secondary" className="ml-2 flex-shrink-0 text-xs">
-              Atualizado
-            </Badge>
-          )}
+          <div className="flex gap-2 ml-2 flex-shrink-0">
+            {post.updated_at && post.updated_at !== post.created_at && (
+              <Badge variant="secondary" className="text-xs">
+                Atualizado
+              </Badge>
+            )}
+            {post.is_public && (
+              <Badge variant="outline" className="text-xs text-green-600 border-green-600">
+                <Globe className="h-3 w-3 mr-1" />
+                Público
+              </Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
 
@@ -104,6 +114,14 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           </Button>
 
           <div className="flex items-center justify-center sm:justify-end gap-2">
+            <ShareButton
+              postTitle={post.title}
+              postId={post.id}
+              postContent={post.content}
+              variant="ghost"
+              size="sm"
+            />
+
             <Button
               variant="ghost"
               size="sm"

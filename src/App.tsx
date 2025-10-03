@@ -11,6 +11,7 @@ import Posts from "@/pages/Posts";
 import CreatePost from "@/pages/CreatePost";
 import EditPost from "@/pages/EditPost";
 import PostDetail from "@/pages/PostDetail";
+import PublicPostDetail from "@/pages/PublicPostDetail";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import EmailConfirmation from "@/pages/EmailConfirmation";
@@ -39,6 +40,9 @@ const App = () => (
               <Route path="/debug-auth" element={<DebugAuth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               
+              {/* Public post view - accessible without login */}
+              <Route path="/posts/:id" element={<PublicPostDetail />} />
+              
               {/* Protected routes */}
               <Route path="/posts" element={
                 <ProtectedRoute>
@@ -48,11 +52,6 @@ const App = () => (
               <Route path="/posts/new" element={
                 <ProtectedRoute>
                   <CreatePost />
-                </ProtectedRoute>
-              } />
-              <Route path="/posts/:id" element={
-                <ProtectedRoute>
-                  <PostDetail />
                 </ProtectedRoute>
               } />
               <Route path="/posts/:id/edit" element={

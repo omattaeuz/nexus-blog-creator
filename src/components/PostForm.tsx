@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Save, X } from "lucide-react";
 import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
 import { VALIDATION_CONSTANTS, ERROR_MESSAGES } from "@/lib/constants";
@@ -14,6 +15,7 @@ interface Post {
   id?: string;
   title: string;
   content: string;
+  is_public?: boolean;
 }
 
 interface PostFormProps {
@@ -28,6 +30,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     content: initialData?.content || "",
+    is_public: initialData?.is_public || false,
   });
 
   // Use form validation hook
@@ -59,6 +62,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       await onSubmit({
         title: formData.title.trim(),
         content: formData.content.trim(),
+        is_public: formData.is_public,
       });
       
       showPostSuccess(isEdit);
@@ -129,6 +133,29 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               {errors.content && (
                 <p className="text-sm text-destructive mt-1">{errors.content}</p>
               )}
+            </div>
+
+            {/* Public Post Checkbox */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_public"
+                  checked={formData.is_public}
+                  onCheckedChange={(checked) => 
+                    setFormData(prev => ({ ...prev, is_public: !!checked }))
+                  }
+                  disabled={isLoading}
+                />
+                <Label 
+                  htmlFor="is_public" 
+                  className="text-sm font-medium text-foreground cursor-pointer"
+                >
+                  Tornar post público
+                </Label>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Posts públicos podem ser visualizados por qualquer pessoa através de links compartilhados
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 sm:gap-4 pt-4">

@@ -10,19 +10,16 @@ interface Post {
   created_at: string;
   updated_at?: string;
   user_id?: string;
-  is_public?: boolean;
 }
 
 interface CreatePostData {
   title: string;
   content: string;
-  is_public?: boolean;
 }
 
 interface UpdatePostData {
   title: string;
   content: string;
-  is_public?: boolean;
 }
 
 interface User {
@@ -372,7 +369,6 @@ export const api = {
           content: data.content,
           created_at: new Date().toISOString(),
           user_id: 'dev-user-id',
-          is_public: data.is_public || false,
         };
         
         // Simulate network delay

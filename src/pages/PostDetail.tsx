@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/useAuth";
 import { formatDate } from "@/lib/formatters";
 import DeletePostModal from "@/components/DeletePostModal";
+import ShareButton from "@/components/ShareButton";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -182,6 +183,15 @@ const PostDetail = () => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-border">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                <ShareButton
+                  postTitle={post.title}
+                  postId={post.id}
+                  postContent={post.content}
+                  variant="outline"
+                  size="default"
+                  className="flex-1 sm:flex-none"
+                />
+
                 <Button
                   variant="outline"
                   asChild
