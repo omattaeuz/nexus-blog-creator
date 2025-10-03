@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit, Trash2, ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
+import { Calendar, Edit, Trash2, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/useAuth";
@@ -37,10 +37,12 @@ const PostDetail = () => {
           setPost(fetchedPost);
         }
       } catch (err) {
-        setError("Falha ao carregar post");
+        console.error('Error fetching post:', err);
+        const errorMessage = err instanceof Error ? err.message : "Falha ao carregar post";
+        setError(errorMessage);
         toast({
           title: "Erro",
-          description: "Falha ao carregar post. Tente novamente.",
+          description: errorMessage,
           variant: "destructive",
         });
       } finally {
@@ -68,9 +70,11 @@ const PostDetail = () => {
       });
       navigate("/posts");
     } catch (error) {
+      console.error('Error deleting post:', error);
+      const errorMessage = error instanceof Error ? error.message : "Falha ao excluir post. Tente novamente.";
       toast({
         title: "Erro",
-        description: "Falha ao excluir post. Tente novamente.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -175,7 +179,11 @@ const PostDetail = () => {
           <CardContent className="space-y-6 sm:space-y-8 p-4 sm:p-6">
             {/* Post Content */}
             <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none">
-              <div className="text-foreground leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
+              <div 
+                className="text-foreground leading-relaxed whitespace-pre-wrap text-sm sm:text-base"
+                role="article"
+                aria-label="Conteúdo do post"
+              >
                 {post.content}
               </div>
             </div>
@@ -186,7 +194,6 @@ const PostDetail = () => {
                 <ShareButton
                   postTitle={post.title}
                   postId={post.id}
-                  postContent={post.content}
                   variant="outline"
                   size="default"
                   className="flex-1 sm:flex-none"
@@ -207,6 +214,7 @@ const PostDetail = () => {
                   variant="outline"
                   onClick={handleDeleteClick}
                   className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300 flex-1 sm:flex-none"
+                  aria-label="Excluir post"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Excluir Post

@@ -327,7 +327,6 @@ export const api = {
       const response = await makeRequestWithCorsHandling('post', '/posts', data, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          // No cache headers to avoid preflight requests
         },
       });
       
@@ -551,11 +550,10 @@ export const api = {
   // Get a specific post by ID (works for both public and private posts)
   async getPost(id: string, token?: string): Promise<Post | null> {
     try {
-      // Use the new N8N endpoint that handles both public and private posts
+      // First try the specific post endpoint
       const response = await makeRequestWithCorsHandling('get', `/posts/${id}?_t=${Date.now()}`, undefined, {
         headers: {
           ...(token && { 'Authorization': `Bearer ${token}` }),
-          // No cache headers to avoid preflight requests
         },
       });
 
@@ -568,10 +566,49 @@ export const api = {
       
       return null;
     } catch (error) {
-      logError('Error fetching post:', error);
+      logError('Error fetching post from specific endpoint:', error);
       
-      // Always try cache fallback for any error
-      logApi('Trying cache fallback for any error', { postId: id });
+      // If specific post endpoint fails, try to find it in public posts
+      try {
+        logApi('Trying to find post in public posts list', { postId: id });
+        const publicResponse = await makeRequestWithCorsHandling('get', `/posts/public?_t=${Date.now()}&limit=100`, undefined, {
+          headers: {},
+        });
+
+        if (publicResponse.data && publicResponse.data.data) {
+          const posts = publicResponse.data.data;
+          const post = posts.find((p: Post) => p.id === id);
+          
+          if (post) {
+            logApi('Post found in public posts list', { postId: id, title: post.title });
+            this.cachePost(post);
+            return post;
+          }
+        }
+      } catch (publicError) {
+        logError('Error fetching public posts:', publicError);
+      }
+      
+      // Check if it's a CORS or network error
+      const isCorsError = error instanceof Error && (
+        error.message.includes('CORS') || 
+        error.message.includes('Access-Control-Allow-Origin') ||
+        error.message.includes('ERR_NETWORK') ||
+        error.message.includes('Network Error')
+      );
+      
+      const isServerError = error instanceof Error && (
+        error.message.includes('500') ||
+        error.message.includes('Internal Server Error')
+      );
+      
+      if (isCorsError) {
+        logApi('CORS error detected, trying cache fallback', { postId: id });
+      } else if (isServerError) {
+        logApi('Server error detected, trying cache fallback', { postId: id });
+      } else {
+        logApi('General error detected, trying cache fallback', { postId: id });
+      }
       
       // Try to get from cache using the new cache manager
       const cachedPost = cacheManager.getPost(id);
@@ -580,19 +617,9 @@ export const api = {
         return cachedPost;
       }
       
-      // If no cache available, create a mock post for testing
-      logApi('No cache available, creating mock post for testing', { postId: id });
-      const mockPost: Post = {
-        id: id,
-        title: 'Post de Exemplo (Modo Offline)',
-        content: 'Este é um post de exemplo que está sendo exibido porque o servidor N8N não está disponível no momento. Este post foi criado para demonstração.',
-        created_at: new Date().toISOString(),
-        is_public: true,
-      };
-      
-      // Cache the mock post
-      this.cachePost(mockPost);
-      return mockPost;
+      // If no cache available, return null to indicate post not found
+      logApi('No cache available, post not found', { postId: id });
+      return null;
     }
   },
 

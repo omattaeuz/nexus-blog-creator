@@ -2,22 +2,13 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit, Trash2, User, Globe } from "lucide-react";
+import { Calendar, Edit, Trash2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, truncateContent } from "@/lib/formatters";
 import DeletePostModal from "./DeletePostModal";
 import ShareButton from "./ShareButton";
-
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string;
-  updated_at?: string;
-  author?: string;
-  is_public?: boolean;
-}
+import { type Post } from "@/types";
 
 interface PostCardProps {
   post: Post;
@@ -45,9 +36,11 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
       });
       setShowDeleteModal(false);
     } catch (error) {
+      console.error('Error deleting post:', error);
+      const errorMessage = error instanceof Error ? error.message : "Falha ao excluir post. Tente novamente.";
       toast({
         title: "Erro",
-        description: "Falha ao excluir post. Tente novamente.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -73,12 +66,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
                 Atualizado
               </Badge>
             )}
-            {post.is_public && (
-              <Badge variant="outline" className="text-xs text-green-600 border-green-600">
-                <Globe className="h-3 w-3 mr-1" />
-                Público
-              </Badge>
-            )}
+            {/* Note: is_public property not available in current Post interface */}
           </div>
         </div>
       </CardHeader>
@@ -96,7 +84,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           {post.author && (
             <div className="flex items-center space-x-1">
               <User className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="truncate">{post.author}</span>
+              <span className="truncate">{post.author.email}</span>
             </div>
           )}
         </div>
@@ -117,7 +105,6 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
             <ShareButton
               postTitle={post.title}
               postId={post.id}
-              postContent={post.content}
               variant="ghost"
               size="sm"
             />
@@ -127,6 +114,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
               size="sm"
               asChild
               className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
+              aria-label="Editar post"
             >
               <Link to={`/posts/${post.id}/edit`}>
                 <Edit className="h-4 w-4" />
@@ -139,6 +127,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
               size="sm"
               onClick={handleDeleteClick}
               className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
+              aria-label="Excluir post"
             >
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Excluir</span>

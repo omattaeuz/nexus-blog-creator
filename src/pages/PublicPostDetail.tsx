@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
+import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn } from "lucide-react";
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/formatters";
@@ -35,7 +35,7 @@ const PublicPostDetail = () => {
         }
       } catch (err) {
         // If API fails, try to get post from localStorage (from previous visits)
-        console.warn('Public access failed, trying localStorage fallback:', err);
+        console.error('Public access failed, trying localStorage fallback:', err);
         
         // Try to get from cache using the new cache manager
         const cachedPost = cacheManager.getPost(id);
@@ -56,6 +56,12 @@ const PublicPostDetail = () => {
             errorMessage = "Problema de configuração do servidor. Este post pode não estar disponível publicamente.";
           } else if (err.message.includes('não disponível publicamente')) {
             errorMessage = err.message;
+          } else if (err.message.includes('Network Error') || err.message.includes('ERR_NETWORK')) {
+            errorMessage = "Servidor temporariamente indisponível. Tente novamente mais tarde.";
+          } else if (err.message.includes('500') || err.message.includes('Internal Server Error')) {
+            errorMessage = "Erro interno do servidor. O post pode não estar disponível no momento.";
+          } else if (err.message.includes('CORS policy')) {
+            errorMessage = "Problema de configuração de CORS. Este post pode não estar acessível publicamente.";
           }
         }
         
@@ -105,14 +111,22 @@ const PublicPostDetail = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button
+                  onClick={() => window.location.reload()}
+                  variant="default"
+                  className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                >
+                  Tentar Novamente
+                </Button>
+                
                 {isLoginRequired && (
                   <Button
-                    variant="default"
+                    variant="outline"
                     asChild
-                    className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                    className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
                   >
                     <Link to="/login">
-                      <User className="h-4 w-4 mr-2" />
+                      <LogIn className="h-4 w-4 mr-2" />
                       Fazer Login
                     </Link>
                   </Button>
@@ -200,7 +214,7 @@ const PublicPostDetail = () => {
                   className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 flex-1 sm:flex-none"
                 >
                   <Link to="/login" className="flex items-center justify-center space-x-2">
-                    <User className="h-4 w-4" />
+                    <LogIn className="h-4 w-4" />
                     <span>Fazer Login</span>
                   </Link>
                 </Button>
