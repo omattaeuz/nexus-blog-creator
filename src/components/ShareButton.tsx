@@ -14,14 +14,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 
 interface ShareButtonProps {
   postTitle: string;
   postId: string;
-  postContent?: string;
   className?: string;
   variant?: 'default' | 'outline' | 'ghost';
   size?: 'sm' | 'default' | 'lg';
@@ -30,7 +28,6 @@ interface ShareButtonProps {
 const ShareButton: React.FC<ShareButtonProps> = ({
   postTitle,
   postId,
-  postContent,
   className = '',
   variant = 'ghost',
   size = 'sm'
@@ -125,7 +122,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         let success = false;
         try {
           success = document.execCommand('copy');
-        } catch (e) {
+        } catch {
           // execCommand failed
         }
         
@@ -147,7 +144,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
           
           try {
             success = document.execCommand('copy');
-          } catch (e) {
+          } catch {
             // Alternative copy failed
           }
           
@@ -168,7 +165,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       });
       
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       toast({
         title: "Erro",
         description: "Não foi possível copiar o link. Tente selecionar e copiar manualmente.",
