@@ -8,6 +8,7 @@ import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/useAuth";
 import { formatDate } from "@/lib/formatters";
+import DeletePostModal from "@/components/DeletePostModal";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,6 +17,8 @@ const PostDetail = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -47,26 +50,35 @@ const PostDetail = () => {
     fetchPost();
   }, [id, token]);
 
-  const handleDelete = async () => {
-    if (!post) return;
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
 
-    if (window.confirm("Tem certeza que deseja excluir este post? Esta ação não pode ser desfeita.")) {
-      try {
-        await api.deletePost(post.id, token);
-        toast({
-          title: "Post excluído",
-          description: "O post foi excluído com sucesso.",
-          variant: "destructive",
-        });
-        navigate("/posts");
-      } catch (error) {
-        toast({
-          title: "Erro",
-          description: "Falha ao excluir post. Tente novamente.",
-          variant: "destructive",
-        });
-      }
+  const handleDeleteConfirm = async () => {
+    if (!post || !token) return;
+
+    setIsDeleting(true);
+    try {
+      await api.deletePost(post.id, token);
+      toast({
+        title: "Post excluído",
+        description: "O post foi excluído com sucesso.",
+        variant: "destructive",
+      });
+      navigate("/posts");
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao excluir post. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
   };
 
 
@@ -183,7 +195,7 @@ const PostDetail = () => {
 
                 <Button
                   variant="outline"
-                  onClick={handleDelete}
+                  onClick={handleDeleteClick}
                   className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300 flex-1 sm:flex-none"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
@@ -204,6 +216,14 @@ const PostDetail = () => {
           </CardContent>
         </Card>
       </div>
+      
+      <DeletePostModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        postTitle={post?.title}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

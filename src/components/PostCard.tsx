@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -5,6 +6,7 @@ import { Calendar, Edit, Trash2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, truncateContent } from "@/lib/formatters";
+import DeletePostModal from "./DeletePostModal";
 
 interface Post {
   id: string;
@@ -21,15 +23,38 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, onDelete }: PostCardProps) => {
-  const handleDelete = () => {
-    if (window.confirm("Tem certeza que deseja excluir este post?")) {
-      onDelete?.(post.id);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!onDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete(post.id);
       toast({
         title: "Post excluído",
         description: "O post foi excluído com sucesso.",
         variant: "destructive",
       });
+      setShowDeleteModal(false);
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao excluir post. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
   };
 
 
@@ -94,7 +119,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
             >
               <Trash2 className="h-4 w-4" />
@@ -103,6 +128,14 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           </div>
         </div>
       </CardContent>
+      
+      <DeletePostModal
+        isOpen={showDeleteModal}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        postTitle={post.title}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 };
