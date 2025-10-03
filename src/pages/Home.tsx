@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, BookOpen, Users, Zap, Shield, Palette, LogIn, UserPlus } from "lucide-react";
+import { PlusCircle, BookOpen, Users, Zap, Shield, Palette, LogIn, UserPlus, Database } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
 import TypewriterText from "@/components/TypewriterText";
 
@@ -188,6 +188,28 @@ const Home = () => {
                     <Link to="/register" className="flex items-center justify-center">
                       <UserPlus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                       Crie seu Blog Gratuitamente
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    asChild
+                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
+                  >
+                    <Link to="/posts/public" className="flex items-center justify-center">
+                      <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                      Ver Posts Públicos
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    asChild
+                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
+                  >
+                    <Link to="/posts/demo" className="flex items-center justify-center">
+                      <Database className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                      Demo Offline
                     </Link>
                   </Button>
                   <Button

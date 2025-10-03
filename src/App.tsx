@@ -12,11 +12,11 @@ import CreatePost from "@/pages/CreatePost";
 import EditPost from "@/pages/EditPost";
 import PostDetail from "@/pages/PostDetail";
 import PublicPostDetail from "@/pages/PublicPostDetail";
+import PublicPosts from "@/pages/PublicPosts";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import EmailConfirmation from "@/pages/EmailConfirmation";
 import TestAuth from "@/pages/TestAuth";
-import DebugAuth from "@/pages/DebugAuth";
 import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 
@@ -37,10 +37,10 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/email-confirmation" element={<EmailConfirmation />} />
               <Route path="/test-auth" element={<TestAuth />} />
-              <Route path="/debug-auth" element={<DebugAuth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               
-              {/* Public post view - accessible without login */}
+              {/* Public post views - accessible without login */}
+              <Route path="/posts/public" element={<PublicPosts />} />
               <Route path="/posts/:id" element={<PublicPostDetail />} />
               
               {/* Protected routes */}

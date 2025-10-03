@@ -7,6 +7,7 @@ import { Calendar, ArrowLeft, User, Loader2, AlertCircle } from "lucide-react";
 import { api, type Post } from "@/services/api";
 import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/formatters";
+import { cacheManager } from "@/lib/cache-manager";
 import ShareButton from "@/components/ShareButton";
 
 const PublicPostDetail = () => {
@@ -36,24 +37,29 @@ const PublicPostDetail = () => {
         // If API fails, try to get post from localStorage (from previous visits)
         console.warn('Public access failed, trying localStorage fallback:', err);
         
-        try {
-          const cachedPosts = localStorage.getItem('cached_posts');
-          if (cachedPosts) {
-            const posts = JSON.parse(cachedPosts);
-            const cachedPost = posts.find((p: any) => p.id === id);
-            if (cachedPost) {
-              console.log('Found post in cache, showing preview');
-              setPost(cachedPost);
-              setLoading(false);
-              return;
-            }
-          }
-        } catch (cacheError) {
-          console.warn('Failed to read from cache:', cacheError);
+        // Try to get from cache using the new cache manager
+        const cachedPost = cacheManager.getPost(id);
+        if (cachedPost) {
+          console.log('Found post in cache, showing preview');
+          setPost(cachedPost);
+          setLoading(false);
+          return;
         }
         
-        // If no cache available, show login prompt
-        setError("Este post requer login para visualização");
+        // If no cache available, show appropriate error message
+        let errorMessage = "Este post não está disponível publicamente ou requer login para visualização";
+        
+        if (err instanceof Error) {
+          if (err.message.includes('404')) {
+            errorMessage = "Post não encontrado";
+          } else if (err.message.includes('CORS') || err.message.includes('servidor está com problemas')) {
+            errorMessage = "Problema de configuração do servidor. Este post pode não estar disponível publicamente.";
+          } else if (err.message.includes('não disponível publicamente')) {
+            errorMessage = err.message;
+          }
+        }
+        
+        setError(errorMessage);
         setLoading(false);
         return;
       } finally {
@@ -209,13 +215,6 @@ const PublicPostDetail = () => {
                   Ver Mais Posts
                 </Link>
               </Button>
-            </div>
-            
-            {/* Cache Notice */}
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                💡 <strong>Dica:</strong> Este post foi carregado do cache. Para ver o conteúdo mais recente e interagir com outros posts, faça login na plataforma.
-              </p>
             </div>
           </CardContent>
         </Card>
