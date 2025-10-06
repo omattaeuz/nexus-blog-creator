@@ -53,7 +53,6 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
 
   return (
     <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50 h-full flex flex-col relative">
-      {/* Status indicator - positioned absolutely in top right corner */}
       <div className="absolute top-3 right-3 z-10">
         <div 
           className={`w-3 h-3 rounded-full border-2 border-white shadow-sm ${
