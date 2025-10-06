@@ -9,10 +9,12 @@ import { api, type Post } from "@/services/api";
 import { formatDate } from "@/lib/formatters";
 import { cacheManager } from "@/lib/cache-manager";
 import ShareButton from "@/components/ShareButton";
+import { useAuth } from "@/contexts/useAuth";
 
 const PublicPostDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -208,16 +210,18 @@ const PublicPostDetail = () => {
             {/* Public Actions */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-border">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                <Button
-                  variant="outline"
-                  asChild
-                  className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 flex-1 sm:flex-none"
-                >
-                  <Link to="/login" className="flex items-center justify-center space-x-2">
-                    <LogIn className="h-4 w-4" />
-                    <span>Fazer Login</span>
-                  </Link>
-                </Button>
+                {!isAuthenticated && (
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 flex-1 sm:flex-none"
+                  >
+                    <Link to="/login" className="flex items-center justify-center space-x-2">
+                      <LogIn className="h-4 w-4" />
+                      <span>Fazer Login</span>
+                    </Link>
+                  </Button>
+                )}
               </div>
 
               <Button
