@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { logAuth, logError } from '@/lib/logger';
 
 const EmailConfirmation = () => {
-  const [searchParams] = useSearchParams();
+  const [_searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');

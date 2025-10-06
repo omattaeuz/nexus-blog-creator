@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostCard from "@/components/PostCard";
 import PostsPagination from "@/components/PostsPagination";
 import PostFilters, { type FilterOptions } from "@/components/PostFilters";
-import { api, type Post } from "@/services/api";
+import { api } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { usePosts } from "@/hooks/usePosts";
 import { Search, PlusCircle, Loader2, BookOpen, Filter } from "lucide-react";
@@ -23,21 +23,14 @@ const Posts = () => {
   const {
     posts,
     loading,
-    error,
     total,
     totalPages,
     currentPage,
-    itemsPerPage,
-    hasNextPage,
-    hasPreviousPage,
-    startItem,
-    endItem,
     filters,
     isAutoRefreshing,
     searchPosts,
     goToPage,
     refreshPosts,
-    setItemsPerPage,
     updateFilters,
     clearFilters,
   } = usePosts({

@@ -5,6 +5,9 @@
  * Execute: node test-vercel-proxy.js
  */
 
+/* eslint-env node */
+/* eslint-disable no-console */
+
 const https = require('https');
 const http = require('http');
 

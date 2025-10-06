@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn } from "lucide-react";
 import { api, type Post } from "@/services/api";
-import { toast } from "@/hooks/use-toast";
+// import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/formatters";
 import { cacheManager } from "@/lib/cache-manager";
 import ShareButton from "@/components/ShareButton";

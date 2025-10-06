@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { logAuth, logError } from '@/lib/logger';
 
 const ResetPassword = () => {
-  const [searchParams] = useSearchParams();
+  const [_searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

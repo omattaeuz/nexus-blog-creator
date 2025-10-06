@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, TestTube, CheckCircle, XCircle } from 'lucide-react';
 import { supabase, authHelpers, dbHelpers } from '@/lib/supabase';
-import { logAuth, logError } from '@/lib/logger';
+import { logAuth } from '@/lib/logger';
 
 const TestAuth = () => {
   const [testEmail, setTestEmail] = useState('qualquercoisa479@gmail.com');

@@ -50,12 +50,12 @@ interface LoginData {
   password: string;
 }
 
-interface PostsResponse {
-  posts: Post[];
-  total?: number;
-  page?: number;
-  totalPages?: number;
-}
+// interface PostsResponse {
+//   posts: Post[];
+//   total?: number;
+//   page?: number;
+//   totalPages?: number;
+// }
 
 // Configure axios with base URL for n8n webhook
 const baseURL = N8N_CONFIG.WEBHOOK_URL;
@@ -109,9 +109,9 @@ const makeRequestWithCorsHandling = async (method: string, url: string, data?: a
 };
 
 // Legacy function for backward compatibility
-const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
-  return makeRequestWithCorsHandling('get', url, undefined, options);
-};
+// const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
+//   return makeRequestWithCorsHandling('get', url, undefined, options);
+// };
 
 const apiClient = axios.create({
   baseURL,
