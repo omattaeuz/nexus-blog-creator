@@ -1,16 +1,6 @@
 const getWebhookUrl = () => {
-  // Em produção (Vercel), usar proxy local
-  if (import.meta.env.PROD) {
-    // Use a Edge Function diretamente para evitar conflitos com SPA fallback
-    return "/api/n8n"; // Função Edge em produção
-  }
+  if (import.meta.env.PROD) return "https://primary-production-e91c.up.railway.app/webhook";
   
-  // Em desenvolvimento, usar proxy do Vite (resolve CORS)
-  if (import.meta.env.DEV) {
-    return "/webhook"; // Proxy do Vite configurado no vite.config.ts
-  }
-  
-  // Fallback geral
   return "/webhook";
 };
 

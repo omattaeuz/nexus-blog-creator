@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { N8N_CONFIG } from '@/config/n8n';
 import { logApi, logError } from '@/lib/logger';
-// CORS handler import removed - CORS headers should only be sent by the server
 import { cacheManager } from '@/lib/cache-manager';
 
 interface Post {
@@ -50,17 +49,8 @@ interface LoginData {
   password: string;
 }
 
-// interface PostsResponse {
-//   posts: Post[];
-//   total?: number;
-//   page?: number;
-//   totalPages?: number;
-// }
-
 // Configure axios with base URL for n8n webhook
 const baseURL = N8N_CONFIG.WEBHOOK_URL;
-
-// CORS proxy removed - was causing 403 errors
 
 // Helper function to make requests with CORS handling
 const makeRequestWithCorsHandling = async (method: string, url: string, data?: any, options: any = {}) => {
@@ -102,11 +92,6 @@ const makeRequestWithCorsHandling = async (method: string, url: string, data?: a
   return response;
 };
 
-// Legacy function for backward compatibility
-// const makeRequestWithCorsFallback = async (url: string, options: any = {}) => {
-//   return makeRequestWithCorsHandling('get', url, undefined, options);
-// };
-
 const apiClient = axios.create({
   baseURL,
   timeout: 10000,
@@ -115,8 +100,6 @@ const apiClient = axios.create({
     // Only add essential headers that don't trigger preflight
   },
 });
-
-// CORS interceptor removed - CORS headers should only be sent by the server
 
 // Add request interceptor for logging
 apiClient.interceptors.request.use(
