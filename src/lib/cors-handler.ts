@@ -1,7 +1,7 @@
 // CORS Handler for API requests
 // This module provides utilities to handle CORS issues with n8n webhooks
 
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 export interface CorsConfig {
   origin: string;

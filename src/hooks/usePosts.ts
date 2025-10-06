@@ -76,7 +76,7 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
 
   // Auto-refresh state
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(initialOptions.autoRefresh ?? true);
-  const [refreshInterval, setRefreshInterval] = useState(initialOptions.refreshInterval || 30000); // 30 seconds default
+  const [refreshInterval, _setRefreshInterval] = useState(initialOptions.refreshInterval || 30000); // 30 seconds default
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Use ref to store the latest values without causing re-renders

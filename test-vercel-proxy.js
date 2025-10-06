@@ -6,7 +6,7 @@
  */
 
 /* eslint-env node */
-/* eslint-disable no-console */
+/* eslint-disable no-console, no-undef */
 
 const https = require('https');
 const http = require('http');

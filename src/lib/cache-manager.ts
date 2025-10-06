@@ -126,7 +126,7 @@ class CacheManager {
         public: publicPosts.length,
         size: this.formatBytes(size)
       };
-    } catch (error) {
+    } catch (_error) {
       return { total: 0, public: 0, size: '0 B' };
     }
   }

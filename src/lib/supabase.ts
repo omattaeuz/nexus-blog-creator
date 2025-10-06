@@ -68,7 +68,7 @@ export const authHelpers = {
         }
         throw error;
       }
-    } catch (error) {
+    } catch (_error) {
       // If logout fails due to session issues, we should still clear local state
       console.warn('Logout failed, but clearing local state anyway');
       // Manually clear localStorage when logout fails

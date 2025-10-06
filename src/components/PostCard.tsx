@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Calendar, Edit, Trash2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -51,7 +50,6 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
   };
-
 
   return (
     <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50 h-full flex flex-col relative">

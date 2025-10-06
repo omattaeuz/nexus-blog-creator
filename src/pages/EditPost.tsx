@@ -30,7 +30,7 @@ const EditPost = () => {
         } else {
           setPost(fetchedPost);
         }
-      } catch (err) {
+      } catch (_err) {
         setError("Failed to fetch post");
         toast({
           title: "Error",

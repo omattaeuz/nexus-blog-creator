@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAsyncOperation, useFormSubmission } from '../useAsyncOperation';
-import { delay, createNetworkError } from '../../test/mocks';
+import { delay } from '../../test/mocks';
 
 describe('useAsyncOperation', () => {
   beforeEach(() => {

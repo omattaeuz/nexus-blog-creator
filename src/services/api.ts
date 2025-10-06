@@ -64,48 +64,42 @@ const baseURL = N8N_CONFIG.WEBHOOK_URL;
 
 // Helper function to make requests with CORS handling
 const makeRequestWithCorsHandling = async (method: string, url: string, data?: any, options: any = {}) => {
-  try {
-    // DO NOT add CORS headers to the request - these should only be in server responses
-    const requestOptions = {
-      ...options,
-      headers: {
-        // Add Content-Type only for requests with body (POST, PUT, PATCH)
-        // GET requests don't need Content-Type and it causes preflight
-        ...(data && ['post', 'put', 'patch'].includes(method.toLowerCase()) && { 'Content-Type': 'application/json' }),
-      // No custom headers for GET requests to avoid preflight
-        ...options.headers,
-      },
-    };
+  // DO NOT add CORS headers to the request - these should only be in server responses
+  const requestOptions = {
+    ...options,
+    headers: {
+      // Add Content-Type only for requests with body (POST, PUT, PATCH)
+      // GET requests don't need Content-Type and it causes preflight
+      ...(data && ['post', 'put', 'patch'].includes(method.toLowerCase()) && { 'Content-Type': 'application/json' }),
+    // No custom headers for GET requests to avoid preflight
+      ...options.headers,
+    },
+  };
 
-    // Make the request
-    let response;
+  // Make the request
+  let response;
 
-    switch (method.toLowerCase()) {
-      case 'get':
-        response = await apiClient.get(url, requestOptions);
-        break;
-      case 'post':
-        response = await apiClient.post(url, data, requestOptions);
-        break;
-      case 'put':
-        response = await apiClient.put(url, data, requestOptions);
-        break;
-      case 'patch':
-        response = await apiClient.patch(url, data, requestOptions);
-        break;
-      case 'delete':
-        response = await apiClient.delete(url, requestOptions);
-        break;
-      default:
-        throw new Error(`Unsupported method: ${method}`);
-    }
-
-    return response;
-  } catch (error) {
-    // Remove CORS proxy fallback - it was causing 403 errors
-    // Let the error bubble up to be handled by individual functions
-    throw error;
+  switch (method.toLowerCase()) {
+    case 'get':
+      response = await apiClient.get(url, requestOptions);
+      break;
+    case 'post':
+      response = await apiClient.post(url, data, requestOptions);
+      break;
+    case 'put':
+      response = await apiClient.put(url, data, requestOptions);
+      break;
+    case 'patch':
+      response = await apiClient.patch(url, data, requestOptions);
+      break;
+    case 'delete':
+      response = await apiClient.delete(url, requestOptions);
+      break;
+    default:
+      throw new Error(`Unsupported method: ${method}`);
   }
+
+  return response;
 };
 
 // Legacy function for backward compatibility
