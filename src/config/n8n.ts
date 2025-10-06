@@ -1,7 +1,8 @@
 const getWebhookUrl = () => {
   // Em produção (Vercel), usar proxy local
   if (import.meta.env.PROD) {
-    return "/webhook"; // Proxy da Vercel
+    // Use a Edge Function diretamente para evitar conflitos com SPA fallback
+    return "/api/n8n"; // Função Edge em produção
   }
   
   // Em desenvolvimento, usar proxy do Vite (resolve CORS)
