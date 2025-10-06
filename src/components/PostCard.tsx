@@ -54,20 +54,24 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
 
 
   return (
-    <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50 h-full flex flex-col">
+    <Card className="group hover:shadow-glow transition-all duration-300 bg-gradient-surface border-border/50 h-full flex flex-col relative">
+      {/* Status indicator - positioned absolutely in top right corner */}
+      <div className="absolute top-3 right-3 z-10">
+        <div 
+          className={`w-3 h-3 rounded-full border-2 border-white shadow-sm ${
+            post.is_public 
+              ? 'bg-green-500' 
+              : 'bg-red-500'
+          }`}
+          title={post.is_public ? 'Post público' : 'Post privado'}
+        />
+      </div>
+      
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">
+          <CardTitle className="text-lg sm:text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 leading-tight pr-6">
             {post.title}
           </CardTitle>
-          <div className="flex gap-2 ml-2 flex-shrink-0">
-            {post.updated_at && post.updated_at !== post.created_at && (
-              <Badge variant="secondary" className="text-xs">
-                Atualizado
-              </Badge>
-            )}
-            {/* Note: is_public property not available in current Post interface */}
-          </div>
         </div>
       </CardHeader>
 

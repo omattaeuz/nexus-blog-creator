@@ -681,7 +681,8 @@ export const api = {
       
       if (!token) throw new Error('Token de autenticação não fornecido');
 
-      const response = await makeRequestWithCorsHandling('patch', `/posts/${id}`, data, {
+      // Use PUT method with the correct endpoint as defined in N8n workflow
+      const response = await makeRequestWithCorsHandling('put', `/posts/${id}/update`, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
           // No cache headers to avoid preflight requests
@@ -697,12 +698,16 @@ export const api = {
           throw new Error('Não autorizado. Faça login para atualizar posts.');
         }
         
+        if (error.response?.status === 403) {
+          throw new Error('Acesso negado. Você não tem permissão para editar este post.');
+        }
+        
         if (error.response?.status === 404) {
           throw new Error('Post não encontrado.');
         }
         
         if (error.response) {
-          const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
+          const message = error.response.data?.message || error.response.data?.error || `HTTP ${error.response.status}: ${error.response.statusText}`;
           throw new Error(`Falha ao atualizar post: ${message}`);
         }
         

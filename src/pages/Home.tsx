@@ -196,28 +196,6 @@ const Home = () => {
                     asChild
                     className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
                   >
-                    <Link to="/posts/public" className="flex items-center justify-center">
-                      <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Ver Posts Públicos
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    asChild
-                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
-                  >
-                    <Link to="/posts/demo" className="flex items-center justify-center">
-                      <Database className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                      Demo Offline
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    asChild
-                    className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-6 transition-all duration-300 border-primary-foreground text-black hover:bg-primary-foreground hover:text-primary"
-                  >
                     <Link to="/login" className="flex items-center justify-center">
                       <LogIn className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                       Entrar

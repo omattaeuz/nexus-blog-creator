@@ -12,7 +12,7 @@ const N8nConfig = () => {
   const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   const handleTestConnection = async () => {
-    if (webhookUrl === 'https://your-n8n-instance.com/webhook' || !webhookUrl.includes('railway.app')) {
+    if (webhookUrl === 'https://primary-production-e91c.up.railway.app/webhook-test' || !webhookUrl.includes('railway.app')) {
       setTestResult({
         success: false,
         message: 'Por favor, configure a URL do webhook do N8n primeiro.'
