@@ -414,6 +414,16 @@ export const api = {
       // Apply client-side filtering and sorting
       let filteredPosts = [...allPosts];
 
+      // Apply text search filter (title or content) if provided
+      if (options?.search && options.search.trim()) {
+        const term = options.search.trim().toLowerCase();
+        filteredPosts = filteredPosts.filter((post) => {
+          const title = (post.title || '').toLowerCase();
+          const content = (post.content || '').toLowerCase();
+          return title.includes(term) || content.includes(term);
+        });
+      }
+
       // Apply date filters
       if (options?.filters) {
         if (options.filters.dateFrom) {

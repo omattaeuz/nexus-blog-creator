@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ const Posts = () => {
   const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Use the custom hook for posts management
   const {
@@ -47,10 +48,9 @@ const Posts = () => {
     }
   });
 
-  // Handle search with debouncing
-  const handleSearch = async (value: string) => {
-    setSearchTerm(value);
-    await searchPosts(value);
+  // Explicit search trigger (Enter or button click)
+  const handleSearchSubmit = async () => {
+    await searchPosts(searchTerm.trim());
   };
 
 
@@ -103,12 +103,14 @@ const Posts = () => {
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
-    // Debounce search - only search after user stops typing
-    const timeoutId = setTimeout(() => {
-      handleSearch(value);
+
+    // debounce: wait user stop typing
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(async () => {
+      await handleSearchSubmit();
     }, 500);
-    
-    return () => clearTimeout(timeoutId);
   };
 
   return (
@@ -139,27 +141,44 @@ const Posts = () => {
           <CardContent className="p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
               {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Buscar posts..."
-                  value={searchTerm}
-                  onChange={handleSearchInput}
-                  className="pl-10 transition-all duration-300 focus:ring-primary"
-                />
-              </div>
+              <form
+                className="flex w-full gap-2 items-center"
+                onSubmit={async (e) => { e.preventDefault(); await handleSearchSubmit(); }}
+              >
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar posts..."
+                    value={searchTerm}
+                    onChange={handleSearchInput}
+                    onBlur={async () => { await handleSearchSubmit(); }}
+                    onKeyDown={async (e) => { if (e.key === 'Enter') { e.preventDefault(); await handleSearchSubmit(); } }}
+                    className="pl-10 transition-all duration-300 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <Button
+                    type="submit"
+                    variant="default"
+                    className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                  >
+                    Buscar
+                  </Button>
+                </div>
+              </form>
 
               {/* Stats and Controls */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                   <div className="flex flex-col sm:flex-row items-center gap-2">
-                    <Badge variant="secondary" className="px-3 py-1 text-center sm:text-left">
+                    <Badge variant="secondary" className="px-3 py-1 text-center sm:text-left whitespace-nowrap">
                       {total} {total === 1 ? 'post' : 'posts'}
                     </Badge>
                     
                     {totalPages > 1 && (
-                      <Badge variant="outline" className="px-3 py-1 text-center sm:text-left">
+                      <Badge variant="outline" className="px-3 py-1 text-center sm:text-left whitespace-nowrap">
                         Página {currentPage} de {totalPages}
                       </Badge>
                     )}

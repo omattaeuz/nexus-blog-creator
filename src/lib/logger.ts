@@ -16,9 +16,13 @@ export interface LogEntry {
 class Logger {
   private isDevelopment: boolean;
   private logLevel: LogLevel;
+  private silent: boolean;
 
   constructor() {
     this.isDevelopment = import.meta.env.DEV;
+    // In production, silence all logs by default
+    this.silent = import.meta.env.PROD && (import.meta.env.VITE_ENABLE_DEBUG_LOGS !== 'true');
+    // Default levels: verbose in dev, warn+ in prod if not silenced
     this.logLevel = this.isDevelopment ? 'debug' : 'warn';
   }
 
@@ -40,6 +44,7 @@ class Logger {
   }
 
   private log(level: LogLevel, message: string, data?: unknown, context?: string): void {
+    if (this.silent) return;
     if (!this.shouldLog(level)) return;
 
     const formattedMessage = this.formatMessage(level, message, data, context);

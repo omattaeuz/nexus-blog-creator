@@ -39,7 +39,6 @@ class CacheManager {
       
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(sortedCache));
       
-      console.log(`[Cache] Post "${post.title}" cached successfully`);
     } catch (error) {
       console.warn('[Cache] Failed to store post:', error);
     }
@@ -55,12 +54,10 @@ class CacheManager {
         // Check if cache is expired
         const cacheAge = Date.now() - new Date(post.cached_at).getTime();
         if (cacheAge > this.CACHE_EXPIRY) {
-          console.log(`[Cache] Post ${id} cache expired, removing`);
           this.removePost(id);
           return null;
         }
         
-        console.log(`[Cache] Post "${post.title}" found in cache`);
         return post;
       }
       
@@ -98,7 +95,6 @@ class CacheManager {
       const cache = this.getCache();
       const filteredCache = cache.filter(p => p.id !== id);
       localStorage.setItem(this.CACHE_KEY, JSON.stringify(filteredCache));
-      console.log(`[Cache] Post ${id} removed from cache`);
     } catch (error) {
       console.warn('[Cache] Failed to remove post:', error);
     }
