@@ -1,7 +1,7 @@
 export const config = { runtime: "edge" };
 
 // Ajuste para o seu Railway:
-const RAILWAY_BASE = "https://primary-production-e91c.up.railway.app";
+const RAILWAY_BASE = "https://primary-production-e91c.up.railway.app/webhook";
 
 // Aplica headers CORS à resposta
 function withCORS(resp: Response, origin: string | null, acrh?: string | null, acrm?: string | null) {
