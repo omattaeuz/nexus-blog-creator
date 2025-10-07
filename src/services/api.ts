@@ -737,7 +737,9 @@ export const api = {
           });
           const post = fresh.data?.data || (Array.isArray(fresh.data) && fresh.data[0]?.data) || null;
           if (post) this.cachePost(post);
-        } catch {}
+        } catch (fetchError) {
+          logError('Failed to refetch updated post, cache may be stale', { error: fetchError instanceof Error ? fetchError.message : String(fetchError) });
+        }
       }
       
       return updatedPost;
