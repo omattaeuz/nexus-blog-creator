@@ -12,6 +12,12 @@ Este guia documenta os principais problemas encontrados durante o desenvolviment
 4. [Conflitos de CORS e Proxy](#4-conflitos-de-cors-e-proxy)
 5. [Problemas de Configuração de Ambiente](#5-problemas-de-configuração-de-ambiente)
 6. [Indicadores Visuais de Posts](#6-indicadores-visuais-de-posts)
+7. [URLs n8n incorretas (GET/PUT/DELETE)](#7-urls-n8n-incorretas-getputdelete)
+8. [GET ONE retorna ID diferente do solicitado](#8-get-one-retorna-id-diferente-do-solicitado)
+9. [304/ETag mostra conteúdo antigo](#9-304etag-mostra-conteúdo-antigo)
+10. [UPDATE/DELETE afetando múltiplos posts](#10-updatedelete-afetando-múltiplos-posts)
+11. [Deploy Vercel: unexpected error e project binding](#11-deploy-vercel-unexpected-error-e-project-binding)
+12. [Vercel Edge: unsupported module next/server](#12-vercel-edge-unsupported-module-nextserver)
 
 ---
 
@@ -283,6 +289,96 @@ export interface Post {
 - Tooltip explicativo
 - Cores semânticas (verde=público, vermelho=privado)
 - Responsivo
+
+---
+
+## 7. URLs n8n incorretas (GET/PUT/DELETE)
+
+### 🚨 Problema
+Chamadas do front para webhooks n8n com prefixos errados (ex.: `/posts-update/posts/:id/update` quando o webhook real é `/posts/:id/update`) causam ausência de `params.id` e comportamentos inesperados.
+
+### ✅ Solução
+- Padronize no `src/config/n8n.ts`:
+  - `POSTS = "/posts"`
+  - `POSTS_PUBLIC = "/posts/public"`
+  - `POSTS_UPDATE = "/posts-update/posts"` (se o seu workflow de update usar este prefixo)
+  - `POSTS_DELETE = "/posts-delete/posts"`
+  - `POSTS_GET_ONE = "/posts-get-one/posts"`
+- Monte URLs no front sempre com o `id` no path:
+  - GET ONE: `${POSTS_GET_ONE}/${id}`
+  - UPDATE (PUT): `${POSTS_UPDATE}/${id}/update`
+  - DELETE (DELETE): `${POSTS_DELETE}/${id}`
+
+---
+
+## 8. GET ONE retorna ID diferente do solicitado
+
+### 🚨 Problema
+O webhook retorna `[ { data: {... id: A } } ]` enquanto a rota aberta pede `id=B`. Sem checagem, o front renderiza o post errado.
+
+### ✅ Solução
+- No front, após o fetch, valide `post.id === requestedId`. Se divergir, não renderize e faça fallback (ex.: buscar na lista pública) ou mostre "Post não encontrado".
+- No n8n, garanta que o filtro de GET ONE usa exatamente `id eq {{$json.id}}` e (se público) `is_public eq true`.
+
+---
+
+## 9. 304/ETag mostra conteúdo antigo
+
+### 🚨 Problema
+O navegador revalida com `If-None-Match` e recebe `304 Not Modified`, mantendo o cache antigo após um update.
+
+### ✅ Solução
+- Em GET ONE, force revalidação segura:
+  - Adicione query param `?v=${Date.now()}`
+  - Envie headers: `Cache-Control: no-store`, `Pragma: no-cache`, `Expires: 0`, e limpe `If-None-Match`.
+- Após UPDATE, atualize ou invalide o cache local e (se necessário) refaça o GET ONE com `?v=...`.
+
+---
+
+## 10. UPDATE/DELETE afetando múltiplos posts
+
+### 🚨 Problema
+UPDATE/DELETE atualizam/excluem vários posts ao mesmo tempo.
+
+### Causas comuns
+- `params.id` não chega ao n8n (URL montada errada no front)
+- Nó do n8n recebendo múltiplos itens e propagando para o Supabase (24 itens de entrada → 24 execuções)
+
+### ✅ Solução (n8n)
+- Assegure `Set (id/...)` com "Keep Only Set".
+- Entre o decode do JWT e o Supabase, mantenha apenas 1 item (Item Lists → Reduce → Keep Only Single Item index 0) quando apropriado.
+- No Supabase, use filtros: `id eq {{$json.id}} AND user_id eq {{$json.user_id}}` e `limit = 1` para GET/VERIFY; e mesmas condições para UPDATE/DELETE.
+
+### ✅ Solução (front)
+- Para UPDATE, envie somente campos preenchidos (evita sobrescrita com vazio) e valide UUID do `id`.
+- Para DELETE, use o webhook dedicado `DELETE /posts-delete/posts/:id`.
+
+---
+
+## 11. Deploy Vercel: unexpected error e project binding
+
+### 🚨 Problema
+CI falha com "Unexpected error" ao usar `vercel-action`.
+
+### ✅ Solução
+- Configure secrets do GitHub: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` (e `VERCEL_SCOPE` se for team).
+- Antes do deploy, rode `vercel pull`:
+  - `npx vercel@25 pull --yes --environment=production --token "$VERCEL_TOKEN"`
+- Faça o deploy com flags explícitas e env:
+  - `npx vercel@25 --prod --yes --confirm --token "$VERCEL_TOKEN" --scope "$VERCEL_SCOPE"`
+  - Exporte `VERCEL_ORG_ID` e `VERCEL_PROJECT_ID` no step.
+- Garanta `vercel.json` para SPA (fallback `/index.html`) e Node >= 18 no `package.json`.
+
+---
+
+## 12. Vercel Edge: unsupported module `next/server`
+
+### 🚨 Problema
+Erro: "The Edge Function ... is referencing unsupported modules: next/server".
+
+### ✅ Solução
+- Remova rotas Edge que importam `next/server` fora de uma app Next (ex.: `api/n8n/posts/[id]/route.ts`).
+- Use um único proxy Edge compatível (ex.: `api/n8n/[...path].ts`) baseado na Web Fetch API, com CORS aplicado manualmente.
 
 ---
 
