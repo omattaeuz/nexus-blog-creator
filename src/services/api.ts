@@ -11,6 +11,7 @@ interface Post {
   updated_at?: string;
   user_id?: string;
   is_public?: boolean;
+  deleted_at?: string | null;
 }
 
 interface CreatePostData {
@@ -129,7 +130,6 @@ apiClient.interceptors.response.use(
       headers: response.headers
     });
     
-    // Check if N8N is returning workflow started message instead of actual data
     if (response.data && typeof response.data === 'object' && response.data.message === 'Workflow was started') {
       logError('N8N returned "Workflow was started" - check Response Mode = Last Node');
     }
@@ -281,27 +281,7 @@ export const api = {
       
       if (!token) throw new Error('Token de autenticação não fornecido');
 
-      // Check if N8n webhook is configured
-      if (!N8N_CONFIG.WEBHOOK_URL.includes('railway.app')) {
-        logError('N8n webhook not configured. Using development fallback.');
-        
-        // Development fallback - create mock post
-        const mockPost: Post = {
-          id: `dev-${Date.now()}`,
-          title: data.title,
-          content: data.content,
-          created_at: new Date().toISOString(),
-          user_id: 'dev-user-id',
-          is_public: data.is_public || false,
-        };
-        
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        return mockPost;
-      }
-
-      const response = await makeRequestWithCorsHandling('post', '/posts', data, {
+      const response = await makeRequestWithCorsHandling('post', N8N_CONFIG.ENDPOINTS.POSTS, data, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -384,7 +364,7 @@ export const api = {
         hasToken: !!options?.token
       });
       
-      const response = await makeRequestWithCorsHandling('get', `/posts?${params.toString()}`, undefined, {
+      const response = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS}?${params.toString()}`, undefined, {
         headers,
       });
       
@@ -413,6 +393,13 @@ export const api = {
 
       // Apply client-side filtering and sorting
       let filteredPosts = [...allPosts];
+
+      // Always exclude soft-deleted posts; only exclude non-public when not authenticated
+      if (options?.token) {
+        filteredPosts = filteredPosts.filter((post) => !post.deleted_at);
+      } else {
+        filteredPosts = filteredPosts.filter((post) => post.is_public !== false && !post.deleted_at);
+      }
 
       // Apply text search filter (title or content) if provided
       if (options?.search && options.search.trim()) {
@@ -482,8 +469,10 @@ export const api = {
         totalPages
       });
       
-      // Cache posts for public access
-      paginatedPosts.forEach(post => this.cachePost(post));
+      // Cache only public, not-deleted posts
+      paginatedPosts.forEach(post => {
+        if (post.is_public !== false && !post.deleted_at) this.cachePost(post);
+      });
       
       return {
         posts: paginatedPosts,
@@ -537,96 +526,148 @@ export const api = {
   // Get a specific post by ID (works for both public and private posts)
   async getPost(id: string, token?: string): Promise<Post | null> {
     try {
-      // First try the specific post endpoint
-      const response = await makeRequestWithCorsHandling('get', `/posts/${id}?_t=${Date.now()}`, undefined, {
+      // Try specific endpoint with cache-busting: add query version and clear If-None-Match
+      const response = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_GET_ONE}/${id}?v=${Date.now()}`, undefined, {
         headers: {
           ...(token && { 'Authorization': `Bearer ${token}` }),
+          'If-None-Match': '',
+          'Cache-Control': 'no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       });
 
-      if (response.data && response.data.data) {
-        const post = response.data.data;
-        // Cache post for public access
-        this.cachePost(post);
-        return post;
-      }
-      
-      return null;
-    } catch (error) {
-      logError('Error fetching post from specific endpoint:', error);
-      
-      // If specific post endpoint fails, try to find it in public posts
-      try {
-        logApi('Trying to find post in public posts list', { postId: id });
-        const publicResponse = await makeRequestWithCorsHandling('get', `/posts/public?_t=${Date.now()}&limit=100`, undefined, {
-          headers: {},
+      // Handle HTTP 304 (Not Modified): try cache, then one retry with cache-busting
+      if ((response as any)?.status === 304) {
+        const cached = cacheManager.getPost(id);
+        if (cached) {
+          return cached;
+        }
+        const retry = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_GET_ONE}/${id}?v=${Date.now()}-retry`, undefined, {
+          headers: {
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+            'If-None-Match': '',
+            'Cache-Control': 'no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+          },
         });
+        if (retry.data && retry.data.data) {
+          const post = retry.data.data;
+          this.cachePost(post);
+          return post;
+        }
+      }
 
-        if (publicResponse.data && publicResponse.data.data) {
-          const posts = publicResponse.data.data;
-          const post = posts.find((p: Post) => p.id === id);
-          
-          if (post) {
-            logApi('Post found in public posts list', { postId: id, title: post.title });
+      // Normalize response: n8n can return { data } or [ { data, __status } ]
+      if (response.data) {
+        const post = response.data.data
+          ? (response.data.data as Post)
+          : (Array.isArray(response.data) && response.data[0]?.data ? (response.data[0].data as Post) : null);
+        if (post) {
+          // Safety: ensure backend returned the requested ID
+          if (post.id !== id) {
+            logError('Mismatched post id from GET ONE', { requestedId: id, returnedId: post.id });
+          } else {
             this.cachePost(post);
             return post;
           }
         }
-      } catch (publicError) {
-        logError('Error fetching public posts:', publicError);
       }
-      
-      // Check if it's a CORS or network error
-      const isCorsError = error instanceof Error && (
-        error.message.includes('CORS') || 
-        error.message.includes('Access-Control-Allow-Origin') ||
-        error.message.includes('ERR_NETWORK') ||
-        error.message.includes('Network Error')
-      );
-      
-      const isServerError = error instanceof Error && (
-        error.message.includes('500') ||
-        error.message.includes('Internal Server Error')
-      );
-      
-      if (isCorsError) {
-        logApi('CORS error detected, trying cache fallback', { postId: id });
-      } else if (isServerError) {
-        logApi('Server error detected, trying cache fallback', { postId: id });
-      } else {
-        logApi('General error detected, trying cache fallback', { postId: id });
-      }
-      
-      // Try to get from cache using the new cache manager
-      const cachedPost = cacheManager.getPost(id);
-      if (cachedPost) {
-        logApi('Post found in cache after error', { postId: id, title: cachedPost.title });
-        return cachedPost;
-      }
-      
-      // If no cache available, return null to indicate post not found
-      logApi('No cache available, post not found', { postId: id });
+
       return null;
+    } catch (error) {
+      logError('Error fetching post from specific endpoint:', error);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+
+        // Some adapters surface 304 as an error; handle same as above
+        if (status === 304) {
+          const cached = cacheManager.getPost(id);
+          if (cached) {
+            return cached;
+          }
+          try {
+            const retry = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_GET_ONE}/${id}?v=${Date.now()}-err`, undefined, {
+              headers: {
+                ...(token && { 'Authorization': `Bearer ${token}` }),
+                'If-None-Match': '',
+                'Cache-Control': 'no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+              },
+            });
+        if (retry.data) {
+          const post = retry.data.data
+            ? (retry.data.data as Post)
+            : (Array.isArray(retry.data) && retry.data[0]?.data ? (retry.data[0].data as Post) : null);
+          if (post) {
+            if (post.id === id) {
+              this.cachePost(post);
+              return post;
+            } else {
+              logError('Mismatched post id from GET ONE retry', { requestedId: id, returnedId: post.id });
+            }
+          }
+        }
+          } catch (retryErr) {
+            // fallthrough to remaining handling
+          }
+        }
+
+        // Only fallback to public list on 404
+        if (status === 404) {
+          try {
+            logApi('Trying to find post in public posts list after 404', { postId: id });
+            const publicResponse = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_PUBLIC}?limit=100`, undefined, {
+              headers: {},
+            });
+
+            if (publicResponse.data && publicResponse.data.data) {
+              const posts = publicResponse.data.data as Post[];
+              const post = posts.find((p: Post) => p.id === id) || null;
+              if (post) this.cachePost(post);
+              return post;
+            }
+
+            return null;
+          } catch (publicError) {
+            logError('Error fetching public posts during 404 fallback:', publicError);
+            return null;
+          }
+        }
+
+        // Explicitly rethrow 403 for caller to handle messaging
+        if (status === 403) {
+          throw error;
+        }
+      }
+
+      // Do not mask 500/other errors – let ErrorBoundary/toast handle
+      throw error;
     }
   },
 
   // Get public posts (no authentication required)
   async getPublicPosts(page: number = 1, limit: number = 10): Promise<{ data: Post[], meta: any }> {
     try {
-      const response = await makeRequestWithCorsHandling('get', `/posts/public?_t=${Date.now()}&page=${page}&limit=${limit}`, undefined, {
+      const response = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_PUBLIC}?_t=${Date.now()}&page=${page}&limit=${limit}`, undefined, {
         headers: {
           // No cache headers to avoid preflight requests
         },
       });
 
       if (response.data && response.data.data) {
-        // Cache all public posts for offline access
-        response.data.data.forEach((post: Post) => {
+        // Filter out soft-deleted or non-public items returned by mistake
+        const clean = (response.data.data as Post[]).filter((p) => p.is_public !== false && !p.deleted_at);
+        // Cache only clean public posts for offline access
+        clean.forEach((post: Post) => {
           this.cachePost(post);
         });
         
         return {
-          data: response.data.data,
+          data: clean,
           meta: response.data.meta || { page, limit, total: response.data.data.length }
         };
       }
@@ -663,20 +704,43 @@ export const api = {
   // Update an existing post (requires authentication)
   async updatePost(id: string, data: UpdatePostData, token: string): Promise<Post | null> {
     try {
-      // Debug: Check if token is provided
       logApi('Authorization header check', { hasToken: !!token, tokenPreview: token ? `${token.slice(0, 12)}...` : 'MISSING TOKEN!' });
       
+      if (!id) throw new Error('ID do post não fornecido');
       if (!token) throw new Error('Token de autenticação não fornecido');
 
+      // Only send fields that are actually provided to avoid overwriting with empty values
+      const payload: Record<string, any> = {};
+      if (typeof data.title === 'string' && data.title.trim().length > 0) payload.title = data.title;
+      if (typeof data.content === 'string' && data.content.trim().length > 0) payload.content = data.content;
+      if (typeof data.is_public !== 'undefined') payload.is_public = data.is_public;
+
       // Use PUT method with the correct endpoint as defined in N8n workflow
-      const response = await makeRequestWithCorsHandling('put', `/posts/${id}/update`, data, {
+      const response = await makeRequestWithCorsHandling('put', `${N8N_CONFIG.ENDPOINTS.POSTS_UPDATE}/${id}/update`, payload, {
         headers: {
           'Authorization': `Bearer ${token}`,
           // No cache headers to avoid preflight requests
         },
       });
       
-      return response.data;
+      // Normalize updated post and refresh cache to reflect latest content in views
+      const updatedPost = response.data?.data || response.data || null;
+      if (updatedPost && updatedPost.id) {
+        // Remove any stale cache first to avoid old ETag path
+        cacheManager.removePost(updatedPost.id);
+        this.cachePost(updatedPost);
+      } else {
+        // Fallback: refetch from GET ONE and cache
+        try {
+          const fresh = await makeRequestWithCorsHandling('get', `${N8N_CONFIG.ENDPOINTS.POSTS_GET_ONE}/${id}?v=${Date.now()}-refresh`, undefined, {
+            headers: { 'Authorization': `Bearer ${token}`, 'If-None-Match': '' },
+          });
+          const post = fresh.data?.data || (Array.isArray(fresh.data) && fresh.data[0]?.data) || null;
+          if (post) this.cachePost(post);
+        } catch {}
+      }
+      
+      return updatedPost;
     } catch (error) {
       logError('Error updating post:', error);
       
@@ -705,7 +769,7 @@ export const api = {
     }
   },
 
-  // Delete a post (requires authentication)
+  // Delete a post (requires authentication) - uses dedicated DELETE webhook
   async deletePost(id: string, token: string): Promise<boolean> {
     try {
       // Debug: Check if token is provided
@@ -714,26 +778,24 @@ export const api = {
       if (!token) {
         throw new Error('Token de autenticação não fornecido');
       }
-
-      await makeRequestWithCorsHandling('delete', `/posts/${id}`, undefined, {
+      // Call dedicated DELETE webhook
+      await makeRequestWithCorsHandling('delete', `${N8N_CONFIG.ENDPOINTS.POSTS_DELETE}/${id}`, undefined, {
         headers: {
           'Authorization': `Bearer ${token}`,
-          // No cache headers to avoid preflight requests
         },
       });
+
+      // Remove from cache immediately
+      cacheManager.removePost(id);
       
       return true;
     } catch (error) {
       logError('Error deleting post:', error);
       
       if (axios.isAxiosError(error)) {
-        if (error.response?.status === 401) {
-          throw new Error('Não autorizado. Faça login para deletar posts.');
-        }
-        
-        if (error.response?.status === 404) {
-          throw new Error('Post não encontrado.');
-        }
+        if (error.response?.status === 401) throw new Error('Não autorizado. Faça login para deletar posts.');
+        if (error.response?.status === 403) throw new Error('Acesso negado. Você não tem permissão para deletar este post.');
+        if (error.response?.status === 404) throw new Error('Post não encontrado.');
         
         if (error.response) {
           const message = error.response.data?.message || `HTTP ${error.response.status}: ${error.response.statusText}`;
