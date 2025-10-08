@@ -4,11 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn } from "lucide-react";
-import { api, type Post } from "@/services/api";
+import { api } from "@/services/api";
+import { type Post } from "@/types";
 // import { toast } from "@/hooks/use-toast";
-import { formatDate } from "@/lib/formatters";
+import { formatDate, calculateReadingTime } from "@/lib/formatters";
 import { cacheManager } from "@/lib/cache-manager";
 import ShareButton from "@/components/ShareButton";
+import RichRendererPro from "@/components/RichRendererPro";
+import RelatedPosts from "@/components/RelatedPosts";
 import { useAuth } from "@/contexts/useAuth";
 
 const PublicPostDetail = () => {
@@ -151,92 +154,139 @@ const PublicPostDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-surface">
-      <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
-        <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md">
-          <CardHeader className="pb-6">
-            <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="ghost"
-                onClick={() => navigate("/")}
-                className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-              
-              <ShareButton
-                postTitle={post.title}
-                postId={post.id}
-                variant="outline"
-                size="default"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                  {post.title}
-                </CardTitle>
-                {post.updated_at && post.updated_at !== post.created_at && (
-                  <Badge variant="secondary" className="flex-shrink-0 text-xs">
-                    Atualizado
-                  </Badge>
-                )}
+    <div className="min-h-screen bg-white">
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Article Content */}
+          <article className="lg:col-span-3">
+            {/* Article Header */}
+            <header className="mb-8">
+              <div className="mb-4 flex items-center gap-3">
+                <Badge variant="outline">
+                  Público
+                </Badge>
+                <ShareButton
+                  postTitle={post.title}
+                  postId={post.id}
+                  variant="ghost"
+                  size="sm"
+                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                />
               </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center space-x-1">
+              
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                {post.title}
+              </h1>
+              
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
+                <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4" />
-                  <span>Publicado em {formatDate(post.created_at)}</span>
+                  <span>{formatDate(post.created_at)}</span>
                 </div>
-                {post.updated_at && post.updated_at !== post.created_at && (
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>Atualizado em {formatDate(post.updated_at)}</span>
+                {post.author && (
+                  <div className="flex items-center space-x-2">
+                    <span>Por {post.author.email}</span>
                   </div>
                 )}
+                <div className="flex items-center space-x-2">
+                  <span>•</span>
+                  <span>Tempo de leitura: {calculateReadingTime(post.content)} min</span>
+                </div>
               </div>
-            </div>
-          </CardHeader>
+            </header>
 
-          <CardContent className="space-y-6">
-            <div className="prose prose-sm sm:prose-base max-w-none">
-              <div className="text-foreground leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
-                {post.content}
-              </div>
+            {/* Article Body */}
+            <div className="prose prose-lg max-w-none">
+              <RichRendererPro html={post.content} />
             </div>
 
-            {/* Public Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 sm:pt-6 border-t border-border">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                {!isAuthenticated && (
+            {/* Article Footer */}
+            <footer className="mt-12 pt-8 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <ShareButton
+                  postTitle={post.title}
+                  postId={post.id}
+                  variant="outline"
+                  size="default"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                />
+                
+                <div className="flex items-center gap-3">
+                  {!isAuthenticated && (
+                    <Button
+                      variant="outline"
+                      asChild
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      <Link to="/login" className="flex items-center space-x-2">
+                        <LogIn className="h-4 w-4" />
+                        <span>Fazer Login</span>
+                      </Link>
+                    </Button>
+                  )}
+                  
                   <Button
-                    variant="outline"
+                    variant="default"
                     asChild
-                    className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 flex-1 sm:flex-none"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    <Link to="/login" className="flex items-center justify-center space-x-2">
-                      <LogIn className="h-4 w-4" />
-                      <span>Fazer Login</span>
+                    <Link to="/" className="flex items-center justify-center">
+                      Ver Mais Posts
                     </Link>
                   </Button>
-                )}
+                </div>
               </div>
+            </footer>
+          </article>
 
-              <Button
-                variant="default"
-                asChild
-                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 w-full sm:w-auto"
-              >
-                <Link to="/" className="flex items-center justify-center">
-                  Ver Mais Posts
-                </Link>
-              </Button>
+          {/* Sidebar */}
+          <aside className="lg:col-span-1">
+            <div className="sticky top-24 space-y-8">
+              {/* Author Info */}
+              {post.author && (
+                <Card className="p-6">
+                  <h3 className="font-semibold text-gray-900 mb-4">Sobre o Autor</h3>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold text-lg">
+                        {post.author.email.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{post.author.email}</p>
+                      <p className="text-sm text-gray-600">Autor do Blog</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Related Posts */}
+              <RelatedPosts 
+                currentPostId={post.id}
+                currentPostTags={post.tags}
+                maxPosts={3}
+              />
+
+              {/* Newsletter Signup */}
+              <Card className="p-6 bg-blue-50 border-blue-200">
+                <h3 className="font-semibold text-blue-900 mb-2">Fique por dentro</h3>
+                <p className="text-sm text-blue-700 mb-4">
+                  Receba os melhores posts diretamente no seu e-mail.
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
+                  disabled
+                >
+                  Em breve
+                </Button>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </aside>
+        </div>
+      </main>
     </div>
   );
 };

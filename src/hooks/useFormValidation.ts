@@ -142,5 +142,19 @@ export const commonValidationRules = {
   content: {
     required: true,
     minLength: 10,
+    // Temporarily disabled max length validation
+    // custom: (value: string) => {
+    //   const textOnly = value.replace(/<[^>]*>/g, '').replace(/&[a-zA-Z0-9#]+;/g, ' ').trim();
+    //   const textLength = textOnly.length;
+    //   
+    //   console.log('Validation - HTML length:', value.length);
+    //   console.log('Validation - Text only:', textOnly);
+    //   console.log('Validation - Text length:', textLength);
+    //   
+    //   if (textLength < 10) return 'Conteúdo deve ter pelo menos 10 caracteres';
+    //   if (textLength > 50000) return 'Conteúdo deve ter no máximo 50000 caracteres';
+    //   
+    //   return null;
+    // }
   }
 };

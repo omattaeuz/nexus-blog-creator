@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Post } from '@/types';
 import ShareButton from '@/components/ShareButton';
+import { stripHtmlTags } from '@/lib/formatters';
 
 const PublicPosts: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -155,9 +156,29 @@ const PublicPosts: React.FC = () => {
                   <CardContent className="pt-0">
                     <div className="prose prose-sm sm:prose-base max-w-none text-muted-foreground mb-4 sm:mb-6">
                       <p className="line-clamp-3 sm:line-clamp-4">
-                        {post.content}
+                        {stripHtmlTags(post.content)}
                       </p>
                     </div>
+
+                    {/* Tags */}
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {post.tags.slice(0, 3).map((tag, index) => (
+                          <Badge 
+                            key={index} 
+                            variant="outline" 
+                            className="text-xs px-2 py-0.5"
+                          >
+                            #{tag}
+                          </Badge>
+                        ))}
+                        {post.tags.length > 3 && (
+                          <Badge variant="outline" className="text-xs px-2 py-0.5">
+                            +{post.tags.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
                       <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
@@ -188,7 +209,6 @@ const PublicPosts: React.FC = () => {
                         <ShareButton
                           postTitle={post.title}
                           postId={post.id}
-                          postContent={post.content}
                           variant="outline"
                           size="sm"
                         />

@@ -5,6 +5,7 @@ import { Calendar, Edit, Trash2, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, truncateContent } from "@/lib/formatters";
+import { Badge } from "@/components/ui/badge";
 import DeletePostModal from "./DeletePostModal";
 import ShareButton from "./ShareButton";
 import { type Post } from "@/types";
@@ -76,6 +77,26 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed flex-1">
           {truncateContent(post.content)}
         </p>
+
+        {/* Tags */}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {post.tags.slice(0, 3).map((tag, index) => (
+              <Badge 
+                key={index} 
+                variant="outline" 
+                className="text-xs px-2 py-0.5"
+              >
+                #{tag}
+              </Badge>
+            ))}
+            {post.tags.length > 3 && (
+              <Badge variant="outline" className="text-xs px-2 py-0.5">
+                +{post.tags.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">

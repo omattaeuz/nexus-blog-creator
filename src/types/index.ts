@@ -46,6 +46,7 @@ export interface Post {
   updated_at?: string;
   user_id?: string;
   is_public?: boolean;
+  tags?: string[];
   author?: {
     id: string;
     email: string;
@@ -56,12 +57,14 @@ export interface CreatePostData {
   title: string;
   content: string;
   is_public?: boolean;
+  tags?: string[];
 }
 
 export interface UpdatePostData {
   title: string;
   content: string;
   is_public?: boolean;
+  tags?: string[];
 }
 
 export interface PostsResponse {

@@ -12,18 +12,25 @@ interface Post {
   user_id?: string;
   is_public?: boolean;
   deleted_at?: string | null;
+  tags?: string[];
+  author?: {
+    id: string;
+    email: string;
+  };
 }
 
 interface CreatePostData {
   title: string;
   content: string;
   is_public?: boolean;
+  tags?: string[];
 }
 
 interface UpdatePostData {
   title: string;
   content: string;
   is_public?: boolean;
+  tags?: string[];
 }
 
 interface User {

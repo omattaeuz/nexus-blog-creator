@@ -2,20 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import RichEditorPro from "@/components/RichEditorPro";
+import TagsInput from "@/components/TagsInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Save, X } from "lucide-react";
-import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
-import { VALIDATION_CONSTANTS, ERROR_MESSAGES } from "@/lib/constants";
+import { useFormValidation } from "@/hooks/useFormValidation";
+import { ERROR_MESSAGES } from "@/lib/constants";
 import { showValidationError, showPostSuccess, showUnexpectedError } from "@/lib/toast-helpers";
+import { calculateReadingTime } from "@/lib/formatters";
 
 interface Post {
   id?: string;
   title: string;
   content: string;
   is_public?: boolean;
+  tags?: string[];
 }
 
 interface PostFormProps {
@@ -31,25 +34,33 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     title: initialData?.title || "",
     content: initialData?.content || "",
     is_public: initialData?.is_public || false,
+    tags: initialData?.tags || [],
   });
+  const [preview, setPreview] = useState(false);
+  const [showImageEditor, setShowImageEditor] = useState(false);
 
   // Use form validation hook
   const { errors, validateForm, clearError } = useFormValidation({
     title: {
-      ...commonValidationRules.title,
-      minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
-      maxLength: VALIDATION_CONSTANTS.MAX_TITLE_LENGTH,
+      required: true,
+      minLength: 3,
+      maxLength: 100,
     },
     content: {
-      ...commonValidationRules.content,
-      minLength: VALIDATION_CONSTANTS.MIN_CONTENT_LENGTH,
-      maxLength: VALIDATION_CONSTANTS.MAX_CONTENT_LENGTH,
+      required: true,
+      minLength: 10,
+      // No maxLength validation for now
     },
   });
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Don't validate if image editor is open
+    if (showImageEditor) {
+      return;
+    }
     
     if (!validateForm(formData)) {
       showValidationError();
@@ -63,6 +74,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
         title: formData.title.trim(),
         content: formData.content.trim(),
         is_public: formData.is_public,
+        tags: formData.tags,
       });
       
       showPostSuccess(isEdit);
@@ -81,16 +93,19 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   };
 
   return (
-    <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-4xl">
-      <Card className="bg-gradient-surface shadow-glow border-border/50">
-        <CardHeader className="text-center p-4 sm:p-6">
-          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-            {isEdit ? "Editar Post" : "Criar Novo Post"}
-          </CardTitle>
-        </CardHeader>
+    <div className="h-screen flex">
+      {/* Left Column - Create Post Form */}
+      <div className={`${preview ? 'w-1/2' : 'w-full'} transition-all duration-500 ease-in-out border-r border-border/50 overflow-y-auto`}>
+        <div className="p-6">
+          <Card className="bg-gradient-surface shadow-glow border-border/50">
+            <CardHeader className="text-center p-4 sm:p-6">
+              <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                {isEdit ? "Editar Post" : "Criar Novo Post"}
+              </CardTitle>
+            </CardHeader>
 
-        <CardContent className="p-4 sm:p-6">
-          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <CardContent className="p-4 sm:p-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div className="space-y-2">
               <Label htmlFor="title" className="text-foreground font-medium">
                 Título
@@ -114,25 +129,32 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="content" className="text-foreground font-medium">
-                Conteúdo
-              </Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) => handleInputChange("content", e.target.value)}
-                placeholder="Escreva o conteúdo do seu post aqui..."
-                rows={8}
-                className={`transition-all duration-300 resize-none ${
-                  errors.content 
-                    ? "border-destructive focus:ring-destructive" 
-                    : "focus:ring-primary"
-                }`}
-                disabled={isLoading}
+              <Label className="text-foreground font-medium">Conteúdo</Label>
+              <div className={`${preview ? 'h-[600px]' : 'h-[500px]'} flex flex-col`}>
+                <RichEditorPro
+                  value={formData.content}
+                  onChange={(html) => handleInputChange("content", html)}
+                  preview={preview}
+                  onTogglePreview={setPreview}
+                  title={formData.title}
+                  onImageEditorToggle={setShowImageEditor}
+                />
+              </div>
+              {errors.content && (<p className="text-sm text-destructive mt-1">{errors.content}</p>)}
+            </div>
+
+            {/* Tags */}
+            <div className="space-y-2">
+              <Label className="text-foreground font-medium">Tags</Label>
+              <TagsInput
+                tags={formData.tags}
+                onChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
+                placeholder="Adicione tags para categorizar seu post..."
+                maxTags={8}
               />
-              {errors.content && (
-                <p className="text-sm text-destructive mt-1">{errors.content}</p>
-              )}
+              <p className="text-xs text-muted-foreground">
+                Tags ajudam a organizar e encontrar posts relacionados. Use palavras-chave relevantes.
+              </p>
             </div>
 
             {/* Public Post Checkbox */}
@@ -163,7 +185,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/posts")}
-                disabled={isLoading}
+                disabled={isLoading || showImageEditor}
                 className="transition-all duration-300 order-2 sm:order-1"
               >
                 <X className="h-4 w-4 mr-2" />
@@ -172,7 +194,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || showImageEditor}
                 className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 order-1 sm:order-2"
               >
                 {isLoading ? (
@@ -183,9 +205,51 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 {isEdit ? "Atualizar Post" : "Criar Post"}
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Right Column - Preview */}
+      {preview && (
+        <div className="w-1/2 bg-white overflow-y-auto preview-enter">
+          <div className="p-6">
+            {/* Preview Header */}
+            <div className="mb-6 pb-4 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                  Preview
+                </div>
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                {formData.title || "Título do Post"}
+              </h1>
+              
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
+                <div className="flex items-center space-x-2">
+                  <span>📅</span>
+                  <span>{new Date().toLocaleDateString("pt-BR", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span>•</span>
+                  <span>Tempo de leitura: {calculateReadingTime(formData.content)} min</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Preview Content */}
+            <div className="prose prose-lg max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: formData.content || "<p><em>Comece a escrever para ver o preview...</em></p>" }} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

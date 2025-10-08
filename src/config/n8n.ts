@@ -20,7 +20,7 @@ export const N8N_CONFIG = {
     POSTS_GET_ONE: "/posts-get-one/posts"
   },
   SUPABASE: {
-    URL: import.meta.env.VITE_SUPABASE_URL || "https://yedzidjgfilitaqmjjpc.supabase.co",
-    ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || "SEU_ANON_KEY_AQUI"
+    URL: import.meta.env.VITE_SUPABASE_URL || "",
+    ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || ""
   }
 };

@@ -130,7 +130,292 @@
   }
 
   .prose a {
-    @apply text-primary hover:text-primary-hover transition-colors;
+    @apply text-blue-600 hover:text-blue-800 transition-colors;
+    text-decoration: none !important;
+  }
+
+  .prose a:hover {
+    text-decoration: none !important;
+  }
+
+  /* Ensure proper paragraph spacing */
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .prose p:last-child {
+    @apply mb-0;
+  }
+
+  /* Ensure proper heading spacing */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply mt-6 mb-4;
+  }
+
+  .prose h1:first-child,
+  .prose h2:first-child,
+  .prose h3:first-child,
+  .prose h4:first-child,
+  .prose h5:first-child,
+  .prose h6:first-child {
+    @apply mt-0;
+  }
+
+  /* Ensure proper list spacing */
+  .prose ul,
+  .prose ol {
+    @apply mb-4;
+  }
+
+  .prose li {
+    @apply mb-2;
+  }
+
+  /* Ensure proper blockquote spacing */
+  .prose blockquote {
+    @apply mb-4;
+  }
+
+  /* TipTap Editor Styles */
+  .ProseMirror {
+    @apply outline-none;
+  }
+
+  /* Code Block Styles */
+  .ProseMirror pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+
+  .ProseMirror code {
+    @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm;
+  }
+
+  .ProseMirror pre code {
+    @apply bg-transparent text-gray-100 p-0;
+  }
+
+  /* Horizontal Rule Styles */
+  .ProseMirror hr {
+    @apply border-gray-300 my-6;
+  }
+
+  /* Blockquote Styles */
+  .ProseMirror blockquote {
+    @apply border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg text-gray-700 italic mb-4;
+  }
+
+  /* Image Styles */
+  .ProseMirror img {
+    @apply max-w-full h-auto rounded-lg shadow-lg my-4;
+  }
+
+  /* List Styles */
+  .ProseMirror ul,
+  .ProseMirror ol {
+    @apply mb-4 pl-6;
+  }
+
+  .ProseMirror li {
+    @apply mb-2;
+  }
+
+  .ProseMirror ul li {
+    @apply list-disc;
+  }
+
+  .ProseMirror ol li {
+    @apply list-decimal;
+  }
+
+  /* Heading Styles */
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3,
+  .ProseMirror h4,
+  .ProseMirror h5,
+  .ProseMirror h6 {
+    @apply font-bold text-gray-900 mt-6 mb-4;
+  }
+
+  .ProseMirror h1 {
+    @apply text-3xl;
+  }
+
+  .ProseMirror h2 {
+    @apply text-2xl;
+  }
+
+  .ProseMirror h3 {
+    @apply text-xl;
+  }
+
+  /* Paragraph Styles */
+  .ProseMirror p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .ProseMirror p:last-child {
+    @apply mb-0;
+  }
+
+  /* Link Styles - Blue without underline */
+  .ProseMirror a {
+    @apply text-blue-600 hover:text-blue-800 transition-colors;
+    text-decoration: none !important;
+  }
+
+  .ProseMirror a:hover {
+    text-decoration: none !important;
+  }
+
+  /* Highlight Styles */
+  .ProseMirror mark {
+    @apply bg-yellow-200 px-1 rounded;
+  }
+
+  /* Strong and Emphasis */
+  .ProseMirror strong {
+    @apply font-bold;
+  }
+
+  .ProseMirror em {
+    @apply italic;
+  }
+
+  .ProseMirror u {
+    @apply underline;
+  }
+
+  /* Editor Scroll Styles */
+  .ProseMirror {
+    @apply overflow-y-auto;
+    max-height: none !important;
+  }
+
+  /* Ensure editor content is scrollable */
+  .ProseMirror-focused {
+    @apply outline-none;
+  }
+
+  /* Preview Animation Styles */
+  @keyframes slideInFromRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutToRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  .preview-enter {
+    animation: slideInFromRight 0.5s ease-out forwards;
+  }
+
+  .preview-exit {
+    animation: slideOutToRight 0.3s ease-in forwards;
+  }
+
+  /* Ensure editor elements are visible */
+  .ProseMirror blockquote {
+    @apply border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg text-gray-700 italic mb-4;
+    border-left: 4px solid #3b82f6 !important;
+    background-color: #eff6ff !important;
+    padding: 1rem !important;
+    border-radius: 0 0.5rem 0.5rem 0 !important;
+    font-style: italic !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .ProseMirror hr {
+    @apply border-gray-300 my-6;
+    border: 1px solid #d1d5db !important;
+    margin: 1.5rem 0 !important;
+    height: 1px !important;
+    background: #d1d5db !important;
+  }
+
+  .ProseMirror pre {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+    background-color: #111827 !important;
+    color: #f3f4f6 !important;
+    padding: 1rem !important;
+    border-radius: 0.5rem !important;
+    overflow-x: auto !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .ProseMirror code {
+    @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm;
+    background-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+    padding: 0.125rem 0.25rem !important;
+    border-radius: 0.25rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .ProseMirror pre code {
+    @apply bg-transparent text-gray-100 p-0;
+    background: transparent !important;
+    color: #f3f4f6 !important;
+    padding: 0 !important;
+  }
+
+  /* Image upload styles */
+  .ProseMirror img {
+    @apply max-w-full h-auto rounded-lg shadow-lg my-4;
+    max-width: 100% !important;
+    height: auto !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+    margin: 1rem 0 !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease !important;
+  }
+
+  .ProseMirror img:hover {
+    transform: scale(1.02) !important;
+  }
+
+  /* Image alignment classes */
+  .ProseMirror img[data-align="left"] {
+    @apply float-left mr-4 mb-2;
+    max-width: 50% !important;
+  }
+
+  .ProseMirror img[data-align="right"] {
+    @apply float-right ml-4 mb-2;
+    max-width: 50% !important;
+  }
+
+  .ProseMirror img[data-align="center"] {
+    @apply mx-auto block;
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .ProseMirror img[data-align="full"] {
+    @apply w-full;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   /* Loading animation */
