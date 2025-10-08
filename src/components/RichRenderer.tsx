@@ -4,7 +4,6 @@ interface Props { html: string; }
 
 export default function RichRenderer({ html }: Props) {
   useEffect(() => {
-    // Enhance galleries marked as carousel with basic controls (no dependency)
     const containers = document.querySelectorAll<HTMLDivElement>("[data-gallery='carousel']");
     containers.forEach((c) => {
       if (c.querySelector("button[data-rr-nav]")) return;
@@ -41,5 +40,3 @@ export default function RichRenderer({ html }: Props) {
     <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
   );
 }
-
-

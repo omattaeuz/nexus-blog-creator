@@ -1,10 +1,16 @@
 # Nexus Blog Creator
 
-Modern blog platform with authentication, post management, and public sharing. Built with React, TypeScript, Vite, shadcn-ui, Supabase (Auth), and n8n (API on Railway). Deployed on Vercel.
+Modern blog platform with authentication, post management, analytics, comments system, and public sharing. Built with React, TypeScript, Vite, shadcn-ui, Supabase (Auth), and n8n (API on Railway). Deployed on Vercel.
 
 ### Overview
 - Auth: Supabase Email/Password (SDK) with email confirmation flow
-- Posts: Create, edit, delete, list, pagination, filters, share links
+- Posts: Create, edit, delete, list, pagination, filters, share links with rich text editor
+- Images: Upload and manage images with built-in image editor
+- Analytics: Comprehensive dashboard with post performance metrics
+- Comments: Full-featured commenting system with moderation
+- Templates: Pre-built post templates for faster content creation
+- Backup: Local backup and restore functionality
+- Notifications: Real-time notification system
 - Visibility: Public or private posts with visual status indicators
 - API: n8n workflow hosted on Railway (webhook) consumed by the frontend
 - Deploy: Vercel (SPA routing + proxy strategy as needed)
@@ -18,14 +24,17 @@ Modern blog platform with authentication, post management, and public sharing. B
 - n8n (REST via Webhooks) on Railway
 - Vercel (hosting)
 - Vitest + React Testing Library (tests)
+- Recharts (analytics charts)
+- date-fns (date formatting)
+- Lucide React (icons)
 
 ---
 
 ## Architecture & Data Flow
 1) Frontend (Vite SPA)
-- Routes like `/posts`, `/posts/:id`, `/posts/:id/edit`, `/public` etc.
-- Components: `PostCard`, `PostForm`, `PostFilters`, `PostsPagination`.
-- Hooks: `usePosts`, `useAsyncOperation`, `usePasswordVisibility`, `useFormValidation`.
+- Routes like `/posts`, `/posts/:id`, `/posts/:id/edit`, `/public`, `/dashboard` etc.
+- Components: `PostCard`, `PostForm`, `PostFilters`, `PostsPagination`, `RichEditorPro`, `AnalyticsDashboard`, `CommentsSection`, `NotificationSystem`, `BackupManager`.
+- Hooks: `usePosts`, `useAsyncOperation`, `usePasswordVisibility`, `useFormValidation`, `useComments`, `useNotifications`, `useKeyboardShortcuts`.
 - Context: `AuthContext` manages Supabase session, token, user.
 
 2) API (n8n on Railway)
@@ -106,21 +115,128 @@ Deploy Steps
 ---
 
 ## Features
-- Authentication (register, login, logout, email confirmation)
-- Post CRUD with pagination, search, filters
-- Public/private visibility with colored indicators on `PostCard` (green=public, red=private)
-- Share button for public posts
-- Responsive UI with shadcn-ui
+
+### 🔐 Authentication
+- Register, login, logout with email confirmation
+- Password reset functionality
+- Protected routes and session management
+
+### 📝 Post Management
+- **Rich Text Editor**: Advanced editor with formatting, links, lists, and more
+- **Image Management**: Upload, edit, and manage images with built-in editor
+- **Post Templates**: Pre-built templates (Tutorial, Review, List, News)
+- **CRUD Operations**: Create, read, update, delete with pagination
+- **Search & Filters**: Advanced filtering by tags, author, date, and content
+- **Visibility Control**: Public/private posts with visual indicators
+- **Share Functionality**: Social sharing for public posts
+- **Auto-save**: Automatic saving of draft content
+
+### 📊 Analytics Dashboard
+- Overview with key metrics (posts, views, comments, likes)
+- Visual charts showing post performance over time
+- Top performing posts analysis
+- Recent activity tracking
+- Engagement distribution charts
+
+### 💬 Comments System
+- Nested comments with replies
+- Like functionality
+- Comment moderation (approve/reject)
+- Real-time comment updates
+- Guest and authenticated user support
+
+### 🔔 Notifications
+- Real-time notification system
+- Email, push, and in-app notifications
+- Configurable notification preferences
+- Activity-based notifications
+
+### 🗂️ Templates
+- Pre-built post templates for faster content creation
+- Custom template creation and management
+- Template categories (Tutorial, Review, List, News)
+
+### 💾 Backup & Restore
+- Local backup functionality
+- Export to JSON, Markdown, and HTML formats
+- Restore from backups
+- Automatic backup management
+
+### 🔍 Advanced Search
+- Full-text search across posts
+- Filter by author, tags, date range
+- Sort by relevance, date, reading time, title
+- Active filter display
+
+### ⌨️ Keyboard Shortcuts
+- Quick navigation shortcuts
+- Post creation and editing shortcuts
+- Theme toggle shortcuts
+- Help modal with shortcut reference
+
+### 🎛️ Dashboard Features
+- **Overview Tab**: Key metrics and recent activity
+- **Analytics Tab**: Detailed performance charts and insights
+- **Comments Tab**: Comment management and moderation
+- **Templates Tab**: Post template management
+- **Search Tab**: Advanced search functionality
+- **Notifications Tab**: Notification management and preferences
+- **Backup Tab**: Backup and restore operations
+- **Config Tab**: System settings and preferences
+
+### 🌐 Internationalization
+- Full Portuguese (Brazil) localization
+- Translated dashboard interface
+- Localized date formatting
+- Portuguese error messages and notifications
+
+### 🎨 User Experience
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Dark/Light Theme**: Theme toggle with system preference detection
+- **Loading States**: Skeleton loaders and progress indicators
+- **Error Handling**: User-friendly error messages and recovery options
+- **Accessibility**: ARIA labels, keyboard navigation, and screen reader support
+- **Performance**: Optimized rendering and lazy loading
+- **Toast Notifications**: Non-intrusive feedback system
+- **Confirmation Dialogs**: Safe deletion and action confirmations
 
 ---
 
 ## Key Files & Directories
-- `src/services/api.ts`: API client (axios) + Supabase auth HTTP (when applicable)
+
+### Core Services
+- `src/services/api.ts`: API client (axios) + Supabase auth HTTP
+- `src/services/analytics.ts`: Analytics data processing and calculations
+- `src/services/comments.ts`: Comments management and local storage
+- `src/services/notifications.ts`: Notification system and preferences
 - `src/lib/supabase.ts`: Supabase SDK client and helpers
 - `src/config/n8n.ts`: Determines API base URL per environment
-- `src/pages/*`: Pages (Posts, PostDetail, PublicPosts, Auth, etc.)
+
+### Pages & Components
+- `src/pages/*`: Pages (Posts, PostDetail, PublicPosts, Auth, Dashboard, etc.)
 - `src/components/*`: Reusable UI components
-- `vercel.json`: SPA routing
+  - `RichEditorPro.tsx`: Advanced rich text editor
+  - `AnalyticsDashboard.tsx`: Analytics charts and metrics
+  - `CommentsSection.tsx`: Comments system with moderation
+  - `NotificationSystem.tsx`: Notification management
+  - `BackupManager.tsx`: Backup and restore functionality
+  - `PostTemplates.tsx`: Template management
+  - `AdvancedSearch.tsx`: Advanced search with filters
+  - `ImageEditor.tsx`: Image upload and editing
+
+### Hooks & Context
+- `src/hooks/*`: Custom hooks for data management
+  - `useComments.ts`: Comments state management
+  - `useNotifications.ts`: Notification state management
+  - `useKeyboardShortcuts.ts`: Keyboard shortcut handling
+- `src/contexts/*`: React contexts for global state
+
+### Utilities
+- `src/lib/*`: Utility libraries
+  - `backup-manager.ts`: Backup and restore logic
+  - `rss-generator.ts`: RSS feed generation
+  - `toast-helpers.ts`: Toast notification helpers
+- `vercel.json`: SPA routing configuration
 
 ---
 
@@ -154,6 +270,29 @@ Deploy Steps
 
 ---
 
+## Dependencies
+
+### Core Dependencies
+- `react` & `react-dom`: UI framework
+- `typescript`: Type safety
+- `vite`: Build tool and dev server
+- `tailwindcss`: Utility-first CSS framework
+- `@radix-ui/*`: Accessible UI primitives
+- `lucide-react`: Icon library
+
+### Analytics & Charts
+- `recharts`: Chart library for analytics dashboard
+- `date-fns`: Date manipulation and formatting
+
+### State Management
+- `@supabase/supabase-js`: Authentication and database
+- `axios`: HTTP client for API calls
+
+### Development
+- `vitest`: Testing framework
+- `@testing-library/react`: React testing utilities
+- `eslint`: Code linting
+
 ## Scripts
 ```json
 {
@@ -161,7 +300,8 @@ Deploy Steps
   "build": "vite build",
   "preview": "vite preview",
   "test": "vitest",
-  "lint": "eslint ."
+  "lint": "eslint .",
+  "type-check": "tsc --noEmit"
 }
 ```
 

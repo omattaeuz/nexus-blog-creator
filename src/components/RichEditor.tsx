@@ -12,11 +12,6 @@ interface RichEditorProps {
   onTogglePreview?: (next: boolean) => void;
 }
 
-/**
- * Lightweight rich text editor using contenteditable and execCommand.
- * Supports: bold, italic, headings, links, image insert, simple gallery.
- * Stores HTML in parent state.
- */
 export default function RichEditor({ value, onChange, preview = false, onTogglePreview }: RichEditorProps) {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const [internalHtml, setInternalHtml] = useState<string>(value || "");
@@ -27,7 +22,6 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
   const [selectedImg, setSelectedImg] = useState<HTMLImageElement | null>(null);
   const [imgWidth, setImgWidth] = useState<number>(100); // percent
 
-  // Hydrate editor DOM with external value without resetting caret on each keystroke
   useEffect(() => {
     setInternalHtml(value || "");
     if (editorRef.current && document.activeElement !== editorRef.current) {
@@ -36,7 +30,6 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
   }, [value]);
 
   const exec = (cmd: string, arg?: string) => {
-    // Use deprecated API for simplicity across browsers
     document.execCommand(cmd, false, arg);
     const html = editorRef.current?.innerHTML || "";
     setInternalHtml(html);
@@ -98,7 +91,6 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
     onChange(html);
   };
 
-  // Image selection + floating controls
   useEffect(() => {
     const ed = editorRef.current;
     if (!ed) return;
@@ -125,7 +117,6 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
     onChange(html);
   };
 
-  // DnD reorder and external drop
   useEffect(() => {
     const ed = editorRef.current;
     if (!ed) return;
@@ -141,7 +132,6 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
     };
     const onDrop = async (e: DragEvent) => {
       const figTarget = (e.target as HTMLElement)?.closest("figure[data-re-id]");
-      // External image file drop
       if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         const file = e.dataTransfer.files[0];
         if (file.type.startsWith("image/")) {
@@ -238,5 +228,3 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
     </Card>
   );
 }
-
-

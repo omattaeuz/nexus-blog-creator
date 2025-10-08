@@ -15,7 +15,6 @@ export default function RichRendererPro({ html }: Props) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Enhance images with lazy loading and responsive behavior
     const images = containerRef.current.querySelectorAll("img");
     images.forEach((img) => {
       img.loading = "lazy";
@@ -25,7 +24,6 @@ export default function RichRendererPro({ html }: Props) {
       img.style.boxShadow = "0 4px 6px -1px rgb(0 0 0 / 0.1)";
     });
 
-    // Enhance galleries marked as carousel with Swiper
     const carouselContainers = containerRef.current.querySelectorAll<HTMLDivElement>("[data-gallery='carousel']");
     carouselContainers.forEach((container) => {
       if (container.querySelector(".swiper")) return; // Already enhanced
@@ -33,7 +31,6 @@ export default function RichRendererPro({ html }: Props) {
       const images = container.querySelectorAll("img");
       if (images.length === 0) return;
 
-      // Create Swiper wrapper
       const swiperWrapper = document.createElement("div");
       swiperWrapper.className = "swiper";
       swiperWrapper.style.width = "100%";
@@ -63,7 +60,6 @@ export default function RichRendererPro({ html }: Props) {
 
       swiperWrapper.appendChild(swiperContainer);
 
-      // Add navigation
       const prevBtn = document.createElement("div");
       prevBtn.className = "swiper-button-prev";
       prevBtn.style.color = "#374151";
@@ -72,7 +68,6 @@ export default function RichRendererPro({ html }: Props) {
       nextBtn.className = "swiper-button-next";
       nextBtn.style.color = "#374151";
 
-      // Add pagination
       const pagination = document.createElement("div");
       pagination.className = "swiper-pagination";
       pagination.style.position = "relative";
@@ -82,10 +77,8 @@ export default function RichRendererPro({ html }: Props) {
       swiperWrapper.appendChild(nextBtn);
       swiperWrapper.appendChild(pagination);
 
-      // Replace original container
       container.parentNode?.replaceChild(swiperWrapper, container);
 
-      // Initialize Swiper
       import("swiper").then(({ Swiper: SwiperClass }) => {
         new SwiperClass(swiperWrapper, {
           modules: [Navigation, Pagination, Autoplay],
@@ -119,7 +112,6 @@ export default function RichRendererPro({ html }: Props) {
       });
     });
 
-    // Enhance grid galleries
     const gridContainers = containerRef.current.querySelectorAll<HTMLDivElement>("[data-gallery='grid']");
     gridContainers.forEach((container) => {
       container.style.display = "grid";
@@ -137,17 +129,12 @@ export default function RichRendererPro({ html }: Props) {
       });
     });
 
-    // Enhance Notion-style tables
     const notionTables = containerRef.current.querySelectorAll<HTMLDivElement>(".notion-table-block");
     notionTables.forEach((tableBlock) => {
-      // Remove the menu controls for read-only view
       const menu = tableBlock.querySelector(".notion-table-menu");
-      if (menu) {
-        menu.remove();
-      }
+      if (menu) menu.remove();
       
-      // Make cells non-editable in read-only view
-      const cells = tableBlock.querySelectorAll(".notion-cell");
+      const cells = tableBlock.querySelectorAll<HTMLElement>(".notion-cell");
       cells.forEach((cell) => {
         cell.removeAttribute("contenteditable");
         cell.style.cursor = "default";

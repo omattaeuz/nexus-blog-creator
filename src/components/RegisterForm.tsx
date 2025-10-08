@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { EmailInput } from "@/components/ui/EmailInput";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { Loader2, UserPlus, Mail, CheckCircle, ArrowRight } from "lucide-react";
+import { UserPlus, Mail, CheckCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
 import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidation";
 import { usePasswordVisibility } from "@/hooks/usePasswordVisibility";
@@ -26,7 +26,6 @@ const RegisterForm = () => {
     confirmPassword: "",
   });
 
-  // Custom hooks
   const { showPassword, showConfirmPassword, togglePassword, toggleConfirmPassword } = usePasswordVisibility();
   const { errors, validateForm, clearError } = useFormValidation<RegisterData & { confirmPassword: string } & Record<string, unknown>>({
     email: commonValidationRules.email,
@@ -41,7 +40,6 @@ const RegisterForm = () => {
     },
   });
 
-  // Async operations
   const registerOperation = useAsyncOperation(register, {
     onSuccess: () => {
       setRegisteredEmail(formData.email);
@@ -73,7 +71,6 @@ const RegisterForm = () => {
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field as keyof typeof errors]) clearError(field as keyof typeof formData);
   };
 

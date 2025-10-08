@@ -31,15 +31,11 @@ import { analyticsService } from '@/services/analytics';
 interface AnalyticsDashboardProps {
   stats: DashboardStats;
   postAnalytics: PostAnalytics[];
-  posts: any[]; // Add posts for real analytics
+  posts: any[];
 }
-
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00ff00'];
 
 export default function AnalyticsDashboard({ stats, postAnalytics, posts }: AnalyticsDashboardProps) {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
-
-  // Generate real data from analytics service
   const viewsData = analyticsService.getViewsOverTime(posts, timeRange);
 
   const topPostsData = postAnalytics
@@ -56,11 +52,10 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-muted-foreground">Monitor your blog performance</p>
+          <h1 className="text-3xl font-bold">Dashboard de Analytics</h1>
+          <p className="text-muted-foreground">Monitore o desempenho do seu blog</p>
         </div>
         <div className="flex gap-2">
           {(['7d', '30d', '90d', '1y'] as const).map((range) => (
@@ -76,78 +71,76 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de Visualizações</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +12% from last month
+              +12% do mês passado
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Comments</CardTitle>
+            <CardTitle className="text-sm font-medium">Comentários</CardTitle>
             <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalComments}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +8% from last month
+              +8% do mês passado
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Likes</CardTitle>
+            <CardTitle className="text-sm font-medium">Curtidas</CardTitle>
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalLikes}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +15% from last month
+              +15% do mês passado
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Read Time</CardTitle>
+            <CardTitle className="text-sm font-medium">Tempo Médio de Leitura</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.averageReadTime}min</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +2min from last month
+              +2min do mês passado
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="posts">Posts</TabsTrigger>
-          <TabsTrigger value="engagement">Engagement</TabsTrigger>
+          <TabsTrigger value="engagement">Engajamento</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>Views Over Time</CardTitle>
+                <CardTitle>Visualizações ao Longo do Tempo</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -164,7 +157,7 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
 
             <Card>
               <CardHeader>
-                <CardTitle>Engagement Distribution</CardTitle>
+                <CardTitle>Distribuição de Engajamento</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -194,7 +187,7 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
         <TabsContent value="posts" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Top Performing Posts</CardTitle>
+                <CardTitle>Posts com Melhor Desempenho</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -216,7 +209,7 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader>
-                <CardTitle>Most Popular Post</CardTitle>
+                <CardTitle>Post Mais Popular</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -224,7 +217,7 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">
                       <Eye className="h-3 w-3 mr-1" />
-                      {stats.mostPopularPost.views} views
+                      {stats.mostPopularPost.views} visualizações
                     </Badge>
                   </div>
                 </div>
@@ -233,7 +226,7 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
 
             <Card>
               <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
+                <CardTitle>Atividade Recente</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">

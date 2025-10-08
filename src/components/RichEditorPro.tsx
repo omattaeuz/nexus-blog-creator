@@ -22,9 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { compressImage, uploadToSupabaseStorage } from "@/lib/image-upload";
-import { calculateReadingTime } from "@/lib/formatters";
 import ImageEditor from "./ImageEditor";
-import { supabase } from "@/lib/supabase";
 
 interface Props {
   value: string; // stores HTML
@@ -35,8 +33,6 @@ interface Props {
   onImageEditorToggle?: (isOpen: boolean) => void;
   id?: string; // for accessibility
 }
-
-// Removed custom extension - using inline styles instead
 
 export default function RichEditorPro({ value, onChange, preview = false, onTogglePreview, title = "Preview", onImageEditorToggle, id }: Props) {
   const lowlightInstance = createLowlight(common);
@@ -84,17 +80,14 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
   useEffect(() => {
     if (!editor) return;
     if (preview) return;
-    // only set from outside if different to avoid caret jump
     const current = editor.getHTML();
     if (value && value !== current) editor.commands.setContent(value);
   }, [value, editor, preview]);
 
-  // Handle keyboard shortcuts
   useEffect(() => {
     if (!editor) return;
     
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Ctrl+K or Cmd+K to open link modal
       if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
         event.preventDefault();
         openLinkModal();
@@ -139,9 +132,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           addTableRow(tbody, rows[rows.length - 1], cols, true);
           break;
         case 'delete-row':
-          if (rows.length > 1) {
-            rows[rows.length - 1].remove();
-          }
+          if (rows.length > 1) rows[rows.length - 1].remove();
           break;
         case 'add-col-left':
           addTableColumn(tbody, 0, rows.length);
@@ -153,15 +144,12 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           if (cols > 1) {
             rows.forEach(row => {
               const cells = row.querySelectorAll('td');
-              if (cells[cells.length - 1]) {
-                cells[cells.length - 1].remove();
-              }
+              if (cells[cells.length - 1]) cells[cells.length - 1].remove();
             });
           }
           break;
       }
       
-      // Update editor content
       const html = editor.getHTML();
       onChange(html);
     };
@@ -176,11 +164,8 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         newRow.appendChild(cell);
       }
       
-      if (after) {
-        tbody.appendChild(newRow);
-      } else {
-        tbody.insertBefore(newRow, referenceRow);
-      }
+      if (after) tbody.appendChild(newRow);
+      else tbody.insertBefore(newRow, referenceRow);
     };
     
     const addTableColumn = (tbody: Element, colIndex: number, rowCount: number) => {
@@ -191,11 +176,8 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         cell.contentEditable = 'true';
         
         const cells = row.querySelectorAll('td');
-        if (colIndex >= cells.length) {
-          row.appendChild(cell);
-        } else {
-          row.insertBefore(cell, cells[colIndex]);
-        }
+        if (colIndex >= cells.length) row.appendChild(cell);
+        else row.insertBefore(cell, cells[colIndex]);
       });
     };
     
@@ -305,10 +287,8 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     if (!linkUrl.trim()) return;
     
     if (linkText.trim()) {
-      // Insert link with custom text
       editor?.chain().focus().insertContent(`<a href="${linkUrl}" target="_blank" rel="noopener noreferrer nofollow">${linkText}</a>`).run();
     } else {
-      // Set link on selected text or insert URL as text
       editor?.chain().focus().setLink({ href: linkUrl, target: '_blank' }).run();
     }
     
@@ -332,9 +312,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
   return (
     <Card className="border-border/50 h-full flex flex-col">
       <CardContent className="p-0 flex flex-col h-full">
-        {/* Professional Toolbar */}
         <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 p-3 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75">
-          {/* Text Formatting */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive("bold") ? "bg-primary text-primary-foreground" : ""}>B</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive("italic") ? "bg-primary text-primary-foreground" : ""}>I</Button>
@@ -346,27 +324,23 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
             )}
           </div>
 
-          {/* Headings */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()} className={editor.isActive("heading", { level: 1 }) ? "bg-primary text-primary-foreground" : ""}>H1</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 2 }).run()} className={editor.isActive("heading", { level: 2 }) ? "bg-primary text-primary-foreground" : ""}>H2</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 3 }).run()} className={editor.isActive("heading", { level: 3 }) ? "bg-primary text-primary-foreground" : ""}>H3</Button>
           </div>
 
-          {/* Lists */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "bg-primary text-primary-foreground" : ""}>• List</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive("orderedList") ? "bg-primary text-primary-foreground" : ""}>1. List</Button>
           </div>
 
-          {/* Alignment */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("left").run()} className={editor.isActive({ textAlign: "left" }) ? "bg-primary text-primary-foreground" : ""}>Left</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("center").run()} className={editor.isActive({ textAlign: "center" }) ? "bg-primary text-primary-foreground" : ""}>Center</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={editor.isActive({ textAlign: "right" }) ? "bg-primary text-primary-foreground" : ""}>Right</Button>
           </div>
 
-          {/* Blocks */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive("blockquote") ? "bg-primary text-primary-foreground" : ""}>Quote</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHorizontalRule().run()}>HR</Button>
@@ -411,7 +385,6 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           </div>
           */}
 
-          {/* Media */}
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <label className="inline-flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded border hover:bg-accent">
               <input type="file" accept="image/*" className="hidden" onChange={onPickFile} />
@@ -419,7 +392,6 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
             </label>
           </div>
 
-          {/* Actions */}
           <div className="ml-auto flex items-center gap-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>↶</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>↷</Button>
@@ -427,12 +399,10 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           </div>
         </div>
 
-        {/* Editor Content */}
         <div className="flex-1 overflow-y-auto" id={id} aria-labelledby={id ? `${id}-label` : undefined}>
           <EditorContent editor={editor} />
         </div>
 
-        {/* Table Styles */}
         <style>{`
           .notion-table-block {
             margin: 16px 0;
@@ -595,7 +565,6 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         `}</style>
       </CardContent>
 
-      {/* Image Editor Modal */}
       {showImageEditor && selectedImageFile && (
         <ImageEditor
           imageFile={selectedImageFile}
@@ -604,19 +573,14 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         />
       )}
 
-      {/* Link Modal */}
       {showLinkModal && (
         <div 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleLinkCancel();
-            }
+            if (e.target === e.currentTarget) handleLinkCancel();
           }}
           onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              handleLinkCancel();
-            }
+            if (e.key === 'Escape') handleLinkCancel();
           }}
           tabIndex={-1}
         >
@@ -676,5 +640,3 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     </Card>
   );
 }
-
-

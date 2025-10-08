@@ -21,7 +21,6 @@ export const useTypewriter = ({
   const [isStarted, setIsStarted] = useState(false);
 
   useEffect(() => {
-    // Handle initial delay
     if (!isStarted) {
       const startTimer = setTimeout(() => {
         setIsStarted(true);
@@ -31,12 +30,10 @@ export const useTypewriter = ({
 
     const timer = setTimeout(() => {
       if (!isDeleting) {
-        // Typing phase
         if (currentIndex < text.length) {
           setDisplayText(text.slice(0, currentIndex + 1));
           setCurrentIndex(currentIndex + 1);
         } else {
-          // Finished typing, start deleting if loop is enabled
           if (loop) {
             const pauseTimer = setTimeout(() => {
               setIsDeleting(true);
@@ -45,12 +42,10 @@ export const useTypewriter = ({
           }
         }
       } else {
-        // Deleting phase
         if (currentIndex > 0) {
           setDisplayText(text.slice(0, currentIndex - 1));
           setCurrentIndex(currentIndex - 1);
         } else {
-          // Finished deleting, start typing again
           setIsDeleting(false);
         }
       }

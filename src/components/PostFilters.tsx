@@ -117,7 +117,6 @@ const PostFilters = ({
       
       <CardContent className="pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Ordenar por */}
           <div className="space-y-2">
             <Label htmlFor="sortBy" className="text-sm font-medium">
               Ordenar por
@@ -134,7 +133,6 @@ const PostFilters = ({
             </Select>
           </div>
 
-          {/* Ordem */}
           <div className="space-y-2">
             <Label htmlFor="sortOrder" className="text-sm font-medium">
               Ordem
@@ -150,7 +148,6 @@ const PostFilters = ({
             </Select>
           </div>
 
-          {/* Data inicial */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Data inicial</Label>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -183,7 +180,6 @@ const PostFilters = ({
             </Popover>
           </div>
 
-          {/* Data final */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Data final</Label>
             <Popover>
@@ -217,7 +213,6 @@ const PostFilters = ({
           </div>
         </div>
 
-        {/* Itens por página */}
         <div className="mt-4 pt-4 border-t border-border/50">
           <div className="flex items-center justify-between">
             <div className="space-y-2">
@@ -249,7 +244,6 @@ const PostFilters = ({
           </div>
         </div>
 
-        {/* Resumo dos filtros ativos */}
         {hasActiveFilters && (
           <div className="mt-4 pt-4 border-t border-border/50">
             <div className="flex flex-wrap gap-2">

@@ -24,12 +24,9 @@ interface HelpModalProps {
 export default function HelpModal({ shortcuts, children }: HelpModalProps) {
   const [open, setOpen] = useState(false);
 
-  // Group shortcuts by category
   const shortcutsByCategory = shortcuts.reduce((acc, shortcut) => {
     const category = shortcut.category || 'Outros';
-    if (!acc[category]) {
-      acc[category] = [];
-    }
+    if (!acc[category]) acc[category] = [];
     acc[category].push(shortcut);
     return acc;
   }, {} as Record<string, KeyboardShortcut[]>);
@@ -42,8 +39,8 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
     if (shortcut.altKey) keys.push('Alt');
     if (shortcut.shiftKey) keys.push('Shift');
     
-    // Format the main key
     let mainKey = shortcut.key;
+
     if (mainKey === ' ') mainKey = 'Space';
     if (mainKey === '?') mainKey = '?';
     

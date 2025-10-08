@@ -13,7 +13,7 @@ import { useFormValidation, commonValidationRules } from "@/hooks/useFormValidat
 import { usePasswordVisibility } from "@/hooks/usePasswordVisibility";
 import { useAsyncOperation } from "@/hooks/useAsyncOperation";
 import { logAuth, logError } from "@/lib/logger";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, LOADING_MESSAGES, ROUTES } from "@/lib/constants";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/lib/constants";
 import { type LoginData } from "@/types";
 
 const LoginForm = () => {
@@ -26,14 +26,12 @@ const LoginForm = () => {
     password: "",
   });
 
-  // Custom hooks
   const { showPassword, togglePassword } = usePasswordVisibility();
   const { errors, validateForm, clearError } = useFormValidation<LoginData>({
     email: commonValidationRules.email,
     password: commonValidationRules.password,
   });
 
-  // Async operations
   const loginOperation = useAsyncOperation(login, {
     onSuccess: () => {
       logAuth('Login successful', { email: formData.email });
@@ -99,7 +97,6 @@ const LoginForm = () => {
 
   const handleInputChange = (field: keyof LoginData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) clearError(field);
   };
 
@@ -187,7 +184,6 @@ const LoginForm = () => {
               </Button>
             </div>
 
-            {/* Submit Button */}
             <SubmitButton
               isLoading={loginOperation.isLoading}
               loadingText="Entrando..."
@@ -196,7 +192,6 @@ const LoginForm = () => {
               Entrar
             </SubmitButton>
 
-            {/* Register Link */}
             <div className="text-center">
               <p className="text-sm sm:text-base text-muted-foreground">
                 Não tem uma conta?{" "}

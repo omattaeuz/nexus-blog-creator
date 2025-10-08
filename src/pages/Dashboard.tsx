@@ -11,7 +11,6 @@ import {
   Settings,
   HardDrive,
   Bell,
-  Plus,
   TrendingUp,
   Eye,
   Heart
@@ -27,7 +26,7 @@ import HelpModal from '@/components/HelpModal';
 import { useKeyboardShortcuts, createBlogShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { usePosts } from '@/hooks/usePosts';
 import { useNotifications } from '@/hooks/useNotifications';
-import { DashboardStats, PostAnalytics, Comment } from '@/types/analytics';
+import { Comment } from '@/types/analytics';
 import { Post } from '@/types/index';
 import { analyticsService } from '@/services/analytics';
 
@@ -217,7 +216,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -252,7 +250,6 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 lg:grid-cols-8">

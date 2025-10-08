@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, RotateCw, RotateCcw, Crop, Move, ZoomIn, ZoomOut, Download } from 'lucide-react';
+import { X, RotateCw, RotateCcw, Crop, Move, Download } from 'lucide-react';
 import { uploadToSupabaseStorage } from '@/lib/image-upload';
 
 interface ImageEditorProps {
@@ -76,15 +76,12 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size - smaller to fit better in modal
     canvas.width = 600;
     canvas.height = 400;
 
-    // Clear canvas with white background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Use calculated display size and position
     const drawWidth = imageDisplaySize.width;
     const drawHeight = imageDisplaySize.height;
     const x = imageDisplayPos.x;
@@ -97,7 +94,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       saturate(${saturation}%)
     `;
 
-    // Save context
     ctx.save();
 
     // Apply rotation
@@ -112,14 +108,11 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     ctx.restore();
 
     // Draw crop overlay if in crop mode
-    if (cropMode) {
-      drawCropOverlay(ctx, x, y, drawWidth, drawHeight);
-    }
+    if (cropMode) drawCropOverlay(ctx, x, y, drawWidth, drawHeight);
 
     // Draw resize handles if in resize mode
-    if (resizeMode) {
-      drawResizeHandles(ctx, x, y, drawWidth, drawHeight);
-    }
+    if (resizeMode) drawResizeHandles(ctx, x, y, drawWidth, drawHeight);
+
   };
 
   const drawCropOverlay = (ctx: CanvasRenderingContext2D, imgX: number, imgY: number, imgWidth: number, imgHeight: number) => {
@@ -417,7 +410,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       // Upload to Supabase Storage
       const imageUrl = await uploadToSupabaseStorage(blob, 'jpg');
       
-      // Create a temporary div to generate the HTML with alignment
       const tempDiv = document.createElement('div');
       const img = document.createElement('img');
       img.src = imageUrl;
@@ -425,7 +417,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       img.className = 'prose-image';
       tempDiv.appendChild(img);
       
-      // Return the HTML string with the uploaded image URL
       onSave(tempDiv.innerHTML);
     }
   };
@@ -441,7 +432,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
         </CardHeader>
         
         <CardContent className="space-y-4 overflow-y-auto flex-1 p-4">
-          {/* Canvas */}
           <div className="flex justify-center">
             <canvas
               ref={canvasRef}
@@ -453,9 +443,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
             />
           </div>
 
-          {/* Controls */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Basic Controls */}
             <div className="space-y-3">
               <h3 className="font-semibold text-sm">Controles Básicos</h3>
               
@@ -519,7 +507,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
               </div>
             </div>
 
-            {/* Filters */}
             <div className="space-y-3">
               <h3 className="font-semibold text-sm">Filtros</h3>
               
@@ -563,7 +550,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end gap-3 pt-3 border-t flex-shrink-0">
             <Button variant="outline" onClick={onCancel}>
               Cancelar

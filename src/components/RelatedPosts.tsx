@@ -64,11 +64,8 @@ export default function RelatedPosts({
       }
     };
 
-    if (currentPostTags.length > 0) {
-      fetchRelatedPosts();
-    } else {
-      setLoading(false);
-    }
+    if (currentPostTags.length > 0) fetchRelatedPosts();
+    else setLoading(false);
   }, [currentPostId, currentPostTags, maxPosts]);
 
   if (loading) {

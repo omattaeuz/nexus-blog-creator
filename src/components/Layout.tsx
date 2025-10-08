@@ -26,11 +26,9 @@ const Layout = ({ children }: LayoutProps) => {
   const handleLogoutConfirm = async () => {
     try {
       await logout();
-      // Close the modal after successful logout
       setShowLogoutConfirmation(false);
     } catch (error) {
       logError('Erro ao fazer logout', { error: error instanceof Error ? error.message : 'Unknown error' });
-      // Even if logout fails, close the modal and let the auth state change handle the redirect
       setShowLogoutConfirmation(false);
     }
   };

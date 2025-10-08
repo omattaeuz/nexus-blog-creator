@@ -37,9 +37,7 @@ export default function NotionTable({ tableId, onUpdate }: NotionTableProps) {
           addTableRow(tbody, rows[rows.length - 1], cols, true);
           break;
         case 'delete-row':
-          if (rows.length > 1) {
-            rows[rows.length - 1].remove();
-          }
+          if (rows.length > 1) rows[rows.length - 1].remove();
           break;
         case 'add-col-left':
           addTableColumn(tbody, 0, rows.length);
@@ -51,18 +49,13 @@ export default function NotionTable({ tableId, onUpdate }: NotionTableProps) {
           if (cols > 1) {
             rows.forEach(row => {
               const cells = row.querySelectorAll('td');
-              if (cells[cells.length - 1]) {
-                cells[cells.length - 1].remove();
-              }
+              if (cells[cells.length - 1]) cells[cells.length - 1].remove();
             });
           }
           break;
       }
 
-      // Notify parent of changes
-      if (onUpdate && tableRef.current) {
-        onUpdate(tableRef.current.outerHTML);
-      }
+      if (onUpdate && tableRef.current) onUpdate(tableRef.current.outerHTML);
     };
 
     const addTableRow = (tbody: Element, referenceRow: Element, colCount: number, after = false) => {
@@ -75,26 +68,22 @@ export default function NotionTable({ tableId, onUpdate }: NotionTableProps) {
         newRow.appendChild(cell);
       }
 
-      if (after) {
-        tbody.appendChild(newRow);
-      } else {
-        tbody.insertBefore(newRow, referenceRow);
-      }
+      if (after) tbody.appendChild(newRow);
+      else tbody.insertBefore(newRow, referenceRow);
     };
 
     const addTableColumn = (tbody: Element, colIndex: number, rowCount: number) => {
       const rows = Array.from(tbody.querySelectorAll('tr'));
       rows.forEach(row => {
         const cell = document.createElement('td');
+        
         cell.className = 'notion-cell';
         cell.contentEditable = 'true';
 
         const cells = row.querySelectorAll('td');
-        if (colIndex >= cells.length) {
-          row.appendChild(cell);
-        } else {
-          row.insertBefore(cell, cells[colIndex]);
-        }
+
+        if (colIndex >= cells.length) row.appendChild(cell);
+        else row.insertBefore(cell, cells[colIndex]);
       });
     };
 
@@ -139,7 +128,7 @@ export default function NotionTable({ tableId, onUpdate }: NotionTableProps) {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         .notion-table-block {
           margin: 16px 0;
           position: relative;

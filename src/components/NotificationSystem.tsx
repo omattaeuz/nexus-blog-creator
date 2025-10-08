@@ -94,13 +94,8 @@ export default function NotificationSystem({
 
   const handleRequestNotificationPermission = async () => {
     const granted = await notificationService.requestPermission();
-    if (granted) {
-      // Show success message
-      console.log('Notification permission granted');
-    } else {
-      // Show error message
-      console.log('Notification permission denied');
-    }
+    if (granted) console.log('Notification permission granted');
+    else console.log('Notification permission denied');
   };
 
   return (
@@ -290,7 +285,6 @@ export default function NotificationSystem({
 
         <TabsContent value="settings" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Email Notifications */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -358,7 +352,6 @@ export default function NotificationSystem({
               </CardContent>
             </Card>
 
-            {/* Push Notifications */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -435,7 +428,6 @@ export default function NotificationSystem({
               </CardContent>
             </Card>
 
-            {/* In-App Notifications */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

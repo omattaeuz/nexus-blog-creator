@@ -240,4 +240,4 @@ class RealCommentService implements CommentService {
 export const commentService = new RealCommentService();
 
 // Export types
-export type { CommentService };
+export type { CommentService, Comment };

@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,13 +8,11 @@ import {
   MessageCircle, 
   Heart, 
   Reply, 
-  MoreHorizontal, 
   Check,
   X,
   Flag
 } from 'lucide-react';
 import { Comment } from '@/services/comments';
-import { commentService } from '@/services/comments';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -30,7 +27,6 @@ interface CommentsSystemProps {
 }
 
 export default function CommentsSystem({
-  postId,
   comments,
   onAddComment,
   onLikeComment,
@@ -160,7 +156,6 @@ export default function CommentsSystem({
               )}
             </div>
             
-            {/* Reply Form */}
             {replyingTo === comment.id && (
               <div className="mt-3 space-y-2">
                 <Textarea
@@ -191,7 +186,6 @@ export default function CommentsSystem({
               </div>
             )}
             
-            {/* Replies */}
             {showReplies[comment.id] && comment.replies.length > 0 && (
               <div className="mt-3 space-y-2">
                 {comment.replies.map(reply => renderComment(reply, true))}
@@ -205,7 +199,6 @@ export default function CommentsSystem({
 
   return (
     <div className="space-y-6">
-      {/* Comment Form */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -230,7 +223,6 @@ export default function CommentsSystem({
         </CardContent>
       </Card>
 
-      {/* Comments List */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">
@@ -259,7 +251,6 @@ export default function CommentsSystem({
         )}
       </div>
 
-      {/* Pending Comments (Moderator Only) */}
       {isModerator && pendingComments.length > 0 && (
         <Card className="border-orange-200">
           <CardHeader>

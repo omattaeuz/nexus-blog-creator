@@ -88,17 +88,12 @@ export default function BackupManagerComponent({
 
     try {
       const backup = backupManager.getBackupById(backupId);
-      if (!backup) {
-        throw new Error('Backup not found');
-      }
+      if (!backup) throw new Error('Backup not found');
 
       const result = await backupManager.restoreBackup(backup);
       
-      if (result.success) {
-        onRestoreComplete?.(result.message);
-      } else {
-        throw new Error(result.message);
-      }
+      if (result.success) onRestoreComplete?.(result.message);
+      else throw new Error(result.message);
 
     } catch (error) {
       console.error('Backup restoration failed:', error);
@@ -112,9 +107,7 @@ export default function BackupManagerComponent({
   const handleExportBackup = async (backupId: string, format: 'json' | 'markdown' | 'html') => {
     try {
       const backup = backupManager.getBackupById(backupId);
-      if (!backup) {
-        throw new Error('Backup not found');
-      }
+      if (!backup) throw new Error('Backup not found');
 
       await backupManager.exportBackup(backup, format);
     } catch (error) {
@@ -125,9 +118,7 @@ export default function BackupManagerComponent({
   const handleDeleteBackup = (backupId: string) => {
     if (confirm('Tem certeza que deseja excluir este backup?')) {
       const success = backupManager.deleteBackup(backupId);
-      if (success) {
-        setBackups(backupManager.getBackups());
-      }
+      if (success) setBackups(backupManager.getBackups());
     }
   };
 
@@ -141,7 +132,6 @@ export default function BackupManagerComponent({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Gerenciador de Backup</h1>
@@ -157,7 +147,6 @@ export default function BackupManagerComponent({
         </div>
       </div>
 
-      {/* Create Backup Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -217,7 +206,6 @@ export default function BackupManagerComponent({
             </div>
           </div>
 
-          {/* Progress Bar */}
           {isCreatingBackup && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -228,7 +216,6 @@ export default function BackupManagerComponent({
             </div>
           )}
 
-          {/* Create Button */}
           <Button
             onClick={handleCreateBackup}
             disabled={isCreatingBackup || posts.length === 0}
@@ -249,7 +236,6 @@ export default function BackupManagerComponent({
         </CardContent>
       </Card>
 
-      {/* Backups List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -319,7 +305,6 @@ export default function BackupManagerComponent({
                         </div>
                         
                         <div className="flex items-center gap-2">
-                          {/* Export Options */}
                           <div className="flex gap-1">
                             <Button
                               variant="outline"
@@ -359,7 +344,6 @@ export default function BackupManagerComponent({
                             )}
                           </Button>
                           
-                          {/* Delete Button */}
                           <Button
                             variant="outline"
                             size="sm"
@@ -380,7 +364,6 @@ export default function BackupManagerComponent({
         </CardContent>
       </Card>
 
-      {/* Info Section */}
       <Card className="border-blue-200 bg-blue-50/50">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">

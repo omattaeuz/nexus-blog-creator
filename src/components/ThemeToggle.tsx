@@ -17,9 +17,7 @@ export default function ThemeToggle() {
     setMounted(true);
     // Get theme from localStorage or default to system
     const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
+    if (savedTheme) setTheme(savedTheme);
   }, []);
 
   useEffect(() => {
@@ -27,7 +25,6 @@ export default function ThemeToggle() {
 
     const root = window.document.documentElement;
     
-    // Remove previous theme classes
     root.classList.remove('light', 'dark');
     
     if (theme === 'system') {
@@ -37,7 +34,6 @@ export default function ThemeToggle() {
       root.classList.add(theme);
     }
 
-    // Save theme preference
     localStorage.setItem('theme', theme);
   }, [theme, mounted]);
 

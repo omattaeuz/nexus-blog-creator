@@ -30,14 +30,11 @@ export class BackupManager {
 
   async createBackup(posts: Post[], options: BackupOptions = {}): Promise<BackupData> {
     const {
-      includeImages = true,
-      compress = true,
       format = 'json'
     } = options;
 
     console.log('Creating backup...', { postsCount: posts.length, options });
 
-    // Process posts based on format
     let processedPosts = posts;
     
     if (format === 'markdown') {
@@ -52,7 +49,6 @@ export class BackupManager {
       }));
     }
 
-    // Calculate total size
     const totalSize = this.calculateDataSize(processedPosts);
 
     const backupData: BackupData = {
@@ -65,15 +61,10 @@ export class BackupManager {
       }
     };
 
-    // Store backup
     this.backups.unshift(backupData);
     
-    // Keep only the latest backups
-    if (this.backups.length > this.maxBackups) {
-      this.backups = this.backups.slice(0, this.maxBackups);
-    }
+    if (this.backups.length > this.maxBackups) this.backups = this.backups.slice(0, this.maxBackups);
 
-    // Save to localStorage
     this.saveBackupsToStorage();
 
     console.log('Backup created successfully:', backupData.metadata);
@@ -131,8 +122,6 @@ export class BackupManager {
         throw new Error('Invalid backup data: metadata is missing');
       }
 
-      // Here you would typically send the data to your API to restore
-      // For now, we'll just validate and return success
       console.log(`Backup restoration would restore ${backupData.posts.length} posts`);
       
       return {
@@ -173,7 +162,6 @@ export class BackupManager {
   }
 
   private convertHtmlToMarkdown(html: string): string {
-    // Simple HTML to Markdown conversion
     return html
       .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
       .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
@@ -327,7 +315,6 @@ export class BackupManager {
     }
   }
 
-  // Initialize by loading from storage
   constructor() {
     this.loadBackupsFromStorage();
   }

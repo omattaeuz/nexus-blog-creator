@@ -1,9 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
 
-/**
- * Custom hook for handling async operations with consistent loading and error states
- * Provides a standardized pattern for API calls and async operations
- */
 export interface AsyncOperationState<T = unknown> {
   data: T | null;
   isLoading: boolean;
@@ -143,14 +139,12 @@ export function useFormSubmission<T extends Record<string, any>>(
   });
 
   const handleSubmit = useCallback(async (data: T, validateForm: (data: T) => boolean) => {
-    // Validate form first
     if (!validateForm(data)) {
       if (options.onValidationError) options.onValidationError({});
 
       return false;
     }
 
-    // Execute async operation
     const result = await asyncOperation.execute(data);
     return result !== null;
   }, [asyncOperation, options]);

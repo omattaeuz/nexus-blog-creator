@@ -52,7 +52,6 @@ export function useKeyboardShortcuts(config: KeyboardShortcutsConfig) {
   }, [handleKeyDown, enabled]);
 }
 
-// Common keyboard shortcuts for blog management
 export const createBlogShortcuts = (
   actions: {
     onNewPost?: () => void;

@@ -39,7 +39,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   const [preview, setPreview] = useState(false);
   const [showImageEditor, setShowImageEditor] = useState(false);
 
-  // Use form validation hook
   const { errors, validateForm, clearError } = useFormValidation({
     title: {
       required: true,
@@ -49,7 +48,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     content: {
       required: true,
       minLength: 10,
-      // No maxLength validation for now
     },
   });
 
@@ -58,9 +56,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
     e.preventDefault();
     
     // Don't validate if image editor is open
-    if (showImageEditor) {
-      return;
-    }
+    if (showImageEditor) return;
     
     if (!validateForm(formData)) {
       showValidationError();
@@ -94,7 +90,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
 
   return (
     <div className="h-screen flex">
-      {/* Left Column - Create Post Form */}
       <div className={`${preview ? 'w-1/2' : 'w-full'} transition-all duration-500 ease-in-out border-r border-border/50 overflow-y-auto`}>
         <div className="p-6">
           <Card className="bg-gradient-surface shadow-glow border-border/50">
@@ -144,7 +139,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               {errors.content && (<p className="text-sm text-destructive mt-1">{errors.content}</p>)}
             </div>
 
-            {/* Tags */}
             <div className="space-y-2">
               <Label className="text-foreground font-medium">Tags</Label>
               <TagsInput
@@ -158,7 +152,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               </p>
             </div>
 
-            {/* Public Post Checkbox */}
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -212,11 +205,9 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
         </div>
       </div>
 
-      {/* Right Column - Preview */}
       {preview && (
         <div className="w-1/2 bg-white overflow-y-auto preview-enter">
           <div className="p-6">
-            {/* Preview Header */}
             <div className="mb-6 pb-4 border-b border-gray-200">
               <div className="flex items-center gap-3 mb-4">
                 <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
@@ -244,7 +235,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               </div>
             </div>
 
-            {/* Preview Content */}
             <div className="prose prose-lg max-w-none">
               <div dangerouslySetInnerHTML={{ __html: formData.content || "<p><em>Comece a escrever para ver o preview...</em></p>" }} />
             </div>

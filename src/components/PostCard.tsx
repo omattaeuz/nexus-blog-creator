@@ -78,7 +78,6 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           {truncateContent(post.content)}
         </p>
 
-        {/* Tags */}
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {post.tags.slice(0, 3).map((tag, index) => (

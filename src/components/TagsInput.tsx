@@ -54,7 +54,6 @@ export default function TagsInput({
 
   return (
     <div className={`space-y-3 ${className}`}>
-      {/* Tags Display */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag, index) => (
@@ -77,7 +76,6 @@ export default function TagsInput({
         </div>
       )}
 
-      {/* Input Section */}
       <div className="flex gap-2">
         <Input
           ref={inputRef}
@@ -100,7 +98,6 @@ export default function TagsInput({
         </Button>
       </div>
 
-      {/* Helper Text */}
       <div className="text-xs text-muted-foreground">
         {tags.length >= maxTags ? (
           <span className="text-orange-600">Máximo de {maxTags} tags atingido</span>

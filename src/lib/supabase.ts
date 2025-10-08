@@ -7,7 +7,6 @@ export const supabase = createClient(
   N8N_CONFIG.SUPABASE.ANON_KEY,
   {
     auth: {
-      // Configure auth settings
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true
@@ -83,9 +82,7 @@ export const authHelpers = {
       // Clear all Supabase auth related localStorage items
       const keys = Object.keys(localStorage);
       keys.forEach(key => {
-        if (key.includes('supabase') || key.includes('sb-')) {
-          localStorage.removeItem(key);
-        }
+        if (key.includes('supabase') || key.includes('sb-')) localStorage.removeItem(key);
       });
       console.log('LocalStorage cleared for Supabase auth');
     } catch (error) {

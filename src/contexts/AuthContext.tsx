@@ -81,7 +81,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (result.user && result.session) {
         logAuth('Login successful', { email: result.user.email });
-        // State will be updated by the auth state change listener
       }
     } catch (error) {
       logError('Login failed', { error: error instanceof Error ? error.message : 'Unknown error' });
@@ -111,15 +110,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       logAuth('Logging out');
       await authHelpers.signOut();
-      // Clear local state after successful logout
       setUser(null);
       setToken(null);
     } catch (error) {
       logError('Logout error', { error: error instanceof Error ? error.message : 'Unknown error' });
-      // Even if logout fails, clear local state
       setUser(null);
       setToken(null);
-      // Don't throw error to allow the app to continue
     }
   };
 
@@ -140,4 +136,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-

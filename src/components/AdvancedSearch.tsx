@@ -12,7 +12,6 @@ import {
   Tag,
   Clock,
   TrendingUp,
-  Star
 } from 'lucide-react';
 import { Post } from '@/types/index';
 
@@ -50,32 +49,26 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [availableAuthors, setAvailableAuthors] = useState<string[]>([]);
 
-  // Extract unique tags and authors from posts
   useEffect(() => {
     const tags = [...new Set(posts.flatMap(post => post.tags || []))];
-    const authors = [...new Set(posts.map(post => post.author))];
+    const authors = [...new Set(posts.map(post => post.author?.email || 'Autor desconhecido'))];
     setAvailableTags(tags);
     setAvailableAuthors(authors);
   }, [posts]);
 
-  // Search and filter logic
   const searchResults = useMemo(() => {
     let results = [...posts];
 
-    // Text search
     if (filters.query) {
       const query = filters.query.toLowerCase();
       results = results.filter(post => 
         post.title.toLowerCase().includes(query) ||
-        post.content.toLowerCase().includes(query) ||
-        post.excerpt?.toLowerCase().includes(query)
+        post.content.toLowerCase().includes(query)
       );
     }
 
     // Author filter
-    if (filters.author) {
-      results = results.filter(post => post.author === filters.author);
-    }
+    if (filters.author) results = results.filter(post => post.author?.email === filters.author);
 
     // Tags filter
     if (filters.tags.length > 0) {
@@ -96,10 +89,10 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
       );
     }
 
-    // Read time filter
+    // Read time filter (estimated based on content length)
     results = results.filter(post => {
-      const readTime = post.reading_time || 5;
-      return readTime >= filters.minReadTime && readTime <= filters.maxReadTime;
+      const estimatedReadTime = Math.ceil(post.content.length / 1000); // ~1000 chars per minute
+      return estimatedReadTime >= filters.minReadTime && estimatedReadTime <= filters.maxReadTime;
     });
 
     // Sorting
@@ -111,7 +104,7 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
           comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           break;
         case 'readTime':
-          comparison = (a.reading_time || 5) - (b.reading_time || 5);
+          comparison = Math.ceil(a.content.length / 1000) - Math.ceil(b.content.length / 1000);
           break;
         case 'title':
           comparison = a.title.localeCompare(b.title);
@@ -198,10 +191,8 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
           </div>
         </div>
 
-        {/* Advanced Filters */}
         {showFilters && (
           <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
-            {/* Author Filter */}
             <div>
               <label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <User className="h-4 w-4" />
@@ -219,7 +210,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </select>
             </div>
 
-            {/* Tags Filter */}
             <div>
               <label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Tag className="h-4 w-4" />
@@ -241,7 +231,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </div>
             </div>
 
-            {/* Date Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">
@@ -264,7 +253,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </div>
             </div>
 
-            {/* Read Time Range */}
             <div>
               <label className="text-sm font-medium flex items-center gap-2 mb-2">
                 <Clock className="h-4 w-4" />
@@ -286,7 +274,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </div>
             </div>
 
-            {/* Sort Options */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">
@@ -317,14 +304,12 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </div>
             </div>
 
-            {/* Clear Filters */}
             <Button variant="outline" onClick={clearFilters} className="w-full">
               Limpar Filtros
             </Button>
           </div>
         )}
 
-        {/* Active Filters */}
         {(filters.author || filters.tags.length > 0 || filters.dateFrom || filters.dateTo) && (
           <div className="flex flex-wrap gap-2">
             {filters.author && (

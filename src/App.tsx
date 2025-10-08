@@ -32,7 +32,6 @@ const App = () => (
           <Sonner />
           <Layout>
             <Routes>
-              {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -40,11 +39,9 @@ const App = () => (
               <Route path="/test-auth" element={<TestAuth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               
-              {/* Public post views - accessible without login */}
               <Route path="/posts/public" element={<PublicPosts />} />
               <Route path="/posts/:id" element={<PublicPostDetail />} />
               
-              {/* Protected routes */}
               <Route path="/posts" element={
                 <ProtectedRoute>
                   <Posts />
@@ -66,7 +63,6 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

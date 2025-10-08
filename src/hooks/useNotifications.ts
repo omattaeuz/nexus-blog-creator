@@ -81,7 +81,6 @@ export function useNotifications(): UseNotificationsReturn {
     loadNotifications();
   }, [loadNotifications]);
 
-  // Set up periodic refresh (every 30 seconds)
   useEffect(() => {
     const interval = setInterval(() => {
       loadNotifications();

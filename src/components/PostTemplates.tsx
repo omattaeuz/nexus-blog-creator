@@ -235,7 +235,6 @@ export default function PostTemplates({
         </Button>
       </div>
 
-      {/* Default Templates */}
       <div>
         <h3 className="text-lg font-semibold mb-4">Templates Padrão</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -265,7 +264,6 @@ export default function PostTemplates({
         </div>
       </div>
 
-      {/* Custom Templates */}
       <div>
         <h3 className="text-lg font-semibold mb-4">Meus Templates</h3>
         {templates.length === 0 ? (
@@ -328,7 +326,6 @@ export default function PostTemplates({
         )}
       </div>
 
-      {/* Create Template Form */}
       {showCreateForm && (
         <Card>
           <CardHeader>

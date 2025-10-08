@@ -249,14 +249,10 @@ export function usePosts(initialOptions: UsePostsOptions = {}): UsePostsReturn {
     };
   }, [autoRefreshEnabled, isLoading, startAutoRefresh, stopAutoRefresh]);
 
-  // Pause auto-refresh when user is interacting (optional enhancement)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden) {
-        stopAutoRefresh();
-      } else if (autoRefreshEnabled) {
-        startAutoRefresh();
-      }
+      if (document.hidden) stopAutoRefresh();
+      else if (autoRefreshEnabled) startAutoRefresh();
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);

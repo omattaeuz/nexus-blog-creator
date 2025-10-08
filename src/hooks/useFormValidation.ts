@@ -1,9 +1,5 @@
 import { useState, useCallback } from 'react';
 
-/**
- * Custom hook for form validation with real-time feedback
- * Provides consistent validation patterns across the application
- */
 export interface ValidationRule {
   required?: boolean;
   minLength?: number;
@@ -43,22 +39,11 @@ export function useFormValidation<T extends Record<string, unknown>>(
     const rule = rules[field as string];
     if (!rule) return null;
 
-    // Required validation
     if (rule.required && (!value || value.trim() === '')) return `${String(field)} é obrigatório`;
-
-    // Skip other validations if value is empty and not required
     if (!value || value.trim() === '') return null;
-
-    // Min length validation
     if (rule.minLength && value.length < rule.minLength) return `${String(field)} deve ter pelo menos ${rule.minLength} caracteres`;
-
-    // Max length validation
     if (rule.maxLength && value.length > rule.maxLength) return `${String(field)} deve ter no máximo ${rule.maxLength} caracteres`;
-
-    // Pattern validation
     if (rule.pattern && !rule.pattern.test(value)) return `${String(field)} tem formato inválido`;
-
-    // Custom validation
     if (rule.custom) return rule.custom(value);
 
     return null;
@@ -104,9 +89,6 @@ export function useFormValidation<T extends Record<string, unknown>>(
   };
 }
 
-/**
- * Common validation rules for reuse across forms
- */
 export const commonValidationRules = {
   email: {
     required: true,
@@ -142,19 +124,5 @@ export const commonValidationRules = {
   content: {
     required: true,
     minLength: 10,
-    // Temporarily disabled max length validation
-    // custom: (value: string) => {
-    //   const textOnly = value.replace(/<[^>]*>/g, '').replace(/&[a-zA-Z0-9#]+;/g, ' ').trim();
-    //   const textLength = textOnly.length;
-    //   
-    //   console.log('Validation - HTML length:', value.length);
-    //   console.log('Validation - Text only:', textOnly);
-    //   console.log('Validation - Text length:', textLength);
-    //   
-    //   if (textLength < 10) return 'Conteúdo deve ter pelo menos 10 caracteres';
-    //   if (textLength > 50000) return 'Conteúdo deve ter no máximo 50000 caracteres';
-    //   
-    //   return null;
-    // }
   }
 };

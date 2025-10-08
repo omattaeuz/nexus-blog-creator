@@ -77,5 +77,3 @@ export async function uploadToSupabaseStorage(file: Blob, ext = "jpg"): Promise<
     throw error;
   }
 }
-
-

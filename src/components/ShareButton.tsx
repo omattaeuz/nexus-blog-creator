@@ -35,14 +35,11 @@ const ShareButton: React.FC<ShareButtonProps> = ({
   const [copied, setCopied] = useState(false);
   const [showManualCopy, setShowManualCopy] = useState(false);
   
-  // Build URL based on environment
   const getBaseUrl = () => {
     const hostname = window.location.hostname;
     const port = window.location.port;
     
-    // Environment detection for URL construction
     
-    // Check if we're in development mode (Vite dev server)
     const isDevelopment = hostname === 'localhost' || 
                          hostname === '127.0.0.1' || 
                          hostname.startsWith('192.168.') ||
@@ -50,12 +47,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({
                          hostname.startsWith('10.');
     
     if (isDevelopment) {
-      // In development, prefer localhost for better compatibility
       const devPort = port || '8081';
       return `http://localhost:${devPort}`;
     }
     
-    // For production, use the current origin
     return window.location.origin;
   };
   
@@ -64,8 +59,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
   const encodedUrl = encodeURIComponent(postUrl);
   const encodedText = encodeURIComponent(shareText);
   
-  // Debug logs removed for production
-
   const shareOptions = [
     {
       name: 'Facebook',
@@ -95,12 +88,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({
 
   const handleCopyLink = async () => {
     try {
-      // Try modern clipboard API first
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(postUrl);
       } else {
-        // Use fallback method for non-secure contexts
-        // Enhanced fallback method
         const textArea = document.createElement('textarea');
         textArea.value = postUrl;
         textArea.style.position = 'fixed';
@@ -113,12 +103,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         
         document.body.appendChild(textArea);
         
-        // Focus and select
         textArea.focus();
         textArea.select();
         textArea.setSelectionRange(0, 99999);
         
-        // Try to copy
         let success = false;
         try {
           success = document.execCommand('copy');
@@ -126,12 +114,9 @@ const ShareButton: React.FC<ShareButtonProps> = ({
           // execCommand failed
         }
         
-        // Remove element
         document.body.removeChild(textArea);
         
-        // If execCommand failed, try a different approach
         if (!success) {
-          // Create a temporary input element
           const input = document.createElement('input');
           input.value = postUrl;
           input.style.position = 'fixed';
@@ -183,7 +168,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
           url: postUrl,
         });
       } catch (error) {
-        // User cancelled or error occurred
         console.log('Share cancelled or failed:', error);
       }
     }
@@ -208,7 +192,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         </DropdownMenuTrigger>
         
         <DropdownMenuContent align="end" className="w-56">
-          {/* Native Share (mobile) */}
           {navigator.share && (
             <>
               <DropdownMenuItem onClick={handleNativeShare} className="cursor-pointer">
@@ -219,7 +202,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
             </>
           )}
           
-          {/* Copy Link */}
           <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
             {copied ? (
               <>
@@ -234,10 +216,8 @@ const ShareButton: React.FC<ShareButtonProps> = ({
             )}
           </DropdownMenuItem>
           
-          
           <DropdownMenuSeparator />
           
-          {/* Social Media Options */}
           {shareOptions.map((option) => {
             const IconComponent = option.icon;
             return (
@@ -254,7 +234,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Manual Copy Dialog */}
       <Dialog open={showManualCopy} onOpenChange={setShowManualCopy}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

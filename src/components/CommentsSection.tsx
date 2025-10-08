@@ -9,7 +9,6 @@ import {
   MessageCircle, 
   Heart, 
   Reply, 
-  MoreHorizontal,
   Send,
   Edit,
   Trash2,
@@ -195,7 +194,6 @@ function CommentItem({
               )}
             </div>
 
-            {/* Replies */}
             {comment.replies.length > 0 && (
               <div className="mt-4">
                 <Button
@@ -258,9 +256,7 @@ export default function CommentsSection({
   } = useComments(postId);
 
   const handleSubmitComment = async () => {
-    if (!newComment.trim() || !authorName.trim() || !authorEmail.trim()) {
-      return;
-    }
+    if (!newComment.trim() || !authorName.trim() || !authorEmail.trim()) return;
 
     try {
       await createComment({
@@ -276,9 +272,7 @@ export default function CommentsSection({
   };
 
   const handleSubmitReply = async () => {
-    if (!replyContent.trim() || !authorName.trim() || !authorEmail.trim() || !replyingTo) {
-      return;
-    }
+    if (!replyContent.trim() || !authorName.trim() || !authorEmail.trim() || !replyingTo) return;
 
     try {
       await createComment({
@@ -364,7 +358,6 @@ export default function CommentsSection({
         </h3>
       </div>
 
-      {/* Comment Form */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Deixe seu comentário</CardTitle>
@@ -411,7 +404,6 @@ export default function CommentsSection({
         </CardContent>
       </Card>
 
-      {/* Reply Form */}
       {replyingTo && (
         <Card className="border-primary/20">
           <CardHeader>
@@ -471,7 +463,6 @@ export default function CommentsSection({
         </Card>
       )}
 
-      {/* Comments List */}
       {comments.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
@@ -494,7 +485,7 @@ export default function CommentsSection({
               onModerate={handleModerate}
               isAuthenticated={isAuthenticated}
               currentUser={currentUser}
-              isModerator={true} // For now, allow moderation
+              isModerator={true}
             />
           ))}
         </div>

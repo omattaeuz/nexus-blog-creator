@@ -48,7 +48,7 @@ export function generateRSSFeed(posts: Post[], options: RSSFeedOptions): string 
       <pubDate>${pubDate}</pubDate>
       <author>${managingEditor} (${post.author})</author>
       <category><![CDATA[${post.tags?.join(', ') || 'Blog'}]]></category>
-      ${post.reading_time ? `<readingTime>${post.reading_time}</readingTime>` : ''}
+      ${post.content ? `<readingTime>${Math.ceil(post.content.length / 1000)}</readingTime>` : ''}
     </item>`;
   }).join('');
 
@@ -63,7 +63,7 @@ export function generateRSSFeed(posts: Post[], options: RSSFeedOptions): string 
     <copyright><![CDATA[${copyright}]]></copyright>
     <managingEditor>${managingEditor}</managingEditor>
     <webMaster>${webMaster}</webMaster>
-    <lastBuildDate>${lastBuildDateStr}</lastBuildDate>
+    <lastBuildDate>${lastBuildDate.toUTCString()}</lastBuildDate>
     <ttl>${ttl}</ttl>
     <generator>Nexus Blog RSS Generator</generator>
     <image>
@@ -101,7 +101,7 @@ export function generateSitemap(posts: Post[], options: { siteUrl: string }): st
   const urlEntries = allPages.map(page => `
     <url>
       <loc>${siteUrl}${page.url}</loc>
-      <lastmod>${page.lastmod || lastmod}</lastmod>
+      <lastmod>${'lastmod' in page ? page.lastmod : lastmod}</lastmod>
       <changefreq>${page.changefreq}</changefreq>
       <priority>${page.priority}</priority>
     </url>`).join('');
