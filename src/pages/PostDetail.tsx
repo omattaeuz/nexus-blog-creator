@@ -13,6 +13,7 @@ import DeletePostModal from "@/components/DeletePostModal";
 import ShareButton from "@/components/ShareButton";
 import RichRendererPro from "@/components/RichRendererPro";
 import RelatedPosts from "@/components/RelatedPosts";
+import CommentsSection from "@/components/CommentsSection";
 
 const PostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -254,12 +255,22 @@ const PostDetail = () => {
                 </Card>
               )}
 
-              {/* Related Posts */}
-              <RelatedPosts 
-                currentPostId={post.id}
-                currentPostTags={post.tags}
-                maxPosts={3}
-              />
+          {/* Comments Section */}
+          <CommentsSection 
+            postId={post.id}
+            isAuthenticated={isAuthenticated}
+            currentUser={isAuthenticated ? {
+              name: 'Usuário', // This would come from auth context
+              email: 'user@example.com'
+            } : undefined}
+          />
+
+          {/* Related Posts */}
+          <RelatedPosts 
+            currentPostId={post.id}
+            currentPostTags={post.tags}
+            maxPosts={3}
+          />
 
               {/* Newsletter Signup */}
               <Card className="p-6 bg-blue-50 border-blue-200">

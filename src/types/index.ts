@@ -47,6 +47,7 @@ export interface Post {
   user_id?: string;
   is_public?: boolean;
   tags?: string[];
+  comments_count?: number;
   author?: {
     id: string;
     email: string;

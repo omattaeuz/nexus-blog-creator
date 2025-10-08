@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Edit, Trash2, User } from "lucide-react";
+import { Calendar, Edit, Trash2, User, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, truncateContent } from "@/lib/formatters";
@@ -109,6 +109,10 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
               <span className="truncate">{post.author.email}</span>
             </div>
           )}
+          <div className="flex items-center space-x-1">
+            <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span>{post.comments_count || 0} comentários</span>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2 pt-2">

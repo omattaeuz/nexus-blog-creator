@@ -18,6 +18,7 @@ import Register from "@/pages/Register";
 import EmailConfirmation from "@/pages/EmailConfirmation";
 import TestAuth from "@/pages/TestAuth";
 import ResetPassword from "@/pages/ResetPassword";
+import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,6 +58,11 @@ const App = () => (
               <Route path="/posts/:id/edit" element={
                 <ProtectedRoute>
                   <EditPost />
+                </ProtectedRoute>
+              } />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
                 </ProtectedRoute>
               } />
               

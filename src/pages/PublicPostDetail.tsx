@@ -12,6 +12,7 @@ import { cacheManager } from "@/lib/cache-manager";
 import ShareButton from "@/components/ShareButton";
 import RichRendererPro from "@/components/RichRendererPro";
 import RelatedPosts from "@/components/RelatedPosts";
+import CommentsSection from "@/components/CommentsSection";
 import { useAuth } from "@/contexts/useAuth";
 
 const PublicPostDetail = () => {
@@ -238,6 +239,16 @@ const PublicPostDetail = () => {
                 </div>
               </div>
             </footer>
+
+            {/* Comments Section */}
+            <CommentsSection 
+              postId={post.id}
+              isAuthenticated={isAuthenticated}
+              currentUser={isAuthenticated ? {
+                name: 'Usuário', // This would come from auth context
+                email: 'user@example.com'
+              } : undefined}
+            />
           </article>
 
           {/* Sidebar */}

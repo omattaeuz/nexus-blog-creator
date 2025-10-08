@@ -2,7 +2,7 @@ import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings, Menu } from "lucide-react";
+import { PlusCircle, BookOpen, Home, LogIn, LogOut, User, Settings, Menu, BarChart3 } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
 import LogoutConfirmation from "./LogoutConfirmation";
 import { logError } from "@/lib/logger";
@@ -77,6 +77,18 @@ const Layout = ({ children }: LayoutProps) => {
                     <Link to="/posts" className="flex items-center space-x-2">
                       <BookOpen className="h-4 w-4" />
                       <span>Blogs</span>
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant={isActive("/dashboard") ? "default" : "ghost"}
+                    size="sm"
+                    asChild
+                    className="transition-all duration-300"
+                  >
+                    <Link to="/dashboard" className="flex items-center space-x-2">
+                      <BarChart3 className="h-4 w-4" />
+                      <span>Dashboard</span>
                     </Link>
                   </Button>
 
@@ -183,6 +195,19 @@ const Layout = ({ children }: LayoutProps) => {
                             <Link to="/posts" className="flex items-center">
                               <BookOpen className="h-4 w-4" />
                               <span className="ml-2">Blogs</span>
+                            </Link>
+                          </Button>
+
+                          <Button
+                            variant={isActive("/dashboard") ? "default" : "ghost"}
+                            size="sm"
+                            asChild
+                            className="justify-start"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                          >
+                            <Link to="/dashboard" className="flex items-center">
+                              <BarChart3 className="h-4 w-4" />
+                              <span className="ml-2">Dashboard</span>
                             </Link>
                           </Button>
 
