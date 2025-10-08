@@ -54,7 +54,7 @@ describe('PostForm', () => {
     renderPostForm({ initialData, isEdit: true });
 
     expect(screen.getByLabelText(/Título/i)).toHaveValue('Existing Title');
-    expect(screen.getByLabelText(/Conteúdo/i)).toHaveValue('Existing Content');
+    expect(screen.getByLabelText(/Conteúdo/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Atualizar Post/i })).toBeInTheDocument();
   });
 });

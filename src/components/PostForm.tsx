@@ -129,9 +129,10 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Conteúdo</Label>
+              <Label id="content-label" className="text-foreground font-medium">Conteúdo</Label>
               <div className={`${preview ? 'h-[600px]' : 'h-[500px]'} flex flex-col`}>
                 <RichEditorPro
+                  id="content"
                   value={formData.content}
                   onChange={(html) => handleInputChange("content", html)}
                   preview={preview}

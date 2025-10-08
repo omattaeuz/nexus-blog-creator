@@ -33,11 +33,12 @@ interface Props {
   onTogglePreview?: (next: boolean) => void;
   title?: string; // for preview header
   onImageEditorToggle?: (isOpen: boolean) => void;
+  id?: string; // for accessibility
 }
 
 // Removed custom extension - using inline styles instead
 
-export default function RichEditorPro({ value, onChange, preview = false, onTogglePreview, title = "Preview", onImageEditorToggle }: Props) {
+export default function RichEditorPro({ value, onChange, preview = false, onTogglePreview, title = "Preview", onImageEditorToggle, id }: Props) {
   const lowlightInstance = createLowlight(common);
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
@@ -427,7 +428,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         </div>
 
         {/* Editor Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" id={id} aria-labelledby={id ? `${id}-label` : undefined}>
           <EditorContent editor={editor} />
         </div>
 
