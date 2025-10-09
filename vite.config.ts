@@ -24,4 +24,13 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  assetsInclude: ['**/*.json'],
+  build: {
+    rollupOptions: {
+      external: ['ioredis', 'redis'],
+    },
+  },
+  optimizeDeps: {
+    exclude: ['ioredis', 'redis'],
+  },
 }));

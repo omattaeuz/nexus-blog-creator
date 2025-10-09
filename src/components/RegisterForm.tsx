@@ -84,13 +84,13 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-3 sm:px-4">
-      <Card className="bg-gradient-surface shadow-glow border-border/50">
+    <div className="w-full">
+      <Card className="bg-transparent border-0 shadow-none">
         <CardHeader className="text-center p-4 sm:p-6">
-          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
             Criar Conta
           </CardTitle>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">
+          <p className="text-sm sm:text-base text-gray-300 mt-2">
             Junte-se a nós e comece a compartilhar suas histórias
           </p>
         </CardHeader>
@@ -140,17 +140,17 @@ const RegisterForm = () => {
               isLoading={registerOperation.isLoading}
               loadingText="Criando conta..."
               icon={<UserPlus className="h-4 w-4 mr-2" />}
-              className="w-full bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Criar Conta
             </SubmitButton>
 
             <div className="text-center">
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-sm sm:text-base text-gray-300">
                 Já tem uma conta?{" "}
                 <Link 
                   to="/login" 
-                  className="text-primary hover:underline font-medium"
+                  className="text-cyan-400 hover:text-cyan-300 hover:underline font-medium transition-colors duration-300"
                 >
                   Entrar
                 </Link>
@@ -161,38 +161,38 @@ const RegisterForm = () => {
       </Card>
 
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md mx-4">
+        <DialogContent className="sm:max-w-md mx-4 bg-slate-800/95 backdrop-blur-md border-slate-700/50">
           <DialogHeader className="text-center">
-            <div className="mx-auto mb-3 sm:mb-4 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
-              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
+            <div className="mx-auto mb-3 sm:mb-4 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-green-500/20 border border-green-500/30">
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-400" />
             </div>
-            <DialogTitle className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-white">
               Conta Criada com Sucesso!
             </DialogTitle>
-            <DialogDescription className="text-sm sm:text-base text-muted-foreground">
+            <DialogDescription className="text-sm sm:text-base text-gray-300">
               Enviamos um email de confirmação para:
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 sm:space-y-6">
-            <div className="flex items-center justify-center p-3 sm:p-4 bg-muted/50 rounded-lg border">
-              <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2" />
-              <span className="font-medium text-foreground text-sm sm:text-base truncate">{registeredEmail}</span>
+            <div className="flex items-center justify-center p-3 sm:p-4 bg-slate-700/50 rounded-lg border border-slate-600/50">
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400 mr-2" />
+              <span className="font-medium text-white text-sm sm:text-base truncate">{registeredEmail}</span>
             </div>
 
             <div className="space-y-3">
-              <h4 className="font-semibold text-foreground text-sm sm:text-base">Próximos passos:</h4>
-              <div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+              <h4 className="font-semibold text-white text-sm sm:text-base">Próximos passos:</h4>
+              <div className="space-y-2 text-xs sm:text-sm text-gray-300">
                 <div className="flex items-start">
-                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">1</span>
+                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">1</span>
                   <span>Verifique sua caixa de entrada (e pasta de spam)</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">2</span>
+                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">2</span>
                   <span>Clique no link de confirmação no email</span>
                 </div>
                 <div className="flex items-start">
-                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">3</span>
+                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-cyan-500/20 text-cyan-400 rounded-full flex items-center justify-center text-xs font-medium mr-2 sm:mr-3 mt-0.5">3</span>
                   <span>Volte aqui e faça login com suas credenciais</span>
                 </div>
               </div>
@@ -201,7 +201,7 @@ const RegisterForm = () => {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={handleGoToLogin}
-                className="w-full bg-gradient-primary hover:bg-primary-hover"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Ir para Login
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -209,13 +209,13 @@ const RegisterForm = () => {
               <Button
                 variant="outline"
                 onClick={handleCloseModal}
-                className="w-full"
+                className="w-full border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
               >
                 Fechar
               </Button>
             </div>
 
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs text-gray-400 text-center">
               Não recebeu o email? Verifique sua pasta de spam ou aguarde alguns minutos.
             </p>
           </div>

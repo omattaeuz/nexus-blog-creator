@@ -70,13 +70,13 @@ export default function RelatedPosts({
 
   if (loading) {
     return (
-      <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Posts Relacionados</h3>
+      <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
+        <h3 className="font-semibold text-white mb-4">Posts Relacionados</h3>
         <div className="space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-slate-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-700 rounded w-1/2"></div>
             </div>
           ))}
         </div>
@@ -86,9 +86,9 @@ export default function RelatedPosts({
 
   if (relatedPosts.length === 0) {
     return (
-      <Card className="p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Posts Relacionados</h3>
-        <div className="text-sm text-gray-600">
+      <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
+        <h3 className="font-semibold text-white mb-4">Posts Relacionados</h3>
+        <div className="text-sm text-gray-300">
           <p>Nenhum post relacionado encontrado com as mesmas tags.</p>
         </div>
       </Card>
@@ -96,8 +96,8 @@ export default function RelatedPosts({
   }
 
   return (
-    <Card className="p-6">
-      <h3 className="font-semibold text-gray-900 mb-4">Posts Relacionados</h3>
+    <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
+      <h3 className="font-semibold text-white mb-4">Posts Relacionados</h3>
       <div className="space-y-4">
         {relatedPosts.map((post) => (
           <Link 
@@ -105,17 +105,17 @@ export default function RelatedPosts({
             to={`/posts/${post.id}`}
             className="block group"
           >
-            <Card className="p-4 hover:shadow-md transition-shadow border border-gray-200 group-hover:border-blue-300">
+            <Card className="p-4 hover:shadow-xl transition-all duration-300 border border-slate-600/50 group-hover:border-cyan-400/50 bg-slate-700/30 group-hover:bg-slate-700/50">
               <CardContent className="p-0">
-                <h4 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                <h4 className="font-medium text-white group-hover:text-cyan-400 transition-colors mb-2 line-clamp-2">
                   {post.title}
                 </h4>
                 
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p className="text-sm text-gray-300 mb-3 line-clamp-2">
                   {stripHtmlTags(post.content)}
                 </p>
                 
-                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400">
                   <div className="flex items-center space-x-1">
                     <Calendar className="h-3 w-3" />
                     <span>{formatDate(post.created_at)}</span>
@@ -135,13 +135,13 @@ export default function RelatedPosts({
                       <Badge 
                         key={index} 
                         variant="outline" 
-                        className="text-xs px-2 py-0.5"
+                        className="text-xs px-2 py-0.5 bg-slate-600/50 text-gray-300 border-slate-500/50"
                       >
                         #{tag}
                       </Badge>
                     ))}
                     {post.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs px-2 py-0.5">
+                      <Badge variant="outline" className="text-xs px-2 py-0.5 bg-slate-600/50 text-gray-300 border-slate-500/50">
                         +{post.tags.length - 3}
                       </Badge>
                     )}

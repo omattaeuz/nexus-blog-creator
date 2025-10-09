@@ -89,16 +89,16 @@ const PostFilters = ({
   };
 
   return (
-    <Card className="bg-gradient-surface shadow-md border-border/50">
+    <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold flex items-center gap-2">
-            <Filter className="h-5 w-5 text-primary" />
+          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-white">
+            <Filter className="h-5 w-5 text-cyan-400" />
             Filtros
           </CardTitle>
           <div className="flex items-center gap-2">
             {hasActiveFilters && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                 Filtros ativos
               </Badge>
             )}
@@ -107,7 +107,7 @@ const PostFilters = ({
               size="sm"
               onClick={onClearFilters}
               disabled={!hasActiveFilters || loading}
-              className="h-8 px-2"
+              className="h-8 px-2 text-gray-400 hover:text-white hover:bg-slate-700/50"
             >
               <RotateCcw className="h-4 w-4" />
             </Button>
@@ -118,54 +118,54 @@ const PostFilters = ({
       <CardContent className="pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="sortBy" className="text-sm font-medium">
+            <Label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
               Ordenar por
             </Label>
             <Select value={filters.sortBy} onValueChange={handleSortByChange} disabled={loading}>
-              <SelectTrigger id="sortBy" className="h-9">
+              <SelectTrigger id="sortBy" className="h-9 bg-slate-700/50 border-slate-600/50 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="created_at">Data de Criação</SelectItem>
-                <SelectItem value="title">Título</SelectItem>
-                <SelectItem value="updated_at">Data de Atualização</SelectItem>
+              <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-700/50">
+                <SelectItem value="created_at" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">Data de Criação</SelectItem>
+                <SelectItem value="title" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">Título</SelectItem>
+                <SelectItem value="updated_at" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">Data de Atualização</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sortOrder" className="text-sm font-medium">
+            <Label htmlFor="sortOrder" className="text-sm font-medium text-gray-300">
               Ordem
             </Label>
             <Select value={filters.sortOrder} onValueChange={handleSortOrderChange} disabled={loading}>
-              <SelectTrigger id="sortOrder" className="h-9">
+              <SelectTrigger id="sortOrder" className="h-9 bg-slate-700/50 border-slate-600/50 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Decrescente</SelectItem>
-                <SelectItem value="asc">Crescente</SelectItem>
+              <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-700/50">
+                <SelectItem value="desc" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">Decrescente</SelectItem>
+                <SelectItem value="asc" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">Crescente</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Data inicial</Label>
+            <Label className="text-sm font-medium text-gray-300">Data inicial</Label>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full h-9 justify-start text-left font-normal"
+                  className="w-full h-9 justify-start text-left font-normal border-slate-600/50 bg-slate-700/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                   disabled={loading}
                 >
-                  <Calendar className="mr-2 h-4 w-4" />
+                  <Calendar className="mr-2 h-4 w-4 text-gray-400" />
                   {filters.dateFrom ? (
-                    format(filters.dateFrom, "dd/MM/yyyy", { locale: ptBR })
+                    <span className="text-white">{format(filters.dateFrom, "dd/MM/yyyy", { locale: ptBR })}</span>
                   ) : (
-                    <span className="text-muted-foreground">Selecionar data</span>
+                    <span className="text-gray-400">Selecionar data</span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 bg-slate-800/95 backdrop-blur-md border-slate-700/50" align="start">
                 <CalendarComponent
                   mode="single"
                   selected={filters.dateFrom}
@@ -181,23 +181,23 @@ const PostFilters = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Data final</Label>
+            <Label className="text-sm font-medium text-gray-300">Data final</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full h-9 justify-start text-left font-normal"
+                  className="w-full h-9 justify-start text-left font-normal border-slate-600/50 bg-slate-700/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                   disabled={loading}
                 >
-                  <Calendar className="mr-2 h-4 w-4" />
+                  <Calendar className="mr-2 h-4 w-4 text-gray-400" />
                   {filters.dateTo ? (
-                    format(filters.dateTo, "dd/MM/yyyy", { locale: ptBR })
+                    <span className="text-white">{format(filters.dateTo, "dd/MM/yyyy", { locale: ptBR })}</span>
                   ) : (
-                    <span className="text-muted-foreground">Selecionar data</span>
+                    <span className="text-gray-400">Selecionar data</span>
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 bg-slate-800/95 backdrop-blur-md border-slate-700/50" align="start">
                 <CalendarComponent
                   mode="single"
                   selected={filters.dateTo}
@@ -213,10 +213,10 @@ const PostFilters = ({
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-border/50">
+        <div className="mt-4 pt-4 border-t border-slate-700/50">
           <div className="flex items-center justify-between">
             <div className="space-y-2">
-              <Label htmlFor="itemsPerPage" className="text-sm font-medium">
+              <Label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
                 Posts por página
               </Label>
               <Select 
@@ -224,45 +224,45 @@ const PostFilters = ({
                 onValueChange={handleItemsPerPageChange}
                 disabled={loading}
               >
-                <SelectTrigger id="itemsPerPage" className="w-24 h-9">
+                <SelectTrigger id="itemsPerPage" className="w-24 h-9 bg-slate-700/50 border-slate-600/50 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="6">6</SelectItem>
-                  <SelectItem value="12">12</SelectItem>
-                  <SelectItem value="24">24</SelectItem>
-                  <SelectItem value="48">48</SelectItem>
+                <SelectContent className="bg-slate-800/95 backdrop-blur-md border-slate-700/50">
+                  <SelectItem value="6" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">6</SelectItem>
+                  <SelectItem value="12" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">12</SelectItem>
+                  <SelectItem value="24" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">24</SelectItem>
+                  <SelectItem value="48" className="text-gray-300 hover:bg-slate-700/50 hover:text-white">48</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             
             <div className="text-right">
-              <p className="text-sm text-muted-foreground">
-                Total: <span className="font-medium text-foreground">{totalPosts}</span> posts
+              <p className="text-sm text-gray-400">
+                Total: <span className="font-medium text-white">{totalPosts}</span> posts
               </p>
             </div>
           </div>
         </div>
 
         {hasActiveFilters && (
-          <div className="mt-4 pt-4 border-t border-border/50">
+          <div className="mt-4 pt-4 border-t border-slate-700/50">
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm text-muted-foreground">Filtros ativos:</span>
-              <Badge variant="outline" className="text-xs">
+              <span className="text-sm text-gray-400">Filtros ativos:</span>
+              <Badge className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                 {getSortByLabel(filters.sortBy)} ({getSortOrderLabel(filters.sortOrder)})
               </Badge>
               {filters.dateFrom && (
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                   De: {format(filters.dateFrom, "dd/MM/yyyy", { locale: ptBR })}
                 </Badge>
               )}
               {filters.dateTo && (
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                   Até: {format(filters.dateTo, "dd/MM/yyyy", { locale: ptBR })}
                 </Badge>
               )}
               {filters.itemsPerPage !== 6 && (
-                <Badge variant="outline" className="text-xs">
+                <Badge className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                   {filters.itemsPerPage} por página
                 </Badge>
               )}

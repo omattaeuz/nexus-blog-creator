@@ -157,22 +157,22 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
   };
 
   return (
-    <Card>
+    <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
+        <CardTitle className="flex items-center gap-2 text-white">
+          <Search className="h-5 w-5 text-cyan-400" />
           Busca Avançada
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Search Input */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Buscar posts..."
             value={filters.query}
             onChange={(e) => setFilters(prev => ({ ...prev, query: e.target.value }))}
-            className="pl-10"
+            className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
           />
         </div>
 
@@ -182,26 +182,27 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
             variant="outline"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
+            className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
           >
             <Filter className="h-4 w-4 mr-2" />
             Filtros
           </Button>
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-gray-300">
             {searchResults.length} resultado(s) encontrado(s)
           </div>
         </div>
 
         {showFilters && (
-          <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+          <div className="space-y-4 p-4 border border-slate-600/50 rounded-lg bg-slate-700/30">
             <div>
-              <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                <User className="h-4 w-4" />
+              <label className="text-sm font-medium flex items-center gap-2 mb-2 text-white">
+                <User className="h-4 w-4 text-gray-400" />
                 Autor
               </label>
               <select
                 value={filters.author}
                 onChange={(e) => setFilters(prev => ({ ...prev, author: e.target.value }))}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-slate-600/50 rounded-md bg-slate-700/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
               >
                 <option value="">Todos os autores</option>
                 {availableAuthors.map(author => (
@@ -211,8 +212,8 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
             </div>
 
             <div>
-              <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                <Tag className="h-4 w-4" />
+              <label className="text-sm font-medium flex items-center gap-2 mb-2 text-white">
+                <Tag className="h-4 w-4 text-gray-400" />
                 Tags
               </label>
               <div className="flex flex-wrap gap-2">
@@ -222,8 +223,9 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
                       id={tag}
                       checked={filters.tags.includes(tag)}
                       onCheckedChange={() => handleTagToggle(tag)}
+                      className="border-slate-600/50 data-[state=checked]:bg-cyan-400 data-[state=checked]:border-cyan-400"
                     />
-                    <label htmlFor={tag} className="text-sm">
+                    <label htmlFor={tag} className="text-sm text-gray-300">
                       {tag}
                     </label>
                   </div>
@@ -233,29 +235,31 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                  <Calendar className="h-4 w-4" />
+                <label className="text-sm font-medium flex items-center gap-2 mb-2 text-white">
+                  <Calendar className="h-4 w-4 text-gray-400" />
                   Data Inicial
                 </label>
                 <Input
                   type="date"
                   value={filters.dateFrom}
                   onChange={(e) => setFilters(prev => ({ ...prev, dateFrom: e.target.value }))}
+                  className="bg-slate-700/50 border-slate-600/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2">Data Final</label>
+                <label className="text-sm font-medium mb-2 text-white">Data Final</label>
                 <Input
                   type="date"
                   value={filters.dateTo}
                   onChange={(e) => setFilters(prev => ({ ...prev, dateTo: e.target.value }))}
+                  className="bg-slate-700/50 border-slate-600/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                <Clock className="h-4 w-4" />
+              <label className="text-sm font-medium flex items-center gap-2 mb-2 text-white">
+                <Clock className="h-4 w-4 text-gray-400" />
                 Tempo de Leitura (minutos)
               </label>
               <div className="grid grid-cols-2 gap-4">
@@ -264,26 +268,28 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
                   placeholder="Mínimo"
                   value={filters.minReadTime}
                   onChange={(e) => setFilters(prev => ({ ...prev, minReadTime: parseInt(e.target.value) || 0 }))}
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
                 <Input
                   type="number"
                   placeholder="Máximo"
                   value={filters.maxReadTime}
                   onChange={(e) => setFilters(prev => ({ ...prev, maxReadTime: parseInt(e.target.value) || 60 }))}
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium flex items-center gap-2 mb-2">
-                  <TrendingUp className="h-4 w-4" />
+                <label className="text-sm font-medium flex items-center gap-2 mb-2 text-white">
+                  <TrendingUp className="h-4 w-4 text-gray-400" />
                   Ordenar por
                 </label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value as any }))}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border border-slate-600/50 rounded-md bg-slate-700/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
                 >
                   <option value="relevance">Relevância</option>
                   <option value="date">Data</option>
@@ -292,11 +298,11 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2">Ordem</label>
+                <label className="text-sm font-medium mb-2 text-white">Ordem</label>
                 <select
                   value={filters.sortOrder}
                   onChange={(e) => setFilters(prev => ({ ...prev, sortOrder: e.target.value as any }))}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border border-slate-600/50 rounded-md bg-slate-700/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
                 >
                   <option value="desc">Decrescente</option>
                   <option value="asc">Crescente</option>
@@ -304,7 +310,11 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
               </div>
             </div>
 
-            <Button variant="outline" onClick={clearFilters} className="w-full">
+            <Button 
+              variant="outline" 
+              onClick={clearFilters} 
+              className="w-full border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
+            >
               Limpar Filtros
             </Button>
           </div>
@@ -313,48 +323,48 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
         {(filters.author || filters.tags.length > 0 || filters.dateFrom || filters.dateTo) && (
           <div className="flex flex-wrap gap-2">
             {filters.author && (
-              <Badge variant="secondary" className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 bg-slate-700/50 text-gray-300 border-slate-600/50">
                 <User className="h-3 w-3" />
                 {filters.author}
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, author: '' }))}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-400"
                 >
                   ×
                 </button>
               </Badge>
             )}
             {filters.tags.map(tag => (
-              <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+              <Badge key={tag} className="flex items-center gap-1 bg-slate-700/50 text-gray-300 border-slate-600/50">
                 <Tag className="h-3 w-3" />
                 {tag}
                 <button
                   onClick={() => handleTagToggle(tag)}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-400"
                 >
                   ×
                 </button>
               </Badge>
             ))}
             {filters.dateFrom && (
-              <Badge variant="secondary" className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 bg-slate-700/50 text-gray-300 border-slate-600/50">
                 <Calendar className="h-3 w-3" />
                 Desde {new Date(filters.dateFrom).toLocaleDateString()}
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, dateFrom: '' }))}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-400"
                 >
                   ×
                 </button>
               </Badge>
             )}
             {filters.dateTo && (
-              <Badge variant="secondary" className="flex items-center gap-1">
+              <Badge className="flex items-center gap-1 bg-slate-700/50 text-gray-300 border-slate-600/50">
                 <Calendar className="h-3 w-3" />
                 Até {new Date(filters.dateTo).toLocaleDateString()}
                 <button
                   onClick={() => setFilters(prev => ({ ...prev, dateTo: '' }))}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-400"
                 >
                   ×
                 </button>

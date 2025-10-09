@@ -66,38 +66,38 @@ export default function CommentsSystem({
   };
 
   const renderComment = (comment: Comment, isReply = false) => (
-    <Card key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-l-blue-200' : ''}`}>
+    <Card key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-l-cyan-400/50' : ''} bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl`}>
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Avatar className="h-8 w-8">
             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.author}`} />
-            <AvatarFallback>{comment.author.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-gradient-to-r from-purple-500 to-blue-500 text-white">{comment.author.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-sm">{comment.author}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="font-medium text-sm text-white">{comment.author}</span>
+              <span className="text-xs text-gray-400">
                 {formatDistanceToNow(new Date(comment.createdAt), { 
                   addSuffix: true, 
                   locale: ptBR 
                 })}
               </span>
               {!comment.approved && (
-                <Badge variant="outline" className="text-xs">
+                <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50 text-xs">
                   Pendente
                 </Badge>
               )}
             </div>
             
-            <p className="text-sm text-foreground">{comment.content}</p>
+            <p className="text-sm text-gray-300">{comment.content}</p>
             
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onLikeComment(comment.id)}
-                className="h-6 px-2"
+                className="h-6 px-2 text-gray-400 hover:text-red-400 hover:bg-slate-700/50"
               >
                 <Heart className="h-3 w-3 mr-1" />
                 {comment.likes}
@@ -108,7 +108,7 @@ export default function CommentsSystem({
                   variant="ghost"
                   size="sm"
                   onClick={() => setReplyingTo(comment.id)}
-                  className="h-6 px-2"
+                  className="h-6 px-2 text-gray-400 hover:text-cyan-400 hover:bg-slate-700/50"
                 >
                   <Reply className="h-3 w-3 mr-1" />
                   Responder
@@ -120,7 +120,7 @@ export default function CommentsSystem({
                   variant="ghost"
                   size="sm"
                   onClick={() => toggleReplies(comment.id)}
-                  className="h-6 px-2"
+                  className="h-6 px-2 text-gray-400 hover:text-blue-400 hover:bg-slate-700/50"
                 >
                   <MessageCircle className="h-3 w-3 mr-1" />
                   {comment.replies.length} {comment.replies.length === 1 ? 'resposta' : 'respostas'}
@@ -133,7 +133,7 @@ export default function CommentsSystem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onModerate(comment.id, true)}
-                    className="h-6 w-6 p-0 text-green-600"
+                    className="h-6 w-6 p-0 text-green-400 hover:bg-green-500/20"
                   >
                     <Check className="h-3 w-3" />
                   </Button>
@@ -141,14 +141,14 @@ export default function CommentsSystem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onModerate(comment.id, false)}
-                    className="h-6 w-6 p-0 text-red-600"
+                    className="h-6 w-6 p-0 text-red-400 hover:bg-red-500/20"
                   >
                     <X className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-6 w-6 p-0"
+                    className="h-6 w-6 p-0 text-gray-400 hover:bg-slate-700/50"
                   >
                     <Flag className="h-3 w-3" />
                   </Button>
@@ -162,13 +162,14 @@ export default function CommentsSystem({
                   placeholder="Escreva sua resposta..."
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
                 <div className="flex gap-2">
                   <Button
                     size="sm"
                     onClick={() => handleReply(comment.id)}
                     disabled={!replyContent.trim()}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
                   >
                     Responder
                   </Button>
@@ -179,6 +180,7 @@ export default function CommentsSystem({
                       setReplyingTo(null);
                       setReplyContent('');
                     }}
+                    className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                   >
                     Cancelar
                   </Button>
@@ -199,10 +201,10 @@ export default function CommentsSystem({
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <MessageCircle className="h-5 w-5 text-cyan-400" />
             Deixe um comentário
           </CardTitle>
         </CardHeader>
@@ -212,10 +214,14 @@ export default function CommentsSystem({
               placeholder="Compartilhe seus pensamentos..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="min-h-[100px]"
+              className="min-h-[100px] bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
             />
             <div className="flex justify-end">
-              <Button type="submit" disabled={!newComment.trim()}>
+              <Button 
+                type="submit" 
+                disabled={!newComment.trim()}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+              >
                 Comentar
               </Button>
             </div>
@@ -225,21 +231,21 @@ export default function CommentsSystem({
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold text-white">
             Comentários ({approvedComments.length})
           </h3>
           {isModerator && pendingComments.length > 0 && (
-            <Badge variant="destructive">
+            <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/50">
               {pendingComments.length} pendentes
             </Badge>
           )}
         </div>
         
         {approvedComments.length === 0 ? (
-          <Card>
+          <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-6 text-center">
-              <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
+              <MessageCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-300">
                 Seja o primeiro a comentar!
               </p>
             </CardContent>
@@ -252,9 +258,10 @@ export default function CommentsSystem({
       </div>
 
       {isModerator && pendingComments.length > 0 && (
-        <Card className="border-orange-200">
+        <Card className="bg-slate-800/50 backdrop-blur-md border-orange-500/50 shadow-2xl">
           <CardHeader>
-            <CardTitle className="text-orange-600">
+            <CardTitle className="text-orange-400 flex items-center gap-2">
+              <Flag className="h-5 w-5" />
               Comentários Pendentes ({pendingComments.length})
             </CardTitle>
           </CardHeader>

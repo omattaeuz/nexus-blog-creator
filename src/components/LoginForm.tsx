@@ -123,13 +123,13 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto px-3 sm:px-4">
-      <Card className="bg-gradient-surface shadow-glow border-border/50">
+    <div className="w-full">
+      <Card className="bg-transparent border-0 shadow-none">
         <CardHeader className="text-center p-4 sm:p-6">
-          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+          <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
             Bem-vindo de Volta
           </CardTitle>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2">
+          <p className="text-sm sm:text-base text-gray-300 mt-2">
             Entre na sua conta para continuar
           </p>
         </CardHeader>
@@ -168,7 +168,7 @@ const LoginForm = () => {
                 size="sm"
                 onClick={handleForgotPassword}
                 disabled={loginOperation.isLoading || resetPasswordOperation.isLoading}
-                className="text-muted-foreground hover:text-primary p-0 h-auto"
+                className="text-gray-400 hover:text-cyan-400 p-0 h-auto"
               >
                 {resetPasswordOperation.isLoading ? (
                   <>
@@ -188,16 +188,17 @@ const LoginForm = () => {
               isLoading={loginOperation.isLoading}
               loadingText="Entrando..."
               icon={<LogIn className="h-4 w-4" />}
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
             >
               Entrar
             </SubmitButton>
 
             <div className="text-center">
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className="text-sm sm:text-base text-gray-300">
                 Não tem uma conta?{" "}
                 <Link 
                   to={ROUTES.REGISTER} 
-                  className="text-primary hover:underline font-medium"
+                  className="text-cyan-400 hover:text-cyan-300 hover:underline font-medium transition-colors duration-300"
                 >
                   Cadastre-se
                 </Link>

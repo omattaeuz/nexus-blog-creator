@@ -72,7 +72,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
       editorProps: {
         attributes: {
-          class: "prose max-w-none min-h-[400px] p-4 bg-background border-x border-b rounded-b focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:p-4 [&_.ProseMirror]:prose [&_.ProseMirror]:max-w-none [&_.ProseMirror]:text-gray-900",
+          class: "prose max-w-none min-h-[400px] p-4 bg-slate-800/50 border-x border-b border-slate-700/50 rounded-b focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px] [&_.ProseMirror]:p-4 [&_.ProseMirror]:prose [&_.ProseMirror]:max-w-none [&_.ProseMirror]:text-white [&_.ProseMirror_h1]:text-white [&_.ProseMirror_h2]:text-white [&_.ProseMirror_h3]:text-white [&_.ProseMirror_h4]:text-white [&_.ProseMirror_h5]:text-white [&_.ProseMirror_h6]:text-white [&_.ProseMirror_strong]:text-white [&_.ProseMirror_b]:text-white",
         },
       },
   });
@@ -310,41 +310,41 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
   if (!editor) return null;
 
   return (
-    <Card className="border-border/50 h-full flex flex-col">
+    <Card className="border-slate-700/50 h-full flex flex-col bg-slate-800/50 backdrop-blur-md">
       <CardContent className="p-0 flex flex-col h-full">
-        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 p-3 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/75">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 p-3 border-b border-slate-700/50 bg-slate-800/95 backdrop-blur supports-[backdrop-filter]:bg-slate-800/75">
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive("bold") ? "bg-primary text-primary-foreground" : ""}>B</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive("italic") ? "bg-primary text-primary-foreground" : ""}>I</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive("underline") ? "bg-primary text-primary-foreground" : ""}>U</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleHighlight().run()} className={editor.isActive("highlight") ? "bg-primary text-primary-foreground" : ""}>H</Button>
-            <Button type="button" size="sm" variant="outline" onClick={openLinkModal} className={editor.isActive("link") ? "bg-primary text-primary-foreground" : ""}>🔗</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive("bold") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>B</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive("italic") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>I</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleUnderline().run()} className={editor.isActive("underline") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>U</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleHighlight().run()} className={editor.isActive("highlight") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>H</Button>
+            <Button type="button" size="sm" variant="outline" onClick={openLinkModal} className={editor.isActive("link") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>🔗</Button>
             {editor.isActive("link") && (
-              <Button type="button" size="sm" variant="outline" onClick={removeLink} className="text-red-600 hover:text-red-700">✕</Button>
+              <Button type="button" size="sm" variant="outline" onClick={removeLink} className="text-gray-400 hover:text-red-400 hover:bg-red-500/20 border-slate-600/50">✕</Button>
             )}
           </div>
 
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()} className={editor.isActive("heading", { level: 1 }) ? "bg-primary text-primary-foreground" : ""}>H1</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 2 }).run()} className={editor.isActive("heading", { level: 2 }) ? "bg-primary text-primary-foreground" : ""}>H2</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 3 }).run()} className={editor.isActive("heading", { level: 3 }) ? "bg-primary text-primary-foreground" : ""}>H3</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 1 }).run()} className={editor.isActive("heading", { level: 1 }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>H1</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 2 }).run()} className={editor.isActive("heading", { level: 2 }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>H2</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHeading({ level: 3 }).run()} className={editor.isActive("heading", { level: 3 }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>H3</Button>
           </div>
 
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "bg-primary text-primary-foreground" : ""}>• List</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive("orderedList") ? "bg-primary text-primary-foreground" : ""}>1. List</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive("bulletList") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>• List</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive("orderedList") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>1. List</Button>
           </div>
 
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("left").run()} className={editor.isActive({ textAlign: "left" }) ? "bg-primary text-primary-foreground" : ""}>Left</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("center").run()} className={editor.isActive({ textAlign: "center" }) ? "bg-primary text-primary-foreground" : ""}>Center</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={editor.isActive({ textAlign: "right" }) ? "bg-primary text-primary-foreground" : ""}>Right</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("left").run()} className={editor.isActive({ textAlign: "left" }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Left</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("center").run()} className={editor.isActive({ textAlign: "center" }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Center</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setTextAlign("right").run()} className={editor.isActive({ textAlign: "right" }) ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Right</Button>
           </div>
 
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive("blockquote") ? "bg-primary text-primary-foreground" : ""}>Quote</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHorizontalRule().run()}>HR</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive("codeBlock") ? "bg-primary text-primary-foreground" : ""}>Code</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive("blockquote") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Quote</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHorizontalRule().run()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50">HR</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive("codeBlock") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Code</Button>
           </div>
 
           {/* Table 
@@ -386,16 +386,16 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           */}
 
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <label className="inline-flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded border hover:bg-accent">
+            <label className="inline-flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded border border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={onPickFile} />
               📷 Upload
             </label>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()}>↶</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()}>↷</Button>
-            <Button type="button" size="sm" onClick={() => onTogglePreview?.(!preview)}>{preview ? "✏️ Edit" : "👁️ Preview"}</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50 disabled:text-gray-600 disabled:hover:bg-transparent">↶</Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50 disabled:text-gray-600 disabled:hover:bg-transparent">↷</Button>
+            <Button type="button" size="sm" onClick={() => onTogglePreview?.(!preview)} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">{preview ? "✏️ Edit" : "👁️ Preview"}</Button>
           </div>
         </div>
 
@@ -404,6 +404,24 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
         </div>
 
         <style>{`
+          .ProseMirror {
+            color: #d1d5db !important;
+          }
+          .ProseMirror h1,
+          .ProseMirror h2,
+          .ProseMirror h3,
+          .ProseMirror h4,
+          .ProseMirror h5,
+          .ProseMirror h6 {
+            color: white !important;
+          }
+          .ProseMirror strong,
+          .ProseMirror b {
+            color: white !important;
+          }
+          .ProseMirror p {
+            color: #d1d5db !important;
+          }
           .notion-table-block {
             margin: 16px 0;
             position: relative;

@@ -89,26 +89,26 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
         </DialogHeader>
 
         <Tabs defaultValue="shortcuts" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="shortcuts" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 backdrop-blur-md border-slate-700/50">
+            <TabsTrigger value="shortcuts" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Keyboard className="h-4 w-4" />
               Atalhos
             </TabsTrigger>
-            <TabsTrigger value="features" className="flex items-center gap-2">
+            <TabsTrigger value="features" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Lightbulb className="h-4 w-4" />
               Recursos
             </TabsTrigger>
-            <TabsTrigger value="tips" className="flex items-center gap-2">
+            <TabsTrigger value="tips" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Mouse className="h-4 w-4" />
               Dicas
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="shortcuts" className="space-y-4">
-            <div className="space-y-6">
+            <div className="space-y-4">
               {Object.entries(shortcutsByCategory).map(([category, categoryShortcuts]) => (
-                <div key={category}>
-                  <h3 className="text-lg font-semibold flex items-center gap-2 mb-3">
+                <div key={category} className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                  <h3 className="text-white font-semibold flex items-center gap-2 mb-3">
                     {getCategoryIcon(category)}
                     {category}
                   </h3>
@@ -116,12 +116,12 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
                     {categoryShortcuts.map((shortcut, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                        className="flex items-center justify-between p-2 bg-slate-700/30 rounded-lg hover:bg-slate-600/50 transition-colors"
                       >
                         <div>
-                          <p className="font-medium">{shortcut.description}</p>
+                          <p className="font-medium text-gray-300">{shortcut.description}</p>
                         </div>
-                        <Badge variant="outline" className="font-mono text-sm">
+                        <Badge variant="outline" className="font-mono text-sm bg-slate-600/50 text-gray-300 border-slate-500/50">
                           {formatKeyCombo(shortcut)}
                         </Badge>
                       </div>
@@ -134,12 +134,12 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
 
           <TabsContent value="features" className="space-y-4">
             <div className="grid gap-4">
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-semibold flex items-center gap-2 mb-2">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold flex items-center gap-2 mb-2">
                   <FileText className="h-4 w-4" />
                   Editor Avançado
                 </h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Editor rico com formatação completa</li>
                   <li>• Inserção de imagens com edição avançada</li>
                   <li>• Preview em tempo real</li>
@@ -148,12 +148,12 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
                 </ul>
               </div>
 
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-semibold flex items-center gap-2 mb-2">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold flex items-center gap-2 mb-2">
                   <BarChart3 className="h-4 w-4" />
                   Analytics
                 </h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Dashboard de métricas</li>
                   <li>• Estatísticas de engajamento</li>
                   <li>• Posts mais populares</li>
@@ -161,12 +161,12 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
                 </ul>
               </div>
 
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-semibold flex items-center gap-2 mb-2">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold flex items-center gap-2 mb-2">
                   <Settings className="h-4 w-4" />
                   Gerenciamento
                 </h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Sistema de comentários</li>
                   <li>• Backup automático</li>
                   <li>• Busca avançada</li>
@@ -179,9 +179,9 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
 
           <TabsContent value="tips" className="space-y-4">
             <div className="grid gap-4">
-              <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
-                <h3 className="font-semibold text-blue-900 mb-2">💡 Dicas de Produtividade</h3>
-                <ul className="text-sm text-blue-800 space-y-1">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-2">💡 Dicas de Produtividade</h3>
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Use Ctrl+N para criar posts rapidamente</li>
                   <li>• Ctrl+K abre a busca global</li>
                   <li>• Use templates para posts recorrentes</li>
@@ -189,9 +189,9 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
                 </ul>
               </div>
 
-              <div className="p-4 border rounded-lg bg-green-50 border-green-200">
-                <h3 className="font-semibold text-green-900 mb-2">📝 Dicas de Escrita</h3>
-                <ul className="text-sm text-green-800 space-y-1">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-2">📝 Dicas de Escrita</h3>
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Use o preview para ver como ficará o post</li>
                   <li>• Adicione imagens para melhorar o engajamento</li>
                   <li>• Use tags para organização</li>
@@ -199,9 +199,9 @@ export default function HelpModal({ shortcuts, children }: HelpModalProps) {
                 </ul>
               </div>
 
-              <div className="p-4 border rounded-lg bg-purple-50 border-purple-200">
-                <h3 className="font-semibold text-purple-900 mb-2">🔧 Dicas Técnicas</h3>
-                <ul className="text-sm text-purple-800 space-y-1">
+              <div className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-2">🔧 Dicas Técnicas</h3>
+                <ul className="text-sm text-gray-300 space-y-1">
                   <li>• Faça backups regularmente</li>
                   <li>• Use o modo escuro para economizar bateria</li>
                   <li>• Configure atalhos personalizados</li>

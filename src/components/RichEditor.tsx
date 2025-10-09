@@ -169,15 +169,15 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
     <Card className="border-border/50">
       <CardContent className="p-3 sm:p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={() => exec("bold")}> <Bold className="h-4 w-4" /> </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => exec("italic")}> <Italic className="h-4 w-4" /> </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => exec("formatBlock", "H1")}> <Type className="h-4 w-4" /> H1 </Button>
-          <Button type="button" size="sm" variant="outline" onClick={() => exec("formatBlock", "H2")}> <Type className="h-4 w-4" /> H2 </Button>
-          <Button type="button" size="sm" variant="outline" onClick={insertLink}> <LinkIcon className="h-4 w-4" /> Link </Button>
-          <Button type="button" size="sm" variant="outline" onClick={removeLink}> Unlink </Button>
+          <Button type="button" size="sm" variant="outline" onClick={() => exec("bold")} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <Bold className="h-4 w-4" /> </Button>
+          <Button type="button" size="sm" variant="outline" onClick={() => exec("italic")} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <Italic className="h-4 w-4" /> </Button>
+          <Button type="button" size="sm" variant="outline" onClick={() => exec("formatBlock", "H1")} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <Type className="h-4 w-4" /> H1 </Button>
+          <Button type="button" size="sm" variant="outline" onClick={() => exec("formatBlock", "H2")} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <Type className="h-4 w-4" /> H2 </Button>
+          <Button type="button" size="sm" variant="outline" onClick={insertLink} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <LinkIcon className="h-4 w-4" /> Link </Button>
+          <Button type="button" size="sm" variant="outline" onClick={removeLink} className="text-gray-400 hover:text-red-400 hover:bg-red-500/20 border-slate-600/50"> Unlink </Button>
           <div className="flex items-center gap-2">
             <Input placeholder="Image URL" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="h-8 w-56" />
-            <Button type="button" size="sm" variant="outline" onClick={insertImage}> <ImageIcon className="h-4 w-4" /> Add Image </Button>
+            <Button type="button" size="sm" variant="outline" onClick={insertImage} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"> <ImageIcon className="h-4 w-4" /> Add Image </Button>
             <label className="inline-flex items-center gap-2 text-sm cursor-pointer">
               <Upload className="h-4 w-4" />
               <input type="file" accept="image/*" className="hidden" onChange={handleFilePick} />
@@ -190,10 +190,10 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
               <option value="grid">Grid</option>
               <option value="carousel">Carousel</option>
             </select>
-            <Button type="button" size="sm" variant="outline" onClick={insertGallery}>Add Gallery</Button>
+            <Button type="button" size="sm" variant="outline" onClick={insertGallery} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50">Add Gallery</Button>
           </div>
           <div className="ml-auto">
-            <Button type="button" size="sm" onClick={togglePreview}>
+            <Button type="button" size="sm" onClick={togglePreview} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">
               {preview ? (<><EyeOff className="h-4 w-4 mr-2" /> Edit</>) : (<><Eye className="h-4 w-4 mr-2" /> Preview</>)}
             </Button>
           </div>

@@ -48,15 +48,15 @@ export default function NotificationSystem({
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'comment':
-        return <MessageCircle className="h-4 w-4 text-blue-500" />;
+        return <MessageCircle className="h-4 w-4 text-blue-400" />;
       case 'like':
-        return <Heart className="h-4 w-4 text-red-500" />;
+        return <Heart className="h-4 w-4 text-red-400" />;
       case 'share':
-        return <Share2 className="h-4 w-4 text-green-500" />;
+        return <Share2 className="h-4 w-4 text-green-400" />;
       case 'system':
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+        return <AlertCircle className="h-4 w-4 text-yellow-400" />;
       default:
-        return <Bell className="h-4 w-4 text-gray-500" />;
+        return <Bell className="h-4 w-4 text-gray-400" />;
     }
   };
 
@@ -102,13 +102,13 @@ export default function NotificationSystem({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Notificações</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-white">Notificações</h2>
+          <p className="text-gray-300">
             Gerencie suas notificações e preferências
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline">
+          <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50">
             {unreadCount} não lidas
           </Badge>
           <Button
@@ -116,6 +116,7 @@ export default function NotificationSystem({
             size="sm"
             onClick={onMarkAllAsRead}
             disabled={unreadCount === 0}
+            className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white disabled:text-gray-600 disabled:hover:bg-transparent"
           >
             <Check className="h-4 w-4 mr-2" />
             Marcar todas como lidas
@@ -124,14 +125,23 @@ export default function NotificationSystem({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all">
+        <TabsList className="bg-slate-800/50 backdrop-blur-md border-slate-700/50">
+          <TabsTrigger 
+            value="all"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
             Todas ({notifications.length})
           </TabsTrigger>
-          <TabsTrigger value="unread">
+          <TabsTrigger 
+            value="unread"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
             Não lidas ({unreadCount})
           </TabsTrigger>
-          <TabsTrigger value="settings">
+          <TabsTrigger 
+            value="settings"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
             <Settings className="h-4 w-4 mr-2" />
             Configurações
           </TabsTrigger>
@@ -139,10 +149,10 @@ export default function NotificationSystem({
 
         <TabsContent value="all" className="space-y-4">
           {filteredNotifications.length === 0 ? (
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardContent className="p-6 text-center">
-                <Bell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">
+                <Bell className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-300">
                   Nenhuma notificação encontrada
                 </p>
               </CardContent>
@@ -152,8 +162,8 @@ export default function NotificationSystem({
               {filteredNotifications.map((notification) => (
                 <Card 
                   key={notification.id} 
-                  className={`transition-all duration-200 ${
-                    !notification.read ? 'border-primary/20 bg-primary/5' : ''
+                  className={`transition-all duration-200 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl ${
+                    !notification.read ? 'border-cyan-400/50 bg-cyan-400/5' : ''
                   }`}
                 >
                   <CardContent className="p-4">
@@ -163,23 +173,23 @@ export default function NotificationSystem({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className={`font-medium ${!notification.read ? 'text-primary' : ''}`}>
+                          <h4 className={`font-medium ${!notification.read ? 'text-cyan-400' : 'text-white'}`}>
                             {notification.title}
                           </h4>
                           {!notification.read && (
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/50 text-xs">
                               Nova
                             </Badge>
                           )}
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50 text-xs">
                             {getNotificationTypeLabel(notification.type)}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-gray-300 mb-2">
                           {notification.message}
                         </p>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-gray-400">
                             {formatDistanceToNow(new Date(notification.createdAt), {
                               addSuffix: true,
                               locale: ptBR
@@ -191,6 +201,7 @@ export default function NotificationSystem({
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => onMarkAsRead(notification.id)}
+                                className="text-gray-400 hover:text-green-400 hover:bg-green-500/20"
                               >
                                 <Check className="h-3 w-3" />
                               </Button>
@@ -199,6 +210,7 @@ export default function NotificationSystem({
                               variant="ghost"
                               size="sm"
                               onClick={() => onDeleteNotification(notification.id)}
+                              className="text-gray-400 hover:text-red-400 hover:bg-red-500/20"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -215,10 +227,10 @@ export default function NotificationSystem({
 
         <TabsContent value="unread" className="space-y-4">
           {notifications.filter(n => !n.read).length === 0 ? (
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardContent className="p-6 text-center">
-                <Check className="h-12 w-12 mx-auto text-green-500 mb-4" />
-                <p className="text-muted-foreground">
+                <Check className="h-12 w-12 mx-auto text-green-400 mb-4" />
+                <p className="text-gray-300">
                   Todas as notificações foram lidas
                 </p>
               </CardContent>
@@ -228,7 +240,7 @@ export default function NotificationSystem({
               {notifications.filter(n => !n.read).map((notification) => (
                 <Card 
                   key={notification.id} 
-                  className="border-primary/20 bg-primary/5 transition-all duration-200"
+                  className="border-cyan-400/50 bg-cyan-400/5 transition-all duration-200 backdrop-blur-md shadow-2xl"
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -237,21 +249,21 @@ export default function NotificationSystem({
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-primary">
+                          <h4 className="font-medium text-cyan-400">
                             {notification.title}
                           </h4>
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/50 text-xs">
                             Nova
                           </Badge>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50 text-xs">
                             {getNotificationTypeLabel(notification.type)}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-gray-300 mb-2">
                           {notification.message}
                         </p>
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-gray-400">
                             {formatDistanceToNow(new Date(notification.createdAt), {
                               addSuffix: true,
                               locale: ptBR
@@ -262,6 +274,7 @@ export default function NotificationSystem({
                               variant="ghost"
                               size="sm"
                               onClick={() => onMarkAsRead(notification.id)}
+                              className="text-gray-400 hover:text-green-400 hover:bg-green-500/20"
                             >
                               <Check className="h-3 w-3" />
                             </Button>
@@ -269,6 +282,7 @@ export default function NotificationSystem({
                               variant="ghost"
                               size="sm"
                               onClick={() => onDeleteNotification(notification.id)}
+                              className="text-gray-400 hover:text-red-400 hover:bg-red-500/20"
                             >
                               <Trash2 className="h-3 w-3" />
                             </Button>
@@ -285,18 +299,18 @@ export default function NotificationSystem({
 
         <TabsContent value="settings" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Mail className="h-5 w-5 text-gray-400" />
                   Notificações por Email
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Novos comentários</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Novos comentários</p>
+                    <p className="text-sm text-gray-300">
                       Receba um email quando alguém comentar em seus posts
                     </p>
                   </div>
@@ -305,12 +319,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('email', 'comments', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Curtidas</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Curtidas</p>
+                    <p className="text-sm text-gray-300">
                       Receba um email quando alguém curtir seus posts
                     </p>
                   </div>
@@ -319,12 +334,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('email', 'likes', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Compartilhamentos</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Compartilhamentos</p>
+                    <p className="text-sm text-gray-300">
                       Receba um email quando alguém compartilhar seus posts
                     </p>
                   </div>
@@ -333,12 +349,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('email', 'shares', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Resumo semanal</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Resumo semanal</p>
+                    <p className="text-sm text-gray-300">
                       Receba um resumo semanal das atividades do seu blog
                     </p>
                   </div>
@@ -347,23 +364,24 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('email', 'weeklyDigest', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Smartphone className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Smartphone className="h-5 w-5 text-gray-400" />
                   Notificações Push
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Comentários</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Comentários</p>
+                    <p className="text-sm text-gray-300">
                       Notificações push para novos comentários
                     </p>
                   </div>
@@ -372,12 +390,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('push', 'comments', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Curtidas</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Curtidas</p>
+                    <p className="text-sm text-gray-300">
                       Notificações push para curtidas
                     </p>
                   </div>
@@ -386,12 +405,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('push', 'likes', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Compartilhamentos</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Compartilhamentos</p>
+                    <p className="text-sm text-gray-300">
                       Notificações push para compartilhamentos
                     </p>
                   </div>
@@ -400,12 +420,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('push', 'shares', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Sistema</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Sistema</p>
+                    <p className="text-sm text-gray-300">
                       Notificações importantes do sistema
                     </p>
                   </div>
@@ -414,13 +435,14 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('push', 'system', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleRequestNotificationPermission}
-                  className="w-full"
+                  className="w-full border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                 >
                   <Bell className="h-4 w-4 mr-2" />
                   Solicitar Permissão
@@ -428,18 +450,18 @@ export default function NotificationSystem({
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Monitor className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <Monitor className="h-5 w-5 text-gray-400" />
                   Notificações no App
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Comentários</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Comentários</p>
+                    <p className="text-sm text-gray-300">
                       Mostrar notificações de comentários no app
                     </p>
                   </div>
@@ -448,12 +470,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('inApp', 'comments', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Curtidas</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Curtidas</p>
+                    <p className="text-sm text-gray-300">
                       Mostrar notificações de curtidas no app
                     </p>
                   </div>
@@ -462,12 +485,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('inApp', 'likes', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Compartilhamentos</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Compartilhamentos</p>
+                    <p className="text-sm text-gray-300">
                       Mostrar notificações de compartilhamentos no app
                     </p>
                   </div>
@@ -476,12 +500,13 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('inApp', 'shares', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">Sistema</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-white">Sistema</p>
+                    <p className="text-sm text-gray-300">
                       Mostrar notificações do sistema no app
                     </p>
                   </div>
@@ -490,6 +515,7 @@ export default function NotificationSystem({
                     onCheckedChange={(checked) => 
                       handlePreferenceChange('inApp', 'system', checked)
                     }
+                    className="data-[state=checked]:bg-cyan-400"
                   />
                 </div>
               </CardContent>

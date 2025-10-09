@@ -32,9 +32,9 @@ export const EmailInput: React.FC<EmailInputProps> = ({
 }) => {
   return (
     <div className={cn("space-y-2", className)}>
-      <Label htmlFor={id} className="text-foreground font-medium">
+      <Label htmlFor={id} className="text-gray-300 font-medium">
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
+        {required && <span className="text-red-400 ml-1">*</span>}
       </Label>
       <Input
         id={id}
@@ -43,17 +43,17 @@ export const EmailInput: React.FC<EmailInputProps> = ({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={cn(
-          "transition-all duration-300",
+          "bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20 transition-all duration-300",
           error 
-            ? "border-destructive focus:ring-destructive" 
-            : "focus:ring-primary"
+            ? "border-red-400 focus:ring-red-400/20" 
+            : ""
         )}
         disabled={disabled}
         required={required}
         autoComplete="email"
       />
       {error && (
-        <p className="text-sm text-destructive mt-1">{error}</p>
+        <p className="text-sm text-red-400 mt-1">{error}</p>
       )}
     </div>
   );

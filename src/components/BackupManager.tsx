@@ -134,23 +134,23 @@ export default function BackupManagerComponent({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Gerenciador de Backup</h1>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-white">Gerenciador de Backup</h2>
+          <p className="text-gray-300">
             Crie, restaure e gerencie backups dos seus posts
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="flex items-center gap-1">
+          <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50 flex items-center gap-1">
             <Database className="h-3 w-3" />
             {posts.length} posts
           </Badge>
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HardDrive className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <HardDrive className="h-5 w-5 text-cyan-400" />
             Criar Novo Backup
           </CardTitle>
         </CardHeader>
@@ -158,14 +158,14 @@ export default function BackupManagerComponent({
           {/* Backup Options */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium">Formato</label>
+              <label className="text-sm font-medium text-white">Formato</label>
               <select
                 value={backupOptions.format}
                 onChange={(e) => setBackupOptions(prev => ({ 
                   ...prev, 
                   format: e.target.value as 'json' | 'markdown' | 'html' 
                 }))}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border border-slate-600/50 rounded-md bg-slate-700/50 text-white focus:border-cyan-400 focus:ring-cyan-400/20"
               >
                 <option value="json">JSON</option>
                 <option value="markdown">Markdown</option>
@@ -182,9 +182,9 @@ export default function BackupManagerComponent({
                   ...prev, 
                   includeImages: e.target.checked 
                 }))}
-                className="h-4 w-4"
+                className="h-4 w-4 text-cyan-400 bg-slate-700/50 border-slate-600/50 rounded focus:ring-cyan-400/20"
               />
-              <label htmlFor="includeImages" className="text-sm">
+              <label htmlFor="includeImages" className="text-sm text-gray-300">
                 Incluir imagens
               </label>
             </div>
@@ -198,9 +198,9 @@ export default function BackupManagerComponent({
                   ...prev, 
                   compress: e.target.checked 
                 }))}
-                className="h-4 w-4"
+                className="h-4 w-4 text-cyan-400 bg-slate-700/50 border-slate-600/50 rounded focus:ring-cyan-400/20"
               />
-              <label htmlFor="compress" className="text-sm">
+              <label htmlFor="compress" className="text-sm text-gray-300">
                 Comprimir backup
               </label>
             </div>
@@ -209,8 +209,8 @@ export default function BackupManagerComponent({
           {isCreatingBackup && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Criando backup...</span>
-                <span>{progress}%</span>
+                <span className="text-gray-300">Criando backup...</span>
+                <span className="text-white">{progress}%</span>
               </div>
               <Progress value={progress} className="w-full" />
             </div>
@@ -219,7 +219,7 @@ export default function BackupManagerComponent({
           <Button
             onClick={handleCreateBackup}
             disabled={isCreatingBackup || posts.length === 0}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white disabled:opacity-50"
           >
             {isCreatingBackup ? (
               <>
@@ -236,18 +236,18 @@ export default function BackupManagerComponent({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-white">
+            <FileText className="h-5 w-5 text-cyan-400" />
             Backups Disponíveis ({backups.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {backups.length === 0 ? (
             <div className="text-center py-8">
-              <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
+              <Database className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-300">
                 Nenhum backup encontrado. Crie seu primeiro backup!
               </p>
             </div>
@@ -259,20 +259,20 @@ export default function BackupManagerComponent({
                 const isRestoringThis = isRestoring && isSelected;
 
                 return (
-                  <Card key={backupId} className={`${isSelected ? 'border-blue-500' : ''}`}>
+                  <Card key={backupId} className={`${isSelected ? 'border-cyan-400/50 bg-cyan-400/5' : ''} bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl transition-all duration-200`}>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold">
+                            <h3 className="font-semibold text-white">
                               Backup {new Date(backup.metadata.createdAt).toLocaleString('pt-BR')}
                             </h3>
-                            <Badge variant="outline">
+                            <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50">
                               v{backup.metadata.version}
                             </Badge>
                           </div>
                           
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
                             <div className="flex items-center gap-1">
                               <FileText className="h-3 w-3" />
                               {backup.metadata.totalPosts} posts
@@ -291,13 +291,13 @@ export default function BackupManagerComponent({
                             <div className="flex items-center gap-1">
                               {isRestoringThis ? (
                                 <>
-                                  <Clock className="h-3 w-3 animate-spin" />
-                                  Restaurando...
+                                  <Clock className="h-3 w-3 animate-spin text-cyan-400" />
+                                  <span className="text-cyan-400">Restaurando...</span>
                                 </>
                               ) : (
                                 <>
-                                  <CheckCircle className="h-3 w-3 text-green-500" />
-                                  Pronto
+                                  <CheckCircle className="h-3 w-3 text-green-400" />
+                                  <span className="text-green-400">Pronto</span>
                                 </>
                               )}
                             </div>
@@ -311,6 +311,7 @@ export default function BackupManagerComponent({
                               size="sm"
                               onClick={() => handleExportBackup(backupId, 'json')}
                               disabled={isRestoringThis}
+                              className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"
                             >
                               <Download className="h-3 w-3" />
                             </Button>
@@ -319,6 +320,7 @@ export default function BackupManagerComponent({
                               size="sm"
                               onClick={() => handleExportBackup(backupId, 'markdown')}
                               disabled={isRestoringThis}
+                              className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"
                             >
                               <FileText className="h-3 w-3" />
                             </Button>
@@ -330,6 +332,7 @@ export default function BackupManagerComponent({
                             size="sm"
                             onClick={() => handleRestoreBackup(backupId)}
                             disabled={isRestoring}
+                            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
                           >
                             {isRestoringThis ? (
                               <>
@@ -349,7 +352,7 @@ export default function BackupManagerComponent({
                             size="sm"
                             onClick={() => handleDeleteBackup(backupId)}
                             disabled={isRestoring}
-                            className="text-red-600 hover:text-red-700"
+                            className="text-gray-400 hover:text-red-400 hover:bg-red-500/20 border-slate-600/50"
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -364,13 +367,13 @@ export default function BackupManagerComponent({
         </CardContent>
       </Card>
 
-      <Card className="border-blue-200 bg-blue-50/50">
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-cyan-400 mt-0.5" />
             <div className="space-y-2">
-              <h3 className="font-semibold text-blue-900">Informações sobre Backups</h3>
-              <ul className="text-sm text-blue-800 space-y-1">
+              <h3 className="font-semibold text-white">Informações sobre Backups</h3>
+              <ul className="text-sm text-gray-300 space-y-1">
                 <li>• Backups são armazenados localmente no seu navegador</li>
                 <li>• Recomendamos exportar backups regularmente para segurança</li>
                 <li>• O formato JSON preserva todos os dados originais</li>

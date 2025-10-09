@@ -1,6 +1,3 @@
-// Cache Manager for Public Posts
-// This handles caching and offline access to posts
-
 export interface CachedPost {
   id: string;
   title: string;

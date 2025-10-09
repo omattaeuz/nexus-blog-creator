@@ -224,28 +224,31 @@ export default function PostTemplates({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Templates de Posts</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-white">Templates de Posts</h2>
+          <p className="text-gray-300">
             Use templates para criar posts mais rapidamente
           </p>
         </div>
-        <Button onClick={() => setShowCreateForm(true)}>
+        <Button 
+          onClick={() => setShowCreateForm(true)}
+          className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Novo Template
         </Button>
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-4">Templates Padrão</h3>
+        <h3 className="text-lg font-semibold mb-4 text-white">Templates Padrão</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {defaultTemplates.map((template, index) => (
-            <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow">
+            <Card key={index} className="cursor-pointer hover:shadow-2xl transition-all duration-300 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{template.name}</CardTitle>
-                  <Badge variant="secondary">{template.category}</Badge>
+                  <CardTitle className="text-base text-white">{template.name}</CardTitle>
+                  <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50">{template.category}</Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-300">
                   {template.description}
                 </p>
               </CardHeader>
@@ -253,7 +256,7 @@ export default function PostTemplates({
                 <Button
                   size="sm"
                   onClick={() => handleSelectDefaultTemplate(template)}
-                  className="w-full"
+                  className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
                 >
                   <Copy className="h-3 w-3 mr-2" />
                   Usar Template
@@ -265,12 +268,12 @@ export default function PostTemplates({
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-4">Meus Templates</h3>
+        <h3 className="text-lg font-semibold mb-4 text-white">Meus Templates</h3>
         {templates.length === 0 ? (
-          <Card>
+          <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-6 text-center">
-              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">
+              <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-300">
                 Você ainda não criou nenhum template personalizado
               </p>
             </CardContent>
@@ -278,15 +281,16 @@ export default function PostTemplates({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((template) => (
-              <Card key={template.id} className="hover:shadow-md transition-shadow">
+              <Card key={template.id} className="hover:shadow-2xl transition-all duration-300 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{template.name}</CardTitle>
+                    <CardTitle className="text-base text-white">{template.name}</CardTitle>
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditingTemplate(template.id)}
+                        className="text-gray-400 hover:text-cyan-400 hover:bg-slate-700/50"
                       >
                         <Edit className="h-3 w-3" />
                       </Button>
@@ -294,16 +298,17 @@ export default function PostTemplates({
                         variant="ghost"
                         size="sm"
                         onClick={() => onDeleteTemplate(template.id)}
+                        className="text-gray-400 hover:text-red-400 hover:bg-red-500/20"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-300">
                     {template.description}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline">{template.category}</Badge>
+                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                    <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50">{template.category}</Badge>
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       {new Date(template.createdAt).toLocaleDateString()}
@@ -314,7 +319,7 @@ export default function PostTemplates({
                   <Button
                     size="sm"
                     onClick={() => onSelectTemplate(template)}
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
                   >
                     <Copy className="h-3 w-3 mr-2" />
                     Usar Template
@@ -327,49 +332,56 @@ export default function PostTemplates({
       </div>
 
       {showCreateForm && (
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardHeader>
-            <CardTitle>Criar Novo Template</CardTitle>
+            <CardTitle className="text-white">Criar Novo Template</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">Nome</label>
+                <label className="text-sm font-medium text-white">Nome</label>
                 <Input
                   value={newTemplate.name}
                   onChange={(e) => setNewTemplate(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Nome do template"
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Categoria</label>
+                <label className="text-sm font-medium text-white">Categoria</label>
                 <Input
                   value={newTemplate.category}
                   onChange={(e) => setNewTemplate(prev => ({ ...prev, category: e.target.value }))}
                   placeholder="Categoria"
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium">Descrição</label>
+              <label className="text-sm font-medium text-white">Descrição</label>
               <Textarea
                 value={newTemplate.description}
                 onChange={(e) => setNewTemplate(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Descrição do template"
                 rows={2}
+                className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Conteúdo</label>
+              <label className="text-sm font-medium text-white">Conteúdo</label>
               <Textarea
                 value={newTemplate.content}
                 onChange={(e) => setNewTemplate(prev => ({ ...prev, content: e.target.value }))}
                 placeholder="Conteúdo HTML do template"
                 rows={10}
+                className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
               />
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleCreateTemplate}>
+              <Button 
+                onClick={handleCreateTemplate}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+              >
                 Criar Template
               </Button>
               <Button
@@ -378,6 +390,7 @@ export default function PostTemplates({
                   setShowCreateForm(false);
                   setNewTemplate({ name: '', description: '', content: '', category: '' });
                 }}
+                className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
               >
                 Cancelar
               </Button>

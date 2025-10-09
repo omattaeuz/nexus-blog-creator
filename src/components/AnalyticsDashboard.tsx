@@ -54,15 +54,19 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Dashboard de Analytics</h1>
-          <p className="text-muted-foreground">Monitore o desempenho do seu blog</p>
+          <h2 className="text-2xl font-bold text-white">Analytics em Tempo Real</h2>
+          <p className="text-gray-300">Monitore o desempenho do seu blog</p>
         </div>
         <div className="flex gap-2">
           {(['7d', '30d', '90d', '1y'] as const).map((range) => (
             <Button
               key={range}
-              variant={timeRange === range ? 'default' : 'outline'}
+              variant="outline"
               size="sm"
+              className={timeRange === range 
+                ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-transparent" 
+                : "bg-slate-700/50 border-slate-600/50 text-gray-300 hover:bg-slate-600/50 hover:text-white"
+              }
               onClick={() => setTimeRange(range)}
             >
               {range}
@@ -72,57 +76,57 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Visualizações</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-white">Total de Visualizações</CardTitle>
+            <Eye className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalViews.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+            <div className="text-2xl font-bold text-white">{stats.totalViews.toLocaleString()}</div>
+            <p className="text-xs text-gray-300">
+              <TrendingUp className="inline h-3 w-3 mr-1 text-green-400" />
               +12% do mês passado
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Comentários</CardTitle>
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-white">Comentários</CardTitle>
+            <MessageCircle className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalComments}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+            <div className="text-2xl font-bold text-white">{stats.totalComments}</div>
+            <p className="text-xs text-gray-300">
+              <TrendingUp className="inline h-3 w-3 mr-1 text-green-400" />
               +8% do mês passado
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Curtidas</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-white">Curtidas</CardTitle>
+            <Heart className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalLikes}</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+            <div className="text-2xl font-bold text-white">{stats.totalLikes}</div>
+            <p className="text-xs text-gray-300">
+              <TrendingUp className="inline h-3 w-3 mr-1 text-green-400" />
               +15% do mês passado
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tempo Médio de Leitura</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-white">Tempo Médio de Leitura</CardTitle>
+            <Clock className="h-4 w-4 text-gray-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.averageReadTime}min</div>
-            <p className="text-xs text-muted-foreground">
-              <TrendingUp className="inline h-3 w-3 mr-1" />
+            <div className="text-2xl font-bold text-white">{stats.averageReadTime}min</div>
+            <p className="text-xs text-gray-300">
+              <TrendingUp className="inline h-3 w-3 mr-1 text-green-400" />
               +2min do mês passado
             </p>
           </CardContent>
@@ -130,34 +134,56 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
       </div>
 
       <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="posts">Posts</TabsTrigger>
-          <TabsTrigger value="engagement">Engajamento</TabsTrigger>
+        <TabsList className="bg-slate-800/50 backdrop-blur-md border-slate-700/50">
+          <TabsTrigger 
+            value="overview"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
+            Visão Geral
+          </TabsTrigger>
+          <TabsTrigger 
+            value="posts"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
+            Posts
+          </TabsTrigger>
+          <TabsTrigger 
+            value="engagement"
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-blue-500 data-[state=active]:text-white text-gray-300 hover:text-white"
+          >
+            Engajamento
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle>Visualizações ao Longo do Tempo</CardTitle>
+                <CardTitle className="text-white">Visualizações ao Longo do Tempo</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={viewsData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="views" stroke="#8884d8" strokeWidth={2} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: '#1E293B',
+                        border: '1px solid #475569',
+                        borderRadius: '8px',
+                        color: '#F1F5F9'
+                      }}
+                    />
+                    <Line type="monotone" dataKey="views" stroke="#8B5CF6" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle>Distribuição de Engajamento</CardTitle>
+                <CardTitle className="text-white">Distribuição de Engajamento</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -169,14 +195,21 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
                       labelLine={false}
                       label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                       outerRadius={80}
-                      fill="#8884d8"
+                      fill="#8B5CF6"
                       dataKey="value"
                     >
                       {engagementData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: '#1E293B',
+                        border: '1px solid #475569',
+                        borderRadius: '8px',
+                        color: '#F1F5F9'
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -185,20 +218,27 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
         </TabsContent>
 
         <TabsContent value="posts" className="space-y-4">
-          <Card>
+          <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardHeader>
-                <CardTitle>Posts com Melhor Desempenho</CardTitle>
+                <CardTitle className="text-white">Posts com Melhor Desempenho</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={topPostsData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="views" fill="#8884d8" />
-                  <Bar dataKey="comments" fill="#82ca9d" />
-                  <Bar dataKey="likes" fill="#ffc658" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#1E293B',
+                      border: '1px solid #475569',
+                      borderRadius: '8px',
+                      color: '#F1F5F9'
+                    }}
+                  />
+                  <Bar dataKey="views" fill="#8B5CF6" />
+                  <Bar dataKey="comments" fill="#10B981" />
+                  <Bar dataKey="likes" fill="#F59E0B" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -207,15 +247,15 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
 
         <TabsContent value="engagement" className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle>Post Mais Popular</CardTitle>
+                <CardTitle className="text-white">Post Mais Popular</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <h3 className="font-semibold">{stats.mostPopularPost.title}</h3>
+                  <h3 className="font-semibold text-white">{stats.mostPopularPost.title}</h3>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">
+                    <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50">
                       <Eye className="h-3 w-3 mr-1" />
                       {stats.mostPopularPost.views} visualizações
                     </Badge>
@@ -224,20 +264,20 @@ export default function AnalyticsDashboard({ stats, postAnalytics, posts }: Anal
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
               <CardHeader>
-                <CardTitle>Atividade Recente</CardTitle>
+                <CardTitle className="text-white">Atividade Recente</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {stats.recentActivity.slice(0, 5).map((activity, index) => (
                     <div key={index} className="flex items-center gap-2 text-sm">
-                      {activity.type === 'view' && <Eye className="h-3 w-3" />}
-                      {activity.type === 'comment' && <MessageCircle className="h-3 w-3" />}
-                      {activity.type === 'like' && <Heart className="h-3 w-3" />}
-                      {activity.type === 'share' && <Share2 className="h-3 w-3" />}
-                      <span className="truncate">{activity.postTitle}</span>
-                      <Badge variant="outline" className="text-xs">
+                      {activity.type === 'view' && <Eye className="h-3 w-3 text-blue-400" />}
+                      {activity.type === 'comment' && <MessageCircle className="h-3 w-3 text-green-400" />}
+                      {activity.type === 'like' && <Heart className="h-3 w-3 text-red-400" />}
+                      {activity.type === 'share' && <Share2 className="h-3 w-3 text-purple-400" />}
+                      <span className="truncate text-gray-300">{activity.postTitle}</span>
+                      <Badge className="bg-slate-700/50 text-gray-300 border-slate-600/50 text-xs">
                         {new Date(activity.timestamp).toLocaleDateString()}
                       </Badge>
                     </div>

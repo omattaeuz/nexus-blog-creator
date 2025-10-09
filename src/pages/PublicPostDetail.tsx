@@ -3,7 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn } from "lucide-react";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn, User, Clock } from "lucide-react";
 import { api } from "@/services/api";
 import { type Post } from "@/types";
 // import { toast } from "@/hooks/use-toast";
@@ -84,12 +85,13 @@ const PublicPostDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
-          <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+        <AnimatedBackground />
+        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-12 sm:py-20">
+          <Card className="max-w-4xl mx-auto bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-8 sm:p-12 text-center">
-              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-primary" />
-              <p className="text-sm sm:text-base text-muted-foreground">Carregando post...</p>
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-cyan-400" />
+              <p className="text-sm sm:text-base text-gray-300">Carregando post...</p>
             </CardContent>
           </Card>
         </div>
@@ -101,15 +103,16 @@ const PublicPostDetail = () => {
     const isLoginRequired = error === "Este post requer login para visualização";
     
     return (
-      <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
-          <Card className="max-w-4xl mx-auto bg-gradient-surface shadow-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+        <AnimatedBackground />
+        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-12 sm:py-20">
+          <Card className="max-w-4xl mx-auto bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-8 sm:p-12 text-center">
-              <AlertCircle className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-destructive" />
-              <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">
+              <AlertCircle className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-4 sm:mb-6 text-red-400" />
+              <h1 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                 {isLoginRequired ? "Login Necessário" : "Post não encontrado"}
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">
+              <p className="text-sm sm:text-base text-gray-300 mb-6 sm:mb-8">
                 {isLoginRequired 
                   ? "Para visualizar este post, você precisa fazer login na plataforma."
                   : (error || "O post que você está procurando não existe ou foi removido.")
@@ -119,8 +122,7 @@ const PublicPostDetail = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
                   onClick={() => window.location.reload()}
-                  variant="default"
-                  className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   Tentar Novamente
                 </Button>
@@ -129,7 +131,7 @@ const PublicPostDetail = () => {
                   <Button
                     variant="outline"
                     asChild
-                    className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
+                    className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
                   >
                     <Link to="/login">
                       <LogIn className="h-4 w-4 mr-2" />
@@ -141,7 +143,7 @@ const PublicPostDetail = () => {
                 <Button
                   variant="outline"
                   onClick={() => navigate("/")}
-                  className="hover:bg-secondary hover:text-secondary-foreground transition-all duration-300"
+                  className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Voltar ao início
@@ -155,16 +157,17 @@ const PublicPostDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      <AnimatedBackground />
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Article Content */}
           <article className="lg:col-span-3">
             {/* Article Header */}
             <header className="mb-8">
               <div className="mb-4 flex items-center gap-3">
-                <Badge variant="outline">
+                <Badge className="bg-green-500/10 text-green-400 border-green-500/50">
                   Público
                 </Badge>
                 <ShareButton
@@ -172,26 +175,27 @@ const PublicPostDetail = () => {
                   postId={post.id}
                   variant="ghost"
                   size="sm"
-                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  className="p-2 text-gray-400 hover:text-white hover:bg-slate-700/50"
                 />
               </div>
               
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
                 {post.title}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300 mb-6">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 text-gray-400" />
                   <span>{formatDate(post.created_at)}</span>
                 </div>
                 {post.author && (
                   <div className="flex items-center space-x-2">
+                    <User className="h-4 w-4 text-gray-400" />
                     <span>Por {post.author.email}</span>
                   </div>
                 )}
                 <div className="flex items-center space-x-2">
-                  <span>•</span>
+                  <Clock className="h-4 w-4 text-gray-400" />
                   <span>Tempo de leitura: {calculateReadingTime(post.content)} min</span>
                 </div>
               </div>
@@ -203,14 +207,14 @@ const PublicPostDetail = () => {
             </div>
 
             {/* Article Footer */}
-            <footer className="mt-12 pt-8 border-t border-gray-200">
+            <footer className="mt-12 pt-8 border-t border-slate-700/50">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <ShareButton
                   postTitle={post.title}
                   postId={post.id}
                   variant="outline"
                   size="default"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                 />
                 
                 <div className="flex items-center gap-3">
@@ -218,7 +222,7 @@ const PublicPostDetail = () => {
                     <Button
                       variant="outline"
                       asChild
-                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                     >
                       <Link to="/login" className="flex items-center space-x-2">
                         <LogIn className="h-4 w-4" />
@@ -230,7 +234,7 @@ const PublicPostDetail = () => {
                   <Button
                     variant="default"
                     asChild
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                   >
                     <Link to="/" className="flex items-center justify-center">
                       Ver Mais Posts
@@ -256,17 +260,17 @@ const PublicPostDetail = () => {
             <div className="sticky top-24 space-y-8">
               {/* Author Info */}
               {post.author && (
-                <Card className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">Sobre o Autor</h3>
+                <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
+                  <h3 className="font-semibold text-white mb-4">Sobre o Autor</h3>
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-semibold text-lg">
+                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold text-lg">
                         {post.author.email.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{post.author.email}</p>
-                      <p className="text-sm text-gray-600">Autor do Blog</p>
+                      <p className="font-medium text-white">{post.author.email}</p>
+                      <p className="text-sm text-gray-300">Autor do Blog</p>
                     </div>
                   </div>
                 </Card>
@@ -280,15 +284,16 @@ const PublicPostDetail = () => {
               />
 
               {/* Newsletter Signup */}
-              <Card className="p-6 bg-blue-50 border-blue-200">
-                <h3 className="font-semibold text-blue-900 mb-2">Fique por dentro</h3>
-                <p className="text-sm text-blue-700 mb-4">
+              <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
+                <h3 className="font-semibold text-white mb-2">Fique por dentro</h3>
+                <p className="text-sm text-gray-300 mb-4">
                   Receba os melhores posts diretamente no seu e-mail.
                 </p>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
+                  className="w-full border-slate-600/50 hover:bg-slate-700/50"
+                  style={{ color: 'white !important' }}
                   disabled
                 >
                   Em breve

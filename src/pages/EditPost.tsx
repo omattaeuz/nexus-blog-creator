@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PostForm from "@/components/PostForm";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
 import { api, type Post, type UpdatePostData } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
 import { toast } from "@/hooks/use-toast";
@@ -57,12 +59,13 @@ const EditPost = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
-          <Card className="max-w-2xl mx-auto bg-gradient-surface shadow-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+        <AnimatedBackground />
+        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-12 sm:py-20">
+          <Card className="max-w-2xl mx-auto bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-8 sm:p-12 text-center">
-              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-primary" />
-              <p className="text-sm sm:text-base text-muted-foreground">Carregando post...</p>
+              <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-cyan-400" />
+              <p className="text-sm sm:text-base text-gray-300">Carregando post...</p>
             </CardContent>
           </Card>
         </div>
@@ -72,25 +75,27 @@ const EditPost = () => {
 
   if (error || !post) {
     return (
-      <div className="min-h-screen bg-gradient-surface">
-        <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
-          <Card className="max-w-2xl mx-auto bg-gradient-surface shadow-md border-destructive/20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+        <AnimatedBackground />
+        <div className="relative z-10 container mx-auto px-3 sm:px-4 py-12 sm:py-20">
+          <Card className="max-w-2xl mx-auto bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardContent className="p-6 sm:p-8 md:p-12 text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6 rounded-xl bg-destructive/10 text-destructive">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6 rounded-xl bg-red-500/10 text-red-400">
                 <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
               </div>
-              <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-foreground">
+              <h2 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-white">
                 {error || "Post não encontrado"}
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 px-4">
+              <p className="text-sm sm:text-base text-gray-300 mb-4 sm:mb-6 px-4">
                 O post que você está procurando não existe ou foi removido.
               </p>
-              <button
+              <Button
                 onClick={() => navigate("/posts")}
-                className="hover:bg-primary hover:text-primary-foreground transition-all duration-300 flex-1 sm:flex-none"
-                >
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Voltar aos Posts
-              </button>
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -99,8 +104,11 @@ const EditPost = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8">
-      <PostForm initialData={post} onSubmit={handleSubmit} isEdit />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      <AnimatedBackground />
+      <div className="relative z-10 flex items-center justify-center py-8">
+        <PostForm initialData={post} onSubmit={handleSubmit} isEdit />
+      </div>
     </div>
   );
 };

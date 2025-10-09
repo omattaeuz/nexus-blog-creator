@@ -60,13 +60,13 @@ export default function TagsInput({
             <Badge 
               key={index} 
               variant="secondary" 
-              className="flex items-center gap-1 px-3 py-1 text-sm"
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-slate-700/50 text-gray-300 border-slate-600/50"
             >
               <span>#{tag}</span>
               <button
                 type="button"
                 onClick={() => removeTag(tag)}
-                className="ml-1 hover:bg-gray-300 rounded-full p-0.5 transition-colors"
+                className="ml-1 hover:bg-slate-600/50 rounded-full p-0.5 transition-colors text-gray-400 hover:text-white"
                 aria-label={`Remover tag ${tag}`}
               >
                 <X className="h-3 w-3" />
@@ -83,7 +83,7 @@ export default function TagsInput({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1"
+          className="flex-1 bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
           disabled={tags.length >= maxTags}
         />
         <Button
@@ -92,15 +92,15 @@ export default function TagsInput({
           size="sm"
           onClick={handleAddClick}
           disabled={!inputValue.trim() || tags.includes(inputValue.trim().toLowerCase()) || tags.length >= maxTags}
-          className="px-3"
+          className="px-3 border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white disabled:text-gray-600 disabled:hover:bg-transparent"
         >
           <Plus className="h-4 w-4" />
         </Button>
       </div>
 
-      <div className="text-xs text-muted-foreground">
+      <div className="text-xs text-gray-400">
         {tags.length >= maxTags ? (
-          <span className="text-orange-600">Máximo de {maxTags} tags atingido</span>
+          <span className="text-orange-400">Máximo de {maxTags} tags atingido</span>
         ) : (
           <span>Pressione Enter ou vírgula para adicionar. {tags.length}/{maxTags} tags</span>
         )}

@@ -182,31 +182,31 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={variant}
+            variant="ghost"
             size={size}
-            className={`hover:bg-secondary hover:text-secondary-foreground transition-all duration-300 ${className}`}
+            className={`text-gray-400 bg-transparent hover:bg-slate-700/50 hover:text-cyan-400 transition-all duration-300 ${className}`}
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className="h-4 w-4 text-gray-400" />
             <span className="sr-only">Compartilhar</span>
           </Button>
         </DropdownMenuTrigger>
         
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="end" className="w-56 bg-slate-800/95 backdrop-blur-md border-slate-700/50">
           {navigator.share && (
             <>
-              <DropdownMenuItem onClick={handleNativeShare} className="cursor-pointer">
-                <Share2 className="h-4 w-4 mr-2" />
+              <DropdownMenuItem onClick={handleNativeShare} className="cursor-pointer text-gray-300 hover:bg-slate-700/50 hover:text-white">
+                <Share2 className="h-4 w-4 mr-2 text-gray-400" />
                 Compartilhar
               </DropdownMenuItem>
               <DropdownMenuSeparator />
             </>
           )}
           
-          <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
+          <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer text-gray-300 hover:bg-slate-700/50 hover:text-white">
             {copied ? (
               <>
-                <Check className="h-4 w-4 mr-2 text-green-600" />
-                <span className="text-green-600">Link copiado!</span>
+                <Check className="h-4 w-4 mr-2 text-green-400" />
+                <span className="text-green-400">Link copiado!</span>
               </>
             ) : (
               <>
@@ -224,7 +224,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({
               <DropdownMenuItem
                 key={option.name}
                 onClick={() => handleSocialShare(option.url)}
-                className={`cursor-pointer ${option.color}`}
+                className="cursor-pointer text-gray-300 hover:bg-slate-700/50 hover:text-white"
               >
                 <IconComponent className="h-4 w-4 mr-2" />
                 {option.name}
@@ -235,10 +235,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({
       </DropdownMenu>
 
       <Dialog open={showManualCopy} onOpenChange={setShowManualCopy}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-slate-800/95 backdrop-blur-md border-slate-700/50">
           <DialogHeader>
-            <DialogTitle>Copiar Link</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Copiar Link</DialogTitle>
+            <DialogDescription className="text-gray-300">
               A cópia automática não funcionou. Selecione o link abaixo e copie manualmente (Ctrl+C ou Cmd+C):
             </DialogDescription>
           </DialogHeader>

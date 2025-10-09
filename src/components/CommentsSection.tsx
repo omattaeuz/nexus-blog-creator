@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useComments } from '@/hooks/useComments';
+import { useCommentsWithCache } from '@/hooks/useCommentsWithCache';
 import { Comment } from '@/services/comments';
 
 interface CommentsSectionProps {
@@ -78,7 +78,7 @@ function CommentItem({
   const canModerate = isModerator || isOwner;
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Avatar className="h-8 w-8">
@@ -90,15 +90,15 @@ function CommentItem({
           
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
-              <h4 className="font-medium text-sm">{comment.author}</h4>
-              <Badge variant="outline" className="text-xs">
+              <h4 className="font-medium text-sm text-white">{comment.author}</h4>
+              <Badge variant="outline" className="text-xs bg-slate-700/50 text-gray-300 border-slate-600/50">
                 {formatDistanceToNow(new Date(comment.createdAt), {
                   addSuffix: true,
                   locale: ptBR
                 })}
               </Badge>
               {new Date(comment.updatedAt).getTime() !== new Date(comment.createdAt).getTime() && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs bg-slate-600/50 text-gray-300 border-slate-500/50">
                   Editado
                 </Badge>
               )}
@@ -109,21 +109,21 @@ function CommentItem({
                 <Textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="min-h-[80px]"
+                  className="min-h-[80px] bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={handleEdit}>
+                  <Button size="sm" onClick={handleEdit} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">
                     <Check className="h-3 w-3 mr-1" />
                     Salvar
                   </Button>
-                  <Button size="sm" variant="outline" onClick={handleCancelEdit}>
+                  <Button size="sm" variant="outline" onClick={handleCancelEdit} className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white">
                     <X className="h-3 w-3 mr-1" />
                     Cancelar
                   </Button>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-foreground mb-3 whitespace-pre-wrap">
+              <p className="text-sm text-gray-300 mb-3 whitespace-pre-wrap">
                 {comment.content}
               </p>
             )}
@@ -133,7 +133,7 @@ function CommentItem({
                 variant="ghost"
                 size="sm"
                 onClick={() => onLike(comment.id)}
-                className="text-muted-foreground hover:text-red-500"
+                className="text-gray-400 hover:text-red-400 hover:bg-red-500/20"
               >
                 <Heart className="h-4 w-4 mr-1" />
                 {comment.likes}
@@ -144,7 +144,7 @@ function CommentItem({
                   variant="ghost"
                   size="sm"
                   onClick={() => onReply(comment.id)}
-                  className="text-muted-foreground"
+                  className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20"
                 >
                   <Reply className="h-4 w-4 mr-1" />
                   Responder
@@ -157,7 +157,7 @@ function CommentItem({
                     variant="ghost"
                     size="sm"
                     onClick={handleEdit}
-                    className="text-muted-foreground"
+                    className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20"
                   >
                     <Edit className="h-3 w-3" />
                   </Button>
@@ -165,7 +165,7 @@ function CommentItem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onDelete(comment.id)}
-                    className="text-muted-foreground hover:text-red-500"
+                    className="text-gray-400 hover:text-red-400 hover:bg-red-500/20"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -178,7 +178,7 @@ function CommentItem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onModerate(comment.id, true)}
-                    className="text-green-600 hover:text-green-700"
+                    className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
                   >
                     <Check className="h-3 w-3" />
                   </Button>
@@ -186,7 +186,7 @@ function CommentItem({
                     variant="ghost"
                     size="sm"
                     onClick={() => onModerate(comment.id, false)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -200,14 +200,14 @@ function CommentItem({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowReplies(!showReplies)}
-                  className="text-muted-foreground mb-3"
+                  className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 mb-3"
                 >
                   <MessageCircle className="h-4 w-4 mr-1" />
                   {showReplies ? 'Ocultar' : 'Mostrar'} {comment.replies.length} resposta{comment.replies.length !== 1 ? 's' : ''}
                 </Button>
 
                 {showReplies && (
-                  <div className="ml-4 space-y-3 border-l-2 border-muted pl-4">
+                  <div className="ml-4 space-y-3 border-l-2 border-slate-600/50 pl-4">
                     {comment.replies.map((reply) => (
                       <CommentItem
                         key={reply.id}
@@ -246,14 +246,14 @@ export default function CommentsSection({
 
   const {
     comments,
-    isLoading,
+    loading: isLoading,
     error,
     createComment,
     updateComment,
     deleteComment,
     likeComment,
     moderateComment
-  } = useComments(postId);
+  } = useCommentsWithCache(postId);
 
   const handleSubmitComment = async () => {
     if (!newComment.trim() || !authorName.trim() || !authorEmail.trim()) return;
@@ -330,10 +330,10 @@ export default function CommentsSection({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardContent className="p-6 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando comentários...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-gray-300">Carregando comentários...</p>
         </CardContent>
       </Card>
     );
@@ -341,9 +341,9 @@ export default function CommentsSection({
 
   if (error) {
     return (
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardContent className="p-6 text-center">
-          <p className="text-destructive">Erro ao carregar comentários: {error}</p>
+          <p className="text-red-400">Erro ao carregar comentários: {error}</p>
         </CardContent>
       </Card>
     );
@@ -352,34 +352,36 @@ export default function CommentsSection({
   return (
     <div className="mt-6 space-y-6">
       <div className="flex items-center gap-2">
-        <MessageCircle className="h-5 w-5" />
-        <h3 className="text-lg font-semibold">
+        <MessageCircle className="h-5 w-5 text-cyan-400" />
+        <h3 className="text-lg font-semibold text-white">
           Comentários ({comments.length})
         </h3>
       </div>
 
-      <Card>
+      <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
         <CardHeader>
-          <CardTitle className="text-base">Deixe seu comentário</CardTitle>
+          <CardTitle className="text-base text-white">Deixe seu comentário</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {!isAuthenticated && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">Nome</label>
+                <label className="text-sm font-medium text-gray-300">Nome</label>
                 <Input
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Seu nome"
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium text-gray-300">Email</label>
                 <Input
                   type="email"
                   value={authorEmail}
                   onChange={(e) => setAuthorEmail(e.target.value)}
                   placeholder="seu@email.com"
+                  className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                 />
               </div>
             </div>
@@ -390,13 +392,14 @@ export default function CommentsSection({
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Escreva seu comentário..."
-              className="min-h-[100px]"
+              className="min-h-[100px] bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
             />
           </div>
           
           <Button 
             onClick={handleSubmitComment}
             disabled={!newComment.trim() || (!isAuthenticated && (!authorName.trim() || !authorEmail.trim()))}
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Send className="h-4 w-4 mr-2" />
             Comentar
@@ -405,28 +408,30 @@ export default function CommentsSection({
       </Card>
 
       {replyingTo && (
-        <Card className="border-primary/20">
+        <Card className="bg-slate-800/50 backdrop-blur-md border-cyan-400/20 shadow-2xl">
           <CardHeader>
-            <CardTitle className="text-base">Responder comentário</CardTitle>
+            <CardTitle className="text-base text-white">Responder comentário</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {!isAuthenticated && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Nome</label>
+                  <label className="text-sm font-medium text-gray-300">Nome</label>
                   <Input
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                     placeholder="Seu nome"
+                    className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Email</label>
+                  <label className="text-sm font-medium text-gray-300">Email</label>
                   <Input
                     type="email"
                     value={authorEmail}
                     onChange={(e) => setAuthorEmail(e.target.value)}
                     placeholder="seu@email.com"
+                    className="bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
                   />
                 </div>
               </div>
@@ -437,7 +442,7 @@ export default function CommentsSection({
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Escreva sua resposta..."
-                className="min-h-[80px]"
+                className="min-h-[80px] bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20"
               />
             </div>
             
@@ -445,6 +450,7 @@ export default function CommentsSection({
               <Button 
                 onClick={handleSubmitReply}
                 disabled={!replyContent.trim() || (!isAuthenticated && (!authorName.trim() || !authorEmail.trim()))}
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Responder
@@ -455,6 +461,7 @@ export default function CommentsSection({
                   setReplyingTo(null);
                   setReplyContent('');
                 }}
+                className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
               >
                 Cancelar
               </Button>
@@ -464,10 +471,10 @@ export default function CommentsSection({
       )}
 
       {comments.length === 0 ? (
-        <Card>
+        <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
           <CardContent className="p-6 text-center">
-            <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
+            <MessageCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+            <p className="text-gray-300">
               Seja o primeiro a comentar!
             </p>
           </CardContent>

@@ -56,12 +56,22 @@ Modern blog platform with authentication, post management, analytics, comments s
 ## Environment Variables
 Create `.env.local` (ignored by Git) with:
 ```bash
+# Supabase Configuration
 VITE_SUPABASE_URL=<your-supabase-url>
 VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+
+# Redis Configuration (Optional - falls back to memory cache if not provided)
+VITE_REDIS_URL=redis://localhost:6379
+VITE_REDIS_PASSWORD=<your-redis-password>
+VITE_REDIS_DB=0
+
+# API Configuration
+VITE_API_BASE_URL=https://your-n8n-instance.up.railway.app/webhook
 ```
 
 Notes
 - Never commit secret keys. Use only the Supabase anon/publishable key on client.
+- Redis is optional - the app will use memory cache as fallback if Redis is unavailable.
 - On Vercel, set the same variables in Project Settings → Environment Variables.
 
 ---
@@ -199,6 +209,14 @@ Deploy Steps
 - **Performance**: Optimized rendering and lazy loading
 - **Toast Notifications**: Non-intrusive feedback system
 - **Confirmation Dialogs**: Safe deletion and action confirmations
+
+### ⚡ Performance & Caching
+- **Redis Cache**: Cache-Aside Pattern implementation with Redis backend
+- **Memory Fallback**: Automatic fallback to memory cache if Redis unavailable
+- **Smart Invalidation**: Automatic cache invalidation on data changes
+- **TTL Management**: Configurable time-to-live for different data types
+- **Cache Statistics**: Real-time cache monitoring and management
+- **Optimistic Updates**: Immediate UI updates for better UX
 
 ---
 

@@ -55,7 +55,7 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
         size="sm"
         onClick={() => handlePageClick(currentPage - 1)}
         disabled={currentPage === 1}
-        className="h-8 w-8 p-0"
+        className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-slate-700/50 disabled:text-gray-600 disabled:hover:bg-transparent"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -68,8 +68,8 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
             className={cn(
               "h-2 w-2 rounded-full transition-all duration-200",
               page === currentPage 
-                ? "bg-foreground scale-125" 
-                : "bg-muted-foreground/30"
+                ? "bg-cyan-400 scale-125 shadow-lg shadow-cyan-400/50" 
+                : "bg-gray-600/50 hover:bg-gray-500/70"
             )}
             aria-label={`Ir para página ${page}`}
           />
@@ -81,7 +81,7 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
         size="sm"
         onClick={() => handlePageClick(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="h-8 w-8 p-0"
+        className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-slate-700/50 disabled:text-gray-600 disabled:hover:bg-transparent"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>

@@ -90,11 +90,11 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
 
   return (
     <div className="h-screen flex">
-      <div className={`${preview ? 'w-1/2' : 'w-full'} transition-all duration-500 ease-in-out border-r border-border/50 overflow-y-auto`}>
+      <div className={`${preview ? 'w-1/2' : 'w-full'} transition-all duration-500 ease-in-out border-r border-slate-700/50 overflow-y-auto`}>
         <div className="p-6">
-          <Card className="bg-gradient-surface shadow-glow border-border/50">
+          <Card className="bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
             <CardHeader className="text-center p-4 sm:p-6">
-              <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <CardTitle className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
                 {isEdit ? "Editar Post" : "Criar Novo Post"}
               </CardTitle>
             </CardHeader>
@@ -102,7 +102,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
             <CardContent className="p-4 sm:p-6">
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-foreground font-medium">
+              <Label htmlFor="title" className="text-gray-300 font-medium">
                 Título
               </Label>
               <Input
@@ -111,20 +111,20 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
                 placeholder="Digite o título do seu post..."
-                className={`transition-all duration-300 ${
+                className={`bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-cyan-400/20 transition-all duration-300 ${
                   errors.title 
-                    ? "border-destructive focus:ring-destructive" 
-                    : "focus:ring-primary"
+                    ? "border-red-400 focus:ring-red-400/20" 
+                    : ""
                 }`}
                 disabled={isLoading}
               />
               {errors.title && (
-                <p className="text-sm text-destructive mt-1">{errors.title}</p>
+                <p className="text-sm text-red-400 mt-1">{errors.title}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label id="content-label" className="text-foreground font-medium">Conteúdo</Label>
+              <Label id="content-label" className="text-gray-300 font-medium">Conteúdo</Label>
               <div className={`${preview ? 'h-[600px]' : 'h-[500px]'} flex flex-col`}>
                 <RichEditorPro
                   id="content"
@@ -136,18 +136,18 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                   onImageEditorToggle={setShowImageEditor}
                 />
               </div>
-              {errors.content && (<p className="text-sm text-destructive mt-1">{errors.content}</p>)}
+              {errors.content && (<p className="text-sm text-red-400 mt-1">{errors.content}</p>)}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-foreground font-medium">Tags</Label>
+              <Label className="text-gray-300 font-medium">Tags</Label>
               <TagsInput
                 tags={formData.tags}
                 onChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
                 placeholder="Adicione tags para categorizar seu post..."
                 maxTags={8}
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-400">
                 Tags ajudam a organizar e encontrar posts relacionados. Use palavras-chave relevantes.
               </p>
             </div>
@@ -164,12 +164,12 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 />
                 <Label 
                   htmlFor="is_public" 
-                  className="text-sm font-medium text-foreground cursor-pointer"
+                  className="text-sm font-medium text-gray-300 cursor-pointer"
                 >
                   Tornar post público
                 </Label>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-400">
                 Posts públicos podem ser visualizados por qualquer pessoa através de links compartilhados
               </p>
             </div>
@@ -180,7 +180,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
                 variant="outline"
                 onClick={() => navigate("/posts")}
                 disabled={isLoading || showImageEditor}
-                className="transition-all duration-300 order-2 sm:order-1"
+                className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300 order-2 sm:order-1"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancelar
@@ -189,7 +189,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               <Button
                 type="submit"
                 disabled={isLoading || showImageEditor}
-                className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300 order-1 sm:order-2"
+                className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 order-1 sm:order-2"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -206,20 +206,20 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       </div>
 
       {preview && (
-        <div className="w-1/2 bg-white overflow-y-auto preview-enter">
+        <div className="w-1/2 bg-slate-800/50 backdrop-blur-md overflow-y-auto preview-enter">
           <div className="p-6">
-            <div className="mb-6 pb-4 border-b border-gray-200">
+            <div className="mb-6 pb-4 border-b border-slate-700/50">
               <div className="flex items-center gap-3 mb-4">
-                <div className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                <div className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs font-medium rounded border border-cyan-500/30">
                   Preview
                 </div>
               </div>
               
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
                 {formData.title || "Título do Post"}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-600 mb-6">
+              <div className="flex flex-wrap items-center gap-6 text-sm text-gray-300 mb-6">
                 <div className="flex items-center space-x-2">
                   <span>📅</span>
                   <span>{new Date().toLocaleDateString("pt-BR", {
@@ -235,7 +235,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               </div>
             </div>
 
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none prose-invert">
               <div dangerouslySetInnerHTML={{ __html: formData.content || "<p><em>Comece a escrever para ver o preview...</em></p>" }} />
             </div>
           </div>

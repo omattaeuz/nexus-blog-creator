@@ -38,27 +38,33 @@ const Layout = ({ children }: LayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-surface flex flex-col">
-      <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-lg border-b border-border shadow-sm">
-        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+      <header className="fixed top-4 left-0 right-0 z-50">
+        <div className="container mx-auto px-4">
+          <div className="py-4">
           <nav className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2 group">
-              <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-primary shadow-glow group-hover:shadow-lg transition-all duration-300">
-                <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-primary-foreground" />
+            <Link to="/" className="inline-flex items-center space-x-2 group">
+              <div className="p-1.5 sm:p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                <BookOpen className="h-4 w-4 sm:h-6 sm:w-6 text-white group-hover:animate-bounce" />
               </div>
-              <span className="text-lg sm:text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-cyan-400 group-hover:to-pink-400 transition-all duration-300">
                 Nexta
               </span>
             </Link>
 
             <div className="hidden md:flex items-center space-x-2">
               <Button
-                variant={isActive("/") ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 asChild
-                className="transition-all duration-300"
+                className={`transition-all duration-300 rounded-full ${
+                  isActive("/") 
+                    ? "bg-white/20 text-white" 
+                    : "text-white/70 hover:text-white hover:bg-white/10"
+                }`}
               >
                 <Link to="/" className="flex items-center">
+                  {isActive("/") && <div className="w-2 h-2 bg-white rounded-full mr-2" />}
                   <Home className="h-4 w-4" />
                   <span className="ml-2">Início</span>
                 </Link>
@@ -67,24 +73,34 @@ const Layout = ({ children }: LayoutProps) => {
               {isAuthenticated && (
                 <>
                   <Button
-                    variant={isActive("/posts") ? "default" : "ghost"}
+                    variant="ghost"
                     size="sm"
                     asChild
-                    className="transition-all duration-300"
+                    className={`transition-all duration-300 rounded-full ${
+                      isActive("/posts") 
+                        ? "bg-white/20 text-white" 
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
                   >
                     <Link to="/posts" className="flex items-center space-x-2">
+                      {isActive("/posts") && <div className="w-2 h-2 bg-white rounded-full mr-2" />}
                       <BookOpen className="h-4 w-4" />
                       <span>Blogs</span>
                     </Link>
                   </Button>
 
                   <Button
-                    variant={isActive("/dashboard") ? "default" : "ghost"}
+                    variant="ghost"
                     size="sm"
                     asChild
-                    className="transition-all duration-300"
+                    className={`transition-all duration-300 rounded-full ${
+                      isActive("/dashboard") 
+                        ? "bg-white/20 text-white" 
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    }`}
                   >
                     <Link to="/dashboard" className="flex items-center space-x-2">
+                      {isActive("/dashboard") && <div className="w-2 h-2 bg-white rounded-full mr-2" />}
                       <BarChart3 className="h-4 w-4" />
                       <span>Dashboard</span>
                     </Link>
@@ -94,7 +110,7 @@ const Layout = ({ children }: LayoutProps) => {
                     variant="default"
                     size="sm"
                     asChild
-                    className="bg-gradient-primary hover:bg-primary-hover shadow-glow transition-all duration-300"
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-6"
                   >
                     <Link to="/posts/new" className="flex items-center space-x-2">
                       <PlusCircle className="h-4 w-4" />
@@ -126,7 +142,7 @@ const Layout = ({ children }: LayoutProps) => {
                     variant="ghost"
                     size="sm"
                     asChild
-                    className="transition-all duration-300"
+                    className="text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300"
                   >
                     <Link to="/login" className="flex items-center">
                       <LogIn className="h-4 w-4" />
@@ -279,17 +295,78 @@ const Layout = ({ children }: LayoutProps) => {
               </Sheet>
             </div>
           </nav>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full pt-20">
         {children}
       </main>
 
-      <footer className="border-t border-border bg-surface/50">
-        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <div className="text-center text-muted-foreground">
-            <p className="text-sm sm:text-base">&copy; 2025 Nexta — Conte histórias que importam</p>
+      <footer className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-t border-white/10">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 group cursor-pointer">
+                <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                  <BookOpen className="h-6 w-6 text-white group-hover:animate-bounce" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-cyan-400 group-hover:to-pink-400 transition-all duration-300">
+                  Nexta
+                </span>
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">
+                A plataforma mais avançada para criadores de conteúdo tech. 
+                Performance extrema, design moderno e ferramentas de IA integradas.
+              </p>
+            </div>
+
+            {/* Links */}
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold">Produto</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/posts" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blogs</a></li>
+                <li><a href="/dashboard" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Dashboard</a></li>
+                <li><a href="/posts/new" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Criar Post</a></li>
+                <li><a href="/posts/public" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Posts Públicos</a></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold">Empresa</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Sobre</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blog</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Carreiras</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Contato</a></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div className="space-y-4">
+              <h3 className="text-white font-semibold">Suporte</h3>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Central de Ajuda</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Documentação</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">API</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Status</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+              <p className="text-gray-300 text-sm">
+                &copy; 2025 Nexta. Todos os direitos reservados.
+              </p>
+              <div className="flex space-x-6 text-sm">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Privacidade</a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Termos</a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Cookies</a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

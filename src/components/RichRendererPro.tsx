@@ -144,10 +144,56 @@ export default function RichRendererPro({ html }: Props) {
   }, [html]);
 
   return (
-    <div 
-      ref={containerRef}
-      className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-800 prose-p:leading-relaxed prose-p:text-base prose-strong:text-gray-900 prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-r-lg prose-blockquote:text-gray-700 prose-table:border prose-table:border-gray-300 prose-th:bg-gray-100 prose-th:font-semibold prose-th:text-gray-900 prose-td:border prose-td:border-gray-300 prose-td:text-gray-800 prose-img:rounded-lg prose-img:shadow-lg prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-ul:text-gray-800 prose-ol:text-gray-800 prose-li:text-gray-800"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <>
+      <style>{`
+        .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+          color: white !important;
+        }
+        .prose strong, .prose b {
+          color: white !important;
+        }
+        .prose p {
+          color: #d1d5db !important;
+        }
+        .prose ul, .prose ol, .prose li {
+          color: #d1d5db !important;
+        }
+        .prose code {
+          color: #d1d5db !important;
+          background-color: #334155 !important;
+        }
+        .prose pre {
+          background-color: #1e293b !important;
+          color: #f1f5f9 !important;
+        }
+        .prose blockquote {
+          color: #d1d5db !important;
+          background-color: rgba(30, 41, 59, 0.5) !important;
+          border-left-color: #22d3ee !important;
+        }
+        .prose table {
+          border-color: #475569 !important;
+        }
+        .prose th {
+          background-color: #334155 !important;
+          color: white !important;
+        }
+        .prose td {
+          border-color: #475569 !important;
+          color: #d1d5db !important;
+        }
+        .prose a {
+          color: #22d3ee !important;
+        }
+        .prose a:hover {
+          text-decoration: underline !important;
+        }
+      `}</style>
+      <div 
+        ref={containerRef}
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </>
   );
 }
