@@ -40,9 +40,7 @@ export default function AdvancedTypewriter({
       } else {
         setCurrentText(fullText.substring(0, currentText.length + 1));
         
-        if (currentText === fullText) {
-          setIsPaused(true);
-        }
+        if (currentText === fullText) setIsPaused(true);
       }
     }, isPaused ? pauseTime : (isDeleting ? deleteSpeed : speed));
 

@@ -47,7 +47,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       setImageSize({ width: img.width, height: img.height });
       setCropArea({ x: 0, y: 0, width: img.width, height: img.height });
       
-      // Calculate initial display size to fit in canvas
       const canvasWidth = 600;
       const canvasHeight = 400;
       const aspectRatio = img.width / img.height;
@@ -87,7 +86,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     const x = imageDisplayPos.x;
     const y = imageDisplayPos.y;
 
-    // Apply filters
     ctx.filter = `
       brightness(${brightness}%) 
       contrast(${contrast}%) 
@@ -96,31 +94,21 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
 
     ctx.save();
 
-    // Apply rotation
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
     ctx.translate(-canvas.width / 2, -canvas.height / 2);
-
-    // Draw image
     ctx.drawImage(image, x, y, drawWidth, drawHeight);
-
-    // Restore context
     ctx.restore();
 
-    // Draw crop overlay if in crop mode
     if (cropMode) drawCropOverlay(ctx, x, y, drawWidth, drawHeight);
 
-    // Draw resize handles if in resize mode
     if (resizeMode) drawResizeHandles(ctx, x, y, drawWidth, drawHeight);
-
   };
 
   const drawCropOverlay = (ctx: CanvasRenderingContext2D, imgX: number, imgY: number, imgWidth: number, imgHeight: number) => {
-    // Dark overlay
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Clear crop area
     ctx.clearRect(
       imgX + (cropArea.x / imageSize.width) * imgWidth,
       imgY + (cropArea.y / imageSize.height) * imgHeight,
@@ -128,7 +116,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       (cropArea.height / imageSize.height) * imgHeight
     );
 
-    // Draw crop border
     ctx.strokeStyle = '#3b82f6';
     ctx.lineWidth = 2;
     ctx.strokeRect(
@@ -152,12 +139,10 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       { x: imgX - handleSize/2, y: imgY + imgHeight/2 - handleSize/2, cursor: 'w-resize' }, // left
     ];
 
-    // Draw border around image
     ctx.strokeStyle = '#3b82f6';
     ctx.lineWidth = 2;
     ctx.strokeRect(imgX, imgY, imgWidth, imgHeight);
 
-    // Draw resize handles
     handles.forEach((handle, index) => {
       ctx.fillStyle = '#3b82f6';
       ctx.fillRect(handle.x, handle.y, handleSize, handleSize);
@@ -317,15 +302,12 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size to crop area
     canvas.width = cropArea.width;
     canvas.height = cropArea.height;
 
-    // Fill with white background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Apply rotation and draw cropped image
     ctx.save();
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.rotate((rotation * Math.PI) / 180);
@@ -345,17 +327,14 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
 
     ctx.restore();
 
-    // Convert canvas to blob
     const blob = await new Promise<Blob>((resolve) => {
       canvas.toBlob((blob) => {
         if (blob) resolve(blob);
       }, 'image/jpeg', 0.9);
     });
 
-    // Upload to Supabase Storage
     const imageUrl = await uploadToSupabaseStorage(blob, 'jpg');
     
-    // Create a temporary div to generate the HTML with alignment
     const tempDiv = document.createElement('div');
     const img = document.createElement('img');
     img.src = imageUrl;
@@ -363,7 +342,6 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     img.className = 'prose-image';
     tempDiv.appendChild(img);
     
-    // Return the HTML string with the uploaded image URL
     onSave(tempDiv.innerHTML);
   };
 
@@ -371,18 +349,15 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     if (cropMode) {
       applyCrop();
     } else {
-      // Save without crop
       if (!image || !canvasRef.current) return;
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Use display size for final output
       canvas.width = imageDisplaySize.width;
       canvas.height = imageDisplaySize.height;
 
-      // Fill with white background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -400,14 +375,12 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
       ctx.restore();
 
-      // Convert canvas to blob
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((blob) => {
           if (blob) resolve(blob);
         }, 'image/jpeg', 0.9);
       });
 
-      // Upload to Supabase Storage
       const imageUrl = await uploadToSupabaseStorage(blob, 'jpg');
       
       const tempDiv = document.createElement('div');

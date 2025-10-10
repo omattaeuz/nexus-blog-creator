@@ -20,6 +20,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useCommentsWithCache } from '@/hooks/useCommentsWithCache';
 import { Comment } from '@/services/comments';
+import { COMMENT_MODES } from '@/lib/constants';
 
 interface CommentsSectionProps {
   postId: string;
@@ -28,6 +29,13 @@ interface CommentsSectionProps {
     name: string;
     email: string;
   };
+  comments?: Comment[];
+  onAddComment?: (content: string, parentId?: string) => void;
+  onLikeComment?: (commentId: string) => void;
+  onReply?: (commentId: string, content: string) => void;
+  onModerate?: (commentId: string, approved: boolean) => void;
+  isModerator?: boolean;
+  mode?: 'standalone' | 'controlled';
 }
 
 interface CommentItemProps {
@@ -236,7 +244,14 @@ function CommentItem({
 export default function CommentsSection({ 
   postId, 
   isAuthenticated = false, 
-  currentUser 
+  currentUser,
+  comments: externalComments,
+  onAddComment: externalOnAddComment,
+  onLikeComment: externalOnLikeComment,
+  onReply: externalOnReply,
+  onModerate: externalOnModerate,
+  isModerator = false,
+  mode = COMMENT_MODES.STANDALONE
 }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -244,16 +259,35 @@ export default function CommentsSection({
   const [authorName, setAuthorName] = useState(currentUser?.name || '');
   const [authorEmail, setAuthorEmail] = useState(currentUser?.email || '');
 
-  const {
-    comments,
-    loading: isLoading,
-    error,
-    createComment,
-    updateComment,
-    deleteComment,
-    likeComment,
-    moderateComment
-  } = useCommentsWithCache(postId);
+  const cacheHook = mode === COMMENT_MODES.STANDALONE ? useCommentsWithCache(postId) : null;
+  
+  const comments = mode === COMMENT_MODES.CONTROLLED ? (externalComments || []) : (cacheHook?.comments || []);
+  const isLoading = mode === COMMENT_MODES.CONTROLLED ? false : (cacheHook?.loading || false);
+  const error = mode === COMMENT_MODES.CONTROLLED ? null : (cacheHook?.error || null);
+  
+  const createComment = mode === COMMENT_MODES.CONTROLLED 
+    ? async (data: any) => externalOnAddComment?.(data.content, data.parentId)
+    : (cacheHook?.createComment || (() => Promise.reject('Cache hook not available')));
+    
+  const updateComment = mode === COMMENT_MODES.CONTROLLED 
+    ? async (id: string, content: string) => {
+        console.warn('Update not supported in controlled mode');
+      }
+    : (cacheHook?.updateComment || (() => Promise.reject('Cache hook not available')));
+    
+  const deleteComment = mode === COMMENT_MODES.CONTROLLED 
+    ? async (id: string) => {
+        console.warn('Delete not supported in controlled mode');
+      }
+    : (cacheHook?.deleteComment || (() => Promise.reject('Cache hook not available')));
+    
+  const likeComment = mode === COMMENT_MODES.CONTROLLED
+    ? async (id: string) => externalOnLikeComment?.(id)
+    : (cacheHook?.likeComment || (() => Promise.reject('Cache hook not available')));
+    
+  const moderateComment = mode === COMMENT_MODES.CONTROLLED 
+    ? async (id: string, approved: boolean) => externalOnModerate?.(id, approved)
+    : (cacheHook?.moderateComment || (() => Promise.reject('Cache hook not available')));
 
   const handleSubmitComment = async () => {
     if (!newComment.trim() || !authorName.trim() || !authorEmail.trim()) return;

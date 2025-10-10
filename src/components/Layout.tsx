@@ -336,7 +336,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </ul>
               </div>
 
-              {/* Empresa */}
               <div className="space-y-3">
                 <h3 className="text-white font-semibold text-base text-center md:text-left">Empresa</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">
@@ -347,7 +346,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </ul>
               </div>
 
-              {/* Suporte */}
               <div className="space-y-3">
                 <h3 className="text-white font-semibold text-base text-center md:text-left">Suporte</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">
@@ -358,7 +356,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </ul>
               </div>
 
-              {/* Comunidade - Added for mobile balance */}
               <div className="space-y-3">
                 <h3 className="text-white font-semibold text-base text-center md:text-left">Comunidade</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">
@@ -384,10 +381,8 @@ const Layout = ({ children }: LayoutProps) => {
             </div>
           </div>
 
-          {/* Desktop/Tablet Layout (768px+) - Unchanged */}
           <div className="hidden md:block">
             <div className="grid md:grid-cols-4 gap-8 mb-8">
-              {/* Brand */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 group cursor-pointer">
                   <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
@@ -403,7 +398,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </p>
               </div>
 
-              {/* Links */}
               <div className="space-y-4">
                 <h3 className="text-white font-semibold">Produto</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">
@@ -414,7 +408,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </ul>
               </div>
 
-              {/* Company */}
               <div className="space-y-4">
                 <h3 className="text-white font-semibold">Empresa</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">
@@ -425,7 +418,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </ul>
               </div>
 
-              {/* Support */}
               <div className="space-y-4">
                 <h3 className="text-white font-semibold">Suporte</h3>
                 <ul className="space-y-2 text-sm text-center md:text-left">

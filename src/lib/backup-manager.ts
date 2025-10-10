@@ -22,9 +22,8 @@ export class BackupManager {
   private maxBackups = 10;
 
   static getInstance(): BackupManager {
-    if (!BackupManager.instance) {
-      BackupManager.instance = new BackupManager();
-    }
+    if (!BackupManager.instance) BackupManager.instance = new BackupManager();
+
     return BackupManager.instance;
   }
 
@@ -95,7 +94,6 @@ export class BackupManager {
         throw new Error(`Unsupported format: ${format}`);
     }
 
-    // Create and download file
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     
@@ -113,7 +111,6 @@ export class BackupManager {
     try {
       console.log('Restoring backup...', backupData.metadata);
       
-      // Validate backup data
       if (!backupData.posts || !Array.isArray(backupData.posts)) {
         throw new Error('Invalid backup data: posts array is missing or invalid');
       }

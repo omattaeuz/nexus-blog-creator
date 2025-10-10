@@ -14,12 +14,6 @@ export interface UseAsyncOperationReturn<T> extends AsyncOperationState<T> {
   setError: (error: string | null) => void;
 }
 
-/**
- * Hook for managing async operations with loading, error, and success states
- * @param asyncFunction - The async function to execute
- * @param options - Configuration options
- * @returns Async operation state and utilities
- */
 export function useAsyncOperation<T = unknown>(
   asyncFunction: (...args: unknown[]) => Promise<T>,
   options: {
@@ -35,19 +29,16 @@ export function useAsyncOperation<T = unknown>(
     isSuccess: false,
   });
 
-  // Use refs to store the latest callback functions
   const onSuccessRef = useRef(options.onSuccess);
   const onErrorRef = useRef(options.onError);
   const resetOnExecuteRef = useRef(options.resetOnExecute);
 
-  // Update refs when options change
   onSuccessRef.current = options.onSuccess;
   onErrorRef.current = options.onError;
   resetOnExecuteRef.current = options.resetOnExecute;
 
   const execute = useCallback(async (...args: unknown[]): Promise<T | null> => {
     try {
-      // Reset state if configured to do so
       if (resetOnExecuteRef.current) {
         setState(prev => ({
           ...prev,
@@ -72,7 +63,6 @@ export function useAsyncOperation<T = unknown>(
         isSuccess: true,
       });
 
-      // Call success callback if provided
       if (onSuccessRef.current) onSuccessRef.current(result);
 
       return result;
@@ -87,7 +77,6 @@ export function useAsyncOperation<T = unknown>(
         isSuccess: false,
       }));
 
-      // Call error callback if provided
       if (onErrorRef.current && error instanceof Error) onErrorRef.current(error);
 
       return null;
@@ -120,10 +109,6 @@ export function useAsyncOperation<T = unknown>(
   };
 }
 
-/**
- * Hook for handling form submissions with validation
- * Combines form validation with async operation handling
- */
 export function useFormSubmission<T extends Record<string, any>>(
   submitFunction: (data: T) => Promise<any>,
   _validationRules: any = {},

@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { N8N_CONFIG } from '@/config/n8n';
 
-// Create Supabase client
 export const supabase = createClient(
   N8N_CONFIG.SUPABASE.URL,
   N8N_CONFIG.SUPABASE.ANON_KEY,
@@ -14,23 +13,19 @@ export const supabase = createClient(
   }
 );
 
-// Auth helper functions
 export const authHelpers = {
-  // Get current user
   async getCurrentUser() {
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error) throw error;
     return user;
   },
 
-  // Get current session
   async getCurrentSession() {
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
     return session;
   },
 
-  // Sign up with email and password
   async signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -43,7 +38,6 @@ export const authHelpers = {
     return data;
   },
 
-  // Sign in with email and password
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -53,33 +47,25 @@ export const authHelpers = {
     return data;
   },
 
-  // Sign out
   async signOut() {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        // If session is already expired or invalid, we can still clear local state
         if (error.message.includes('session_not_found') || error.message.includes('Auth session missing')) {
           console.warn('Session already expired, clearing local state');
-          // Manually clear localStorage for expired sessions
           this.clearLocalStorage();
-          return; // Don't throw error for expired sessions
+          return;
         }
         throw error;
       }
     } catch (_error) {
-      // If logout fails due to session issues, we should still clear local state
       console.warn('Logout failed, but clearing local state anyway');
-      // Manually clear localStorage when logout fails
       this.clearLocalStorage();
-      // Don't re-throw the error to allow the app to continue
     }
   },
 
-  // Clear localStorage manually
   clearLocalStorage() {
     try {
-      // Clear all Supabase auth related localStorage items
       const keys = Object.keys(localStorage);
       keys.forEach(key => {
         if (key.includes('supabase') || key.includes('sb-')) localStorage.removeItem(key);
@@ -90,14 +76,12 @@ export const authHelpers = {
     }
   },
 
-  // Refresh session
   async refreshSession() {
     const { data, error } = await supabase.auth.refreshSession();
     if (error) throw error;
     return data;
   },
 
-  // Reset password
   async resetPassword(email: string) {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`
@@ -107,9 +91,7 @@ export const authHelpers = {
   }
 };
 
-// Database helper functions
 export const dbHelpers = {
-  // Get posts
   async getPosts(page = 1, limit = 10) {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -130,7 +112,6 @@ export const dbHelpers = {
     };
   },
 
-  // Get single post
   async getPost(id: string) {
     const { data, error } = await supabase
       .from('posts')
@@ -142,7 +123,6 @@ export const dbHelpers = {
     return data;
   },
 
-  // Create post
   async createPost(title: string, content: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
@@ -161,7 +141,6 @@ export const dbHelpers = {
     return data;
   },
 
-  // Update post
   async updatePost(id: string, title: string, content: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
@@ -170,7 +149,7 @@ export const dbHelpers = {
       .from('posts')
       .update({ title, content })
       .eq('id', id)
-      .eq('user_id', user.id) // Ensure user can only update their own posts
+      .eq('user_id', user.id)
       .select()
       .single();
     
@@ -178,7 +157,6 @@ export const dbHelpers = {
     return data;
   },
 
-  // Delete post
   async deletePost(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
@@ -187,7 +165,7 @@ export const dbHelpers = {
       .from('posts')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.id); // Ensure user can only delete their own posts
+      .eq('user_id', user.id);
     
     if (error) throw error;
     return true;

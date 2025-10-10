@@ -1,5 +1,6 @@
 import { Comment } from '@/types/analytics';
 import { notificationService } from './notifications';
+import { ERROR_MESSAGES } from '@/lib/constants';
 
 export interface CreateCommentData {
   postId: string;
@@ -130,26 +131,23 @@ class RealCommentService implements CommentService {
       replies: [],
       createdAt: new Date(),
       updatedAt: new Date(),
-      approved: true, // Auto-approve for now
+      approved: true,
       likes: 0,
       isReply: !!data.parentId,
       parentId: data.parentId
     };
 
     if (data.parentId) {
-      // Add as reply to parent comment
       const parentIndex = this.comments.findIndex(c => c.id === data.parentId);
       if (parentIndex !== -1) {
         this.comments[parentIndex].replies.push(newComment);
       }
     } else {
-      // Add as top-level comment
       this.comments.push(newComment);
     }
 
     this.saveComments();
 
-    // Create notification for new comment
     notificationService.createNotification({
       type: 'comment',
       title: 'Novo comentário em seu post',
@@ -164,9 +162,7 @@ class RealCommentService implements CommentService {
 
   async updateComment(id: string, content: string): Promise<Comment> {
     const commentIndex = this.comments.findIndex(c => c.id === id);
-    if (commentIndex === -1) {
-      throw new Error('Comment not found');
-    }
+    if (commentIndex === -1) throw new Error(ERROR_MESSAGES.NOT_FOUND);
 
     this.comments[commentIndex].content = content;
     this.comments[commentIndex].updatedAt = new Date();
@@ -176,22 +172,15 @@ class RealCommentService implements CommentService {
   }
 
   async deleteComment(id: string): Promise<void> {
-    // Remove from main comments array
     this.comments = this.comments.filter(c => c.id !== id);
     
-    // Remove from replies
-    this.comments.forEach(comment => {
-      comment.replies = comment.replies.filter(reply => reply.id !== id);
-    });
-
+    this.comments.forEach(comment => { comment.replies = comment.replies.filter(reply => reply.id !== id); });
     this.saveComments();
   }
 
   async likeComment(id: string): Promise<Comment> {
     const commentIndex = this.comments.findIndex(c => c.id === id);
-    if (commentIndex === -1) {
-      throw new Error('Comment not found');
-    }
+    if (commentIndex === -1) throw new Error(ERROR_MESSAGES.NOT_FOUND);
 
     this.comments[commentIndex].likes += 1;
     this.saveComments();
@@ -201,9 +190,7 @@ class RealCommentService implements CommentService {
 
   async moderateComment(id: string, approved: boolean): Promise<Comment> {
     const commentIndex = this.comments.findIndex(c => c.id === id);
-    if (commentIndex === -1) {
-      throw new Error('Comment not found');
-    }
+    if (commentIndex === -1) throw new Error(ERROR_MESSAGES.NOT_FOUND);
 
     this.comments[commentIndex].approved = approved;
     this.saveComments();
@@ -211,33 +198,26 @@ class RealCommentService implements CommentService {
     return this.comments[commentIndex];
   }
 
-  // Helper method to get comment by ID (including replies)
   getCommentById(id: string): Comment | null {
     for (const comment of this.comments) {
-      if (comment.id === id) {
-        return comment;
-      }
+      if (comment.id === id) return comment;
+
       const reply = comment.replies.find(r => r.id === id);
-      if (reply) {
-        return reply;
-      }
+
+      if (reply) return reply;
     }
     return null;
   }
 
-  // Helper method to get all comments (including replies) for a post
   getAllCommentsForPost(postId: string): Comment[] {
     return this.comments.filter(comment => comment.postId === postId);
   }
 
-  // Helper method to get comment count for a post
   getCommentCountForPost(postId: string): number {
     return this.comments.filter(comment => comment.postId === postId).length;
   }
 }
 
-// Export singleton instance
 export const commentService = new RealCommentService();
 
-// Export types
-export type { CommentService, Comment };
+export type { CommentService as CommentServiceType, Comment };

@@ -171,7 +171,6 @@ export const createBlogShortcuts = (
   return shortcuts;
 };
 
-// Editor-specific shortcuts
 export const createEditorShortcuts = (
   actions: {
     onBold?: () => void;

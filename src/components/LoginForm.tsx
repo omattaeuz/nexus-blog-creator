@@ -20,7 +20,6 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   
-  // Form state
   const [formData, setFormData] = useState<LoginData>({
     email: "",
     password: "",
@@ -79,7 +78,6 @@ const LoginForm = () => {
     }
   );
 
-  // Event handlers
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

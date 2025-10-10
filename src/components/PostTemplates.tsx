@@ -10,7 +10,6 @@ import {
   Edit, 
   Trash2, 
   Copy,
-  Star,
   Clock
 } from 'lucide-react';
 import { PostTemplate } from '@/types/analytics';

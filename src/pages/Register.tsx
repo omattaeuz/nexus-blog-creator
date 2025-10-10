@@ -33,7 +33,6 @@ const Register = () => {
       <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
         <section className="p-8 w-full max-w-7xl bg-slate-800/30 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden">
           <div className="flex min-h-[600px]">
-            {/* Left Column - Branding & Stats */}
             <div className="hidden lg:flex lg:w-1/2 flex-col justify-center px-12 xl:px-16">
               <div className="max-w-lg">
                 <Badge className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0 mb-6 w-fit">
@@ -82,10 +81,8 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Divider Line */}
             <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-slate-400/80 to-transparent"></div>
 
-            {/* Right Column - Register Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
               <div className="w-full max-w-md">
                 <RegisterForm />

@@ -51,7 +51,6 @@ export default function BackupManagerComponent({
     setProgress(0);
 
     try {
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) {
@@ -67,7 +66,6 @@ export default function BackupManagerComponent({
       clearInterval(progressInterval);
       setProgress(100);
       
-      // Update backups list
       setBackups(backupManager.getBackups());
       
       setTimeout(() => {
@@ -155,7 +153,6 @@ export default function BackupManagerComponent({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Backup Options */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium text-white">Formato</label>

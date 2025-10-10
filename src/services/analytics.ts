@@ -1,6 +1,7 @@
 import { Post } from '@/types/index';
 import { PostAnalytics, DashboardStats } from '@/types/analytics';
 import { calculateReadingTime } from '@/lib/formatters';
+import { ERROR_MESSAGES } from '@/lib/constants';
 
 export interface AnalyticsService {
   getDashboardStats(posts: Post[]): DashboardStats;
@@ -47,7 +48,7 @@ class RealAnalyticsService implements AnalyticsService {
         views: mostPopularPost.views || 0
       } : {
         id: '',
-        title: 'Nenhum post encontrado',
+        title: ERROR_MESSAGES.NOT_FOUND,
         views: 0
       },
       recentActivity
@@ -60,8 +61,8 @@ class RealAnalyticsService implements AnalyticsService {
       postId: post.id,
       views: post.views || 0,
       readTime: calculateReadingTime(post.content),
-      bounceRate: 0.15, // This would come from analytics service
-      socialShares: 0, // This would come from social media APIs
+      bounceRate: 0.15,
+      socialShares: 0, 
       comments: post.comments_count || 0,
       likes: post.likes_count || 0,
       createdAt: new Date(post.created_at),
@@ -74,12 +75,10 @@ class RealAnalyticsService implements AnalyticsService {
     const daysBack = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : timeRange === '90d' ? 90 : 365;
     const startDate = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000);
 
-    // Filter posts by date range
     const filteredPosts = posts.filter(post => 
       new Date(post.created_at) >= startDate
     );
 
-    // Group posts by day/week/month
     const groupedData: { [key: string]: { views: number; comments: number; likes: number } } = {};
 
     filteredPosts.forEach(post => {
@@ -132,8 +131,6 @@ class RealAnalyticsService implements AnalyticsService {
   }
 }
 
-// Export singleton instance
 export const analyticsService = new RealAnalyticsService();
 
-// Export types
-export type { AnalyticsService };
+export type { AnalyticsService as AnalyticsServiceType };

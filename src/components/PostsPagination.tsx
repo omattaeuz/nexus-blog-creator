@@ -28,9 +28,7 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
     const maxVisible = 5; // Show max 5 dots
     
     if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
-        dots.push(i);
-      }
+      for (let i = 1; i <= totalPages; i++) { dots.push(i); }
     } else {
       let start = Math.max(1, currentPage - 2);
       let end = Math.min(totalPages, currentPage + 2);
@@ -38,9 +36,7 @@ export const PostsPagination: React.FC<PostsPaginationProps> = ({
       if (currentPage <= 3) end = Math.min(totalPages, 5);
       if (currentPage > totalPages - 3) start = Math.max(1, totalPages - 4);
       
-      for (let i = start; i <= end; i++) {
-        dots.push(i);
-      }
+      for (let i = start; i <= end; i++) { dots.push(i); }
     }
     
     return dots;

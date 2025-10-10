@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Post } from '@/types/index';
 import { api } from '@/services/api';
 import { redisCache, CacheKeys, CacheTTL, CacheInvalidation } from '@/lib/redis-cache';
+import { useAuth } from '@/contexts/useAuth';
+import { ERROR_MESSAGES } from '@/lib/constants';
 
 interface UsePostsWithCacheOptions {
   page?: number;
@@ -15,6 +17,14 @@ interface UsePostsWithCacheReturn {
   error: string | null;
   refetch: (forceRefresh?: boolean) => Promise<void>;
   invalidateCache: () => Promise<void>;
+  invalidatePostCache: (postId: string) => Promise<void>;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalPosts: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
 }
 
 export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePostsWithCacheReturn {
@@ -22,6 +32,14 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({
+    currentPage: page,
+    totalPages: 1,
+    totalPosts: 0,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
+  const { token } = useAuth();
 
   const cacheKey = CacheKeys.posts.list(page, limit);
 
@@ -41,29 +59,49 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
       }
 
       // Cache miss - fetch from API
-      const response = await api.getPosts({ page, limit });
-      const postsData = response.data || response;
+      const response = await api.getPosts({ page, limit, token });
+      const postsData = Array.isArray(response) ? response : (response.posts || []);
+      const totalPosts = response.total || postsData.length;
+      const totalPages = response.totalPages || Math.ceil(totalPosts / limit);
 
       // Store in cache
       await redisCache.set(cacheKey, postsData, CacheTTL.posts);
       
       setPosts(postsData);
+      setPagination({
+        currentPage: page,
+        totalPages,
+        totalPosts,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch posts';
+      const errorMessage = err instanceof Error ? err.message : ERROR_MESSAGES.NETWORK_ERROR;
       setError(errorMessage);
       console.error('Error fetching posts:', err);
     } finally {
       setLoading(false);
     }
-  }, [page, limit, cacheKey]);
+  }, [page, limit, cacheKey, token]);
 
   const invalidateCache = useCallback(async () => {
     await CacheInvalidation.onPostCreate();
   }, []);
 
+  const invalidatePostCache = useCallback(async (postId: string) => {
+    await CacheInvalidation.onPostDelete(postId);
+  }, []);
+
   useEffect(() => {
     fetchPosts(forceRefresh);
   }, [fetchPosts, forceRefresh]);
+
+  useEffect(() => {
+    setPagination(prev => ({
+      ...prev,
+      currentPage: page,
+    }));
+  }, [page]);
 
   return {
     posts,
@@ -71,10 +109,11 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
     error,
     refetch: fetchPosts,
     invalidateCache,
+    invalidatePostCache,
+    pagination,
   };
 }
 
-// Hook for single post with cache
 export function usePostWithCache(postId: string, forceRefresh = false) {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +126,6 @@ export function usePostWithCache(postId: string, forceRefresh = false) {
     setError(null);
 
     try {
-      // Try cache first
       if (!forceRefresh) {
         const cached = await redisCache.get<Post>(cacheKey);
         if (cached) {
@@ -97,16 +135,14 @@ export function usePostWithCache(postId: string, forceRefresh = false) {
         }
       }
 
-      // Cache miss - fetch from API
       const response = await api.getPost(postId);
-      const postData = response.data || response;
+      const postData = response;
 
-      // Store in cache
       await redisCache.set(cacheKey, postData, CacheTTL.posts);
       
       setPost(postData);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch post';
+      const errorMessage = err instanceof Error ? err.message : ERROR_MESSAGES.NETWORK_ERROR;
       setError(errorMessage);
       console.error('Error fetching post:', err);
     } finally {
@@ -128,7 +164,6 @@ export function usePostWithCache(postId: string, forceRefresh = false) {
   };
 }
 
-// Hook for public posts with cache
 export function usePublicPostsWithCache(page = 1, forceRefresh = false) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -141,7 +176,6 @@ export function usePublicPostsWithCache(page = 1, forceRefresh = false) {
     setError(null);
 
     try {
-      // Try cache first
       if (!forceRefresh) {
         const cached = await redisCache.get<Post[]>(cacheKey);
         if (cached) {
@@ -151,16 +185,14 @@ export function usePublicPostsWithCache(page = 1, forceRefresh = false) {
         }
       }
 
-      // Cache miss - fetch from API
-      const response = await api.getPublicPosts({ page });
-      const postsData = response.data || response;
+      const response = await api.getPublicPosts(page, 10);
+      const postsData = Array.isArray(response) ? response : (response.data || []);
 
-      // Store in cache
       await redisCache.set(cacheKey, postsData, CacheTTL.posts);
       
       setPosts(postsData);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch public posts';
+      const errorMessage = err instanceof Error ? err.message : ERROR_MESSAGES.NETWORK_ERROR;
       setError(errorMessage);
       console.error('Error fetching public posts:', err);
     } finally {

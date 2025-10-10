@@ -48,6 +48,8 @@ export interface Post {
   is_public?: boolean;
   tags?: string[];
   comments_count?: number;
+  views?: number;
+  likes_count?: number;
   author?: {
     id: string;
     email: string;

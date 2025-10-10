@@ -17,8 +17,6 @@ const EmailConfirmation = () => {
       try {
         logAuth('📧 Processing email confirmation...');
         
-        // The Supabase SDK automatically handles the email confirmation
-        // when the user is redirected to this page with the confirmation tokens
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -33,12 +31,10 @@ const EmailConfirmation = () => {
           setStatus('success');
           setMessage('Email confirmado com sucesso! Você foi automaticamente logado.');
 
-          // Redirect to posts page after 3 seconds
           setTimeout(() => {
             navigate('/posts');
           }, 3000);
         } else {
-          // Check if there are tokens in the URL that need to be processed
           const hash = window.location.hash.substring(1);
           const params = new URLSearchParams(hash);
           
@@ -49,7 +45,6 @@ const EmailConfirmation = () => {
           if (type === 'signup' && accessToken && refreshToken) {
             logAuth('🔄 Processing tokens from URL...');
             
-            // Set the session with the tokens from the URL
             const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken
@@ -67,7 +62,6 @@ const EmailConfirmation = () => {
               setStatus('success');
               setMessage('Email confirmado com sucesso! Você foi automaticamente logado.');
 
-              // Redirect to posts page after 3 seconds
               setTimeout(() => {
                 navigate('/posts');
               }, 3000);

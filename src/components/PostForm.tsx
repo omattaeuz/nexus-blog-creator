@@ -9,21 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Save, X } from "lucide-react";
 import { useFormValidation } from "@/hooks/useFormValidation";
-import { ERROR_MESSAGES } from "@/lib/constants";
 import { showValidationError, showPostSuccess, showUnexpectedError } from "@/lib/toast-helpers";
 import { calculateReadingTime } from "@/lib/formatters";
-
-interface Post {
-  id?: string;
-  title: string;
-  content: string;
-  is_public?: boolean;
-  tags?: string[];
-}
+import type { Post } from "@/types";
+import { ROUTES, VALIDATION_CONSTANTS } from "@/lib/constants";
 
 interface PostFormProps {
-  initialData?: Post;
-  onSubmit: (data: Omit<Post, "id">) => Promise<void>;
+  initialData?: Partial<Post>;
+  onSubmit: (data: Omit<Post, "id" | "created_at" | "updated_at" | "user_id" | "author">) => Promise<void>;
   isEdit?: boolean;
 }
 
@@ -42,12 +35,12 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   const { errors, validateForm, clearError } = useFormValidation({
     title: {
       required: true,
-      minLength: 3,
-      maxLength: 100,
+      minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
+      maxLength: VALIDATION_CONSTANTS.MAX_TITLE_LENGTH,
     },
     content: {
       required: true,
-      minLength: 10,
+      minLength: VALIDATION_CONSTANTS.MIN_CONTENT_LENGTH,
     },
   });
 
@@ -55,7 +48,6 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Don't validate if image editor is open
     if (showImageEditor) return;
     
     if (!validateForm(formData)) {
@@ -75,7 +67,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       
       showPostSuccess(isEdit);
       
-      navigate("/posts");
+      navigate(ROUTES.POSTS);
     } catch (error) {
       showUnexpectedError(`Falha ao ${isEdit ? "atualizar" : "criar"} post. Tente novamente.`);
     } finally {
@@ -178,7 +170,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate("/posts")}
+                onClick={() => navigate(ROUTES.POSTS)}
                 disabled={isLoading || showImageEditor}
                 className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300 order-2 sm:order-1"
               >

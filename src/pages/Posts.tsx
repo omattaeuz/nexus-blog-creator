@@ -10,7 +10,7 @@ import PostFilters, { type FilterOptions } from "@/components/PostFilters";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { api } from "@/services/api";
 import { useAuth } from "@/contexts/useAuth";
-import { usePosts } from "@/hooks/usePosts";
+import { usePostsWithCache } from "@/hooks/usePostsWithCache";
 import { Search, PlusCircle, Loader2, BookOpen, Filter, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { logApi, logError } from "@/lib/logger";
@@ -19,37 +19,22 @@ const Posts = () => {
   const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const {
     posts,
     loading,
-    total,
-    totalPages,
-    currentPage,
-    filters,
-    isAutoRefreshing,
-    searchPosts,
-    goToPage,
-    refreshPosts,
-    updateFilters,
-    clearFilters,
-  } = usePosts({
-    page: 1,
-    limit: 6,
-    search: "",
-    autoFetch: true,
-    autoRefresh: true,
-    refreshInterval: 30000, // 30 seconds
-    filters: {
-      sortBy: 'created_at',
-      sortOrder: 'desc',
-      itemsPerPage: 6
-    }
+    refetch,
+    invalidatePostCache,
+    pagination
+  } = usePostsWithCache({
+    page: currentPage,
+    limit: 6
   });
 
   const handleSearchSubmit = async () => {
-    await searchPosts(searchTerm.trim());
+    await refetch();
   };
 
   const handleDelete = async (id: string) => {
@@ -65,11 +50,14 @@ const Posts = () => {
     try {
       logApi('Deleting post', { postId: id });
       await api.deletePost(id, token);
+      
+      await invalidatePostCache(id);
+      await refetch(true);
+      
       toast({
         title: "Sucesso",
         description: "Post excluído com sucesso.",
       });
-      await refreshPosts();
     } catch (error) {
       logError('Failed to delete post', { postId: id, error: error instanceof Error ? error.message : 'Unknown error' });
       toast({
@@ -81,18 +69,18 @@ const Posts = () => {
   };
 
   const handlePageChange = async (page: number) => {
-    await goToPage(page);
+    setCurrentPage(page);
   };
 
   const handleFiltersChange = async (newFilters: FilterOptions) => {
-    await updateFilters(newFilters);
+    await refetch();
   };
 
   const handleClearFilters = async () => {
-    await clearFilters();
+    await refetch();
   };
 
-  const shouldShowPagination = !loading && posts.length > 0 && (totalPages > 1 || posts.length > 6);
+  const shouldShowPagination = !loading && posts.length > 0;
   
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -120,12 +108,6 @@ const Posts = () => {
                 Blogs
               </span>
             </h1>
-            {isAutoRefreshing && (
-              <div className="flex items-center gap-1 text-green-500">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs font-medium">Atualizando</span>
-              </div>
-            )}
           </div>
           <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto px-4">
             Descubra histórias, insights e ideias da nossa comunidade de escritores
@@ -167,21 +149,8 @@ const Posts = () => {
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
                   <div className="flex flex-col sm:flex-row items-center gap-2">
                     <Badge className="px-3 py-1 text-center sm:text-left whitespace-nowrap bg-slate-700/50 text-gray-300 border-slate-600/50">
-                      {total} {total === 1 ? 'post' : 'posts'}
+                      {posts.length} {posts.length === 1 ? 'post' : 'posts'}
                     </Badge>
-                    
-                    {totalPages > 1 && (
-                      <Badge className="px-3 py-1 text-center sm:text-left whitespace-nowrap bg-slate-700/50 text-gray-300 border-slate-600/50">
-                        Página {currentPage} de {totalPages}
-                      </Badge>
-                    )}
-
-                    {isAutoRefreshing && (
-                      <Badge className="px-3 py-1 text-center sm:text-left text-green-400 border-green-500/50 bg-green-500/10">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
-                        Live
-                      </Badge>
-                    )}
                   </div>
                   
                 </div>
@@ -213,10 +182,14 @@ const Posts = () => {
         {showFilters && (
           <div className="mb-6 sm:mb-8">
             <PostFilters
-              filters={filters}
+              filters={{
+                sortBy: 'created_at',
+                sortOrder: 'desc',
+                itemsPerPage: 6
+              }}
               onFiltersChange={handleFiltersChange}
               onClearFilters={handleClearFilters}
-              totalPosts={total}
+              totalPosts={pagination.totalPosts}
               loading={loading}
             />
           </div>
@@ -277,8 +250,8 @@ const Posts = () => {
         {shouldShowPagination && (
           <div className="mt-8">
             <PostsPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
               onPageChange={handlePageChange}
             />
           </div>

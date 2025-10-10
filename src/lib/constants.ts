@@ -1,7 +1,3 @@
-/**
- * Application constants and configuration values
- * Centralized location for all constant values used throughout the app
- */
 
 // Authentication constants
 export const AUTH_CONSTANTS = {
@@ -109,6 +105,32 @@ export const FEATURE_FLAGS = {
   ENABLE_DEBUG_MODE: import.meta.env.DEV,
   ENABLE_MOCK_DATA: import.meta.env.VITE_ENABLE_MOCK_DATA === 'true',
   ENABLE_OFFLINE_MODE: import.meta.env.VITE_ENABLE_OFFLINE_MODE === 'true',
+} as const;
+
+// Dashboard tabs
+export const DASHBOARD_TABS = {
+  OVERVIEW: 'overview',
+  ANALYTICS: 'analytics',
+  COMMENTS: 'comments',
+  TEMPLATES: 'templates',
+  SEARCH: 'search',
+  NOTIFICATIONS: 'notifications',
+  BACKUP: 'backup',
+  SETTINGS: 'settings',
+} as const;
+
+// Comment modes
+export const COMMENT_MODES = {
+  STANDALONE: 'standalone',
+  CONTROLLED: 'controlled',
+} as const;
+
+// Form types
+export const FORM_TYPES = {
+  LOGIN: 'login',
+  REGISTER: 'register',
+  POST: 'post',
+  COMMENT: 'comment',
 } as const;
 
 // Environment configuration

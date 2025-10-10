@@ -44,11 +44,11 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ 
-        codeBlock: false, // We'll use CodeBlockLowlight instead
-        heading: false, // We'll configure it separately
-        horizontalRule: false, // We'll configure it separately
-        dropcursor: false, // We'll configure it separately
-        gapcursor: false, // We'll configure it separately
+        codeBlock: false,
+        heading: false,
+        horizontalRule: false,
+        dropcursor: false,
+        gapcursor: false,
       }),
       Placeholder.configure({ placeholder: "Escreva sua história..." }),
       Link.configure({ openOnClick: true, HTMLAttributes: { rel: "noopener noreferrer nofollow" } }),
@@ -193,28 +193,24 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     try {
       console.log('Starting image upload:', file.name, file.type, file.size);
       
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         console.error('Invalid file type:', file.type);
         return;
       }
 
-      // Validate file size (max 5MB)
       const maxSize = 5 * 1024 * 1024; // 5MB
+
       if (file.size > maxSize) {
         console.error('File too large:', file.size, 'max allowed:', maxSize);
         return;
       }
 
-      // Compress image first
       const compressedBlob = await compressImage(file);
       console.log('Image compressed:', compressedBlob.size, 'bytes');
 
-      // Upload to Supabase Storage
       const imageUrl = await uploadToSupabaseStorage(compressedBlob, 'jpg');
       console.log('Image uploaded to Supabase:', imageUrl);
       
-      // Insert image into editor
       editor?.chain().focus().setImage({ src: imageUrl }).run();
       console.log('Image inserted into editor successfully');
       
@@ -228,13 +224,11 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     if (f) {
       console.log('File selected:', f.name);
       
-      // Validate file type
       if (!f.type.startsWith('image/')) {
         console.error('Invalid file type:', f.type);
         return;
       }
 
-      // Validate file size (max 10MB for editing)
       const maxSize = 10 * 1024 * 1024; // 10MB
       if (f.size > maxSize) {
         console.error('File too large:', f.size, 'max allowed:', maxSize);
@@ -249,11 +243,9 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
   };
 
   const handleImageEditorSave = (editedImageHtml: string) => {
-    // Insert the edited image HTML into the editor
     editor?.chain().focus().insertContent(editedImageHtml).run();
     console.log('Edited image inserted into editor');
     
-    // Close the image editor
     setShowImageEditor(false);
     setSelectedImageFile(null);
     onImageEditorToggle?.(false);
@@ -265,13 +257,12 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
     onImageEditorToggle?.(false);
   };
 
-  // Link functions
   const openLinkModal = () => {
     const { from, to } = editor.state.selection;
     const selectedText = editor.state.doc.textBetween(from, to);
     
-    // Check if we're already in a link
     const linkMark = editor.getAttributes('link');
+
     if (linkMark.href) {
       setLinkUrl(linkMark.href);
       setLinkText(selectedText || linkMark.href);
@@ -346,45 +337,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().setHorizontalRule().run()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50">HR</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive("codeBlock") ? "bg-cyan-400 text-white" : "text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50"}>Code</Button>
           </div>
-
-          {/* Table 
-          <div className="flex items-center gap-1 border-r pr-2 mr-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => {
-              const tableId = `table-${Date.now()}`;
-              const tableHtml = `
-                <div class="notion-table-block" data-table-id="${tableId}" contenteditable="false" style="margin: 16px 0; position: relative; border: 2px solid #000000; border-radius: 6px; background: #ffffff; overflow: hidden;">
-                  <div class="notion-table-container" style="overflow: auto; max-width: 100%;">
-                    <table class="notion-table" style="width: 100%; border-collapse: collapse; background: #ffffff; table-layout: fixed; min-width: 300px;">
-                      <tbody>
-                        <tr style="border-bottom: 1px solid #000000;">
-                          <td class="notion-cell" contenteditable="true" style="border-right: 1px solid #000000; padding: 8px 12px; min-width: 120px; min-height: 36px; position: relative; vertical-align: top; background: #ffffff; transition: background-color 0.1s ease; word-wrap: break-word; overflow-wrap: break-word;"></td>
-                          <td class="notion-cell" contenteditable="true" style="border-right: 1px solid #000000; padding: 8px 12px; min-width: 120px; min-height: 36px; position: relative; vertical-align: top; background: #ffffff; transition: background-color 0.1s ease; word-wrap: break-word; overflow-wrap: break-word;"></td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #000000;">
-                          <td class="notion-cell" contenteditable="true" style="border-right: 1px solid #000000; padding: 8px 12px; min-width: 120px; min-height: 36px; position: relative; vertical-align: top; background: #ffffff; transition: background-color 0.1s ease; word-wrap: break-word; overflow-wrap: break-word;"></td>
-                          <td class="notion-cell" contenteditable="true" style="border-right: 1px solid #000000; padding: 8px 12px; min-width: 120px; min-height: 36px; position: relative; vertical-align: top; background: #ffffff; transition: background-color 0.1s ease; word-wrap: break-word; overflow-wrap: break-word;"></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="notion-table-menu" style="position: absolute; top: 8px; right: 8px; background: #ffffff; border: 1px solid #000000; border-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 4px; display: none; flex-direction: row; gap: 2px; z-index: 1000; min-width: auto;">
-                    <button class="notion-menu-btn" data-action="add-row-above" title="Add row above" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #374151; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">⬆️</button>
-                    <button class="notion-menu-btn" data-action="add-row-below" title="Add row below" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #374151; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">⬇️</button>
-                    <button class="notion-menu-btn" data-action="add-col-left" title="Add column left" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #374151; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">⬅️</button>
-                    <button class="notion-menu-btn" data-action="add-col-right" title="Add column right" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #374151; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">➡️</button>
-                    <div class="notion-menu-divider" style="width: 1px; background: #000000; margin: 0 2px;"></div>
-                    <button class="notion-menu-btn danger" data-action="delete-row" title="Delete row" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #dc2626; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">🗑️</button>
-                    <button class="notion-menu-btn danger" data-action="delete-col" title="Delete column" style="padding: 6px; border: none; background: transparent; border-radius: 4px; cursor: pointer; font-size: 16px; color: #dc2626; text-align: center; transition: background-color 0.1s ease; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">🗑️</button>
-                  </div>
-                </div>
-              `;
               
-              // Insert as raw HTML with inline styles
-              editor.chain().focus().insertContent(tableHtml).run();
-            }}>📊 Table</Button>
-          </div>
-          */}
-
           <div className="flex items-center gap-1 border-r pr-2 mr-2">
             <label className="inline-flex items-center gap-2 text-sm cursor-pointer px-2 py-1 rounded border border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={onPickFile} />

@@ -110,7 +110,6 @@ const TestAuth = () => {
         </CardHeader>
         
         <CardContent className="space-y-6">
-          {/* Test Controls */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Configuração de Teste</h3>
@@ -191,7 +190,6 @@ const TestAuth = () => {
             </div>
           </div>
 
-          {/* Test Results */}
           {testResults.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Resultados dos Testes</h3>

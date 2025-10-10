@@ -19,9 +19,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeleteClick = () => {
-    setShowDeleteModal(true);
-  };
+  const handleDeleteClick = () => { setShowDeleteModal(true); };
 
   const handleDeleteConfirm = async () => {
     if (!onDelete) return;
@@ -48,9 +46,7 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
     }
   };
 
-  const handleDeleteCancel = () => {
-    setShowDeleteModal(false);
-  };
+  const handleDeleteCancel = () => { setShowDeleteModal(false); };
 
   return (
     <Card className="group hover:shadow-2xl transition-all duration-300 bg-slate-800/50 backdrop-blur-md border-slate-700/50 h-full flex flex-col relative">
