@@ -117,10 +117,10 @@ const PostCard = ({ post, onDelete }: PostCardProps) => {
           <Button
             size="sm"
             asChild
-            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex-1 sm:flex-none"
+            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 flex-1 sm:flex-none py-3 sm:py-2 text-base sm:text-sm font-semibold hover:scale-105 active:scale-95"
           >
-            <Link to={`/posts/${post.id}`} className="text-center">
-              Ler Mais
+            <Link to={`/posts/${post.id}`} className="text-center flex items-center justify-center">
+              <span>Ler Mais</span>
             </Link>
           </Button>
 

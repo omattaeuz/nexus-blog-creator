@@ -395,7 +395,7 @@ export default function RichEditorPro({ value, onChange, preview = false, onTogg
           <div className="ml-auto flex items-center gap-2">
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50 disabled:text-gray-600 disabled:hover:bg-transparent">↶</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50 disabled:text-gray-600 disabled:hover:bg-transparent">↷</Button>
-            <Button type="button" size="sm" onClick={() => onTogglePreview?.(!preview)} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">{preview ? "✏️ Edit" : "👁️ Preview"}</Button>
+            <Button type="button" size="sm" onClick={() => onTogglePreview?.(!preview)} className="hidden lg:flex bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">{preview ? "✏️ Edit" : "👁️ Preview"}</Button>
           </div>
         </div>
 

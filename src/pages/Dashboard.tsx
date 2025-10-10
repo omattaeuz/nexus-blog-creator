@@ -22,7 +22,6 @@ import PostTemplates from '@/components/PostTemplates';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import NotificationSystem from '@/components/NotificationSystem';
 import BackupManager from '@/components/BackupManager';
-import ThemeToggle from '@/components/ThemeToggle';
 import HelpModal from '@/components/HelpModal';
 import { useKeyboardShortcuts, createBlogShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { usePosts } from '@/hooks/usePosts';
@@ -79,7 +78,6 @@ export default function Dashboard() {
       onSavePost: () => console.log('Save post shortcut'),
       onPreviewPost: () => console.log('Preview post shortcut'),
       onSearch: () => setActiveTab('search'),
-      onToggleTheme: () => console.log('Toggle theme shortcut'),
       onGoToPosts: () => window.location.href = '/posts',
       onGoToHome: () => setActiveTab('overview'),
       onGoToAnalytics: () => setActiveTab('analytics'),
@@ -253,7 +251,6 @@ export default function Dashboard() {
                   </Badge>
                 )}
               </Button>
-              <ThemeToggle />
               <HelpModal shortcuts={createBlogShortcuts({})} />
             </div>
           </div>
@@ -262,36 +259,36 @@ export default function Dashboard() {
 
       <main className="relative z-10 container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-6 lg:grid-cols-8 bg-slate-800/50 backdrop-blur-md border-slate-700/50">
-            <TabsTrigger value="overview" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+          <TabsList className="flex flex-wrap w-full md:grid md:grid-cols-6 lg:grid-cols-8 bg-slate-800/50 backdrop-blur-md border-slate-700/50">
+            <TabsTrigger value="overview" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Overview</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="analytics" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
               <TrendingUp className="h-4 w-4" />
               <span className="hidden sm:inline">Analytics</span>
             </TabsTrigger>
-            <TabsTrigger value="comments" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="comments" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
               <MessageCircle className="h-4 w-4" />
               <span className="hidden sm:inline">Comentários</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="templates" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
               <FileText className="h-4 w-4" />
               <span className="hidden sm:inline">Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="search" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="search" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Search className="h-4 w-4" />
               <span className="hidden sm:inline">Busca</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="notifications" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Bell className="h-4 w-4" />
               <span className="hidden sm:inline">Notificações</span>
             </TabsTrigger>
-            <TabsTrigger value="backup" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="backup" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <HardDrive className="h-4 w-4" />
               <span className="hidden sm:inline">Backup</span>
             </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
+            <TabsTrigger value="settings" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
@@ -505,16 +502,6 @@ export default function Dashboard() {
                 <CardTitle className="text-white">Configurações do Sistema</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-white">Tema</h3>
-                    <p className="text-sm text-gray-300">
-                      Escolha entre tema claro, escuro ou seguir o sistema
-                    </p>
-                  </div>
-                  <ThemeToggle />
-                </div>
-                
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-medium text-white">Notificações</h3>

@@ -167,18 +167,22 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="p-2">
-                    <Menu className="h-5 w-5" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                  >
+                    <Menu className="h-5 w-5 text-white" />
                     <span className="sr-only">Abrir menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+                <SheetContent side="right" className="w-[280px] sm:w-[350px] bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-l border-white/10">
                   <div className="flex flex-col space-y-4 mt-8">
-                    <div className="flex items-center space-x-2 pb-4 border-b border-border">
-                      <div className="p-2 rounded-xl bg-gradient-primary shadow-glow">
-                        <BookOpen className="h-5 w-5 text-primary-foreground" />
+                    <div className="flex items-center space-x-2 pb-4 border-b border-white/10">
+                      <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                        <BookOpen className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                      <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                         Nexta
                       </span>
                     </div>
@@ -188,7 +192,7 @@ const Layout = ({ children }: LayoutProps) => {
                         variant={isActive("/") ? "default" : "ghost"}
                         size="sm"
                         asChild
-                        className="justify-start"
+                        className="justify-start text-white hover:bg-white/10 hover:text-white transition-all duration-300"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <Link to="/" className="flex items-center">
@@ -203,7 +207,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant={isActive("/posts") ? "default" : "ghost"}
                             size="sm"
                             asChild
-                            className="justify-start"
+                            className="justify-start text-white hover:bg-white/10 hover:text-white transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Link to="/posts" className="flex items-center">
@@ -216,7 +220,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant={isActive("/dashboard") ? "default" : "ghost"}
                             size="sm"
                             asChild
-                            className="justify-start"
+                            className="justify-start text-white hover:bg-white/10 hover:text-white transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Link to="/dashboard" className="flex items-center">
@@ -229,7 +233,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant="default"
                             size="sm"
                             asChild
-                            className="justify-start bg-gradient-primary hover:bg-primary-hover shadow-glow"
+                            className="justify-start bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Link to="/posts/new" className="flex items-center">
@@ -241,10 +245,10 @@ const Layout = ({ children }: LayoutProps) => {
                       )}
                     </div>
 
-                    <div className="pt-4 border-t border-border">
+                    <div className="pt-4 border-t border-white/10">
                       {isAuthenticated ? (
                         <div className="space-y-3">
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground px-3 py-2">
+                          <div className="flex items-center space-x-2 text-sm text-gray-300 px-3 py-2">
                             <User className="h-4 w-4" />
                             <span className="truncate">{user?.email}</span>
                           </div>
@@ -255,7 +259,7 @@ const Layout = ({ children }: LayoutProps) => {
                               handleLogoutClick();
                               setIsMobileMenuOpen(false);
                             }}
-                            className="w-full justify-start hover:bg-destructive hover:text-destructive-foreground"
+                            className="w-full justify-start text-white hover:bg-red-500/20 hover:text-red-300 transition-all duration-300"
                           >
                             <LogOut className="h-4 w-4" />
                             <span className="ml-2">Sair</span>
@@ -267,7 +271,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant="ghost"
                             size="sm"
                             asChild
-                            className="w-full justify-start"
+                            className="w-full justify-start text-white hover:bg-white/10 hover:text-white transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Link to="/login" className="flex items-center">
@@ -279,7 +283,7 @@ const Layout = ({ children }: LayoutProps) => {
                             variant="default"
                             size="sm"
                             asChild
-                            className="w-full justify-start bg-gradient-primary hover:bg-primary-hover shadow-glow"
+                            className="w-full justify-start bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
                             <Link to="/register" className="flex items-center">
@@ -304,11 +308,10 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
 
       <footer className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 border-t border-white/10">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Brand */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2 group cursor-pointer">
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="block md:hidden">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center space-x-2 group cursor-pointer mb-4">
                 <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                   <BookOpen className="h-6 w-6 text-white group-hover:animate-bounce" />
                 </div>
@@ -316,55 +319,134 @@ const Layout = ({ children }: LayoutProps) => {
                   Nexta
                 </span>
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed">
+              <p className="text-gray-300 text-sm leading-relaxed max-w-sm mx-auto">
                 A plataforma mais avançada para criadores de conteúdo tech. 
                 Performance extrema, design moderno e ferramentas de IA integradas.
               </p>
             </div>
 
-            {/* Links */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Produto</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="/posts" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blogs</a></li>
-                <li><a href="/dashboard" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Dashboard</a></li>
-                <li><a href="/posts/new" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Criar Post</a></li>
-                <li><a href="/posts/public" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Posts Públicos</a></li>
-              </ul>
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-base text-center md:text-left">Produto</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="/posts" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Blogs</a></li>
+                  <li><a href="/dashboard" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Dashboard</a></li>
+                  <li><a href="/posts/new" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Criar Post</a></li>
+                  <li><a href="/posts/public" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Posts Públicos</a></li>
+                </ul>
+              </div>
+
+              {/* Empresa */}
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-base text-center md:text-left">Empresa</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Sobre</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Blog</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Carreiras</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Contato</a></li>
+                </ul>
+              </div>
+
+              {/* Suporte */}
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-base text-center md:text-left">Suporte</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Central de Ajuda</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Documentação</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">API</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Status</a></li>
+                </ul>
+              </div>
+
+              {/* Comunidade - Added for mobile balance */}
+              <div className="space-y-3">
+                <h3 className="text-white font-semibold text-base text-center md:text-left">Comunidade</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Discord</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Twitter</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">GitHub</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-1 -mx-1 rounded">Newsletter</a></li>
+                </ul>
+              </div>
             </div>
 
-            {/* Company */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Empresa</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Sobre</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blog</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Carreiras</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Contato</a></li>
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div className="space-y-4">
-              <h3 className="text-white font-semibold">Suporte</h3>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Central de Ajuda</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Documentação</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">API</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Status</a></li>
-              </ul>
+            <div className="border-t border-white/10 pt-6">
+              <div className="text-center space-y-4">
+                <p className="text-gray-300 text-sm">
+                  &copy; 2025 Nexta. Todos os direitos reservados.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 text-sm">
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-2 -mx-2 rounded">Privacidade</a>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-2 -mx-2 rounded">Termos</a>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block py-1 px-2 -mx-2 rounded">Cookies</a>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-              <p className="text-gray-300 text-sm">
-                &copy; 2025 Nexta. Todos os direitos reservados.
-              </p>
-              <div className="flex space-x-6 text-sm">
-                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Privacidade</a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Termos</a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Cookies</a>
+          {/* Desktop/Tablet Layout (768px+) - Unchanged */}
+          <div className="hidden md:block">
+            <div className="grid md:grid-cols-4 gap-8 mb-8">
+              {/* Brand */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 group cursor-pointer">
+                  <div className="p-2 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                    <BookOpen className="h-6 w-6 text-white group-hover:animate-bounce" />
+                  </div>
+                  <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent group-hover:from-cyan-400 group-hover:to-pink-400 transition-all duration-300">
+                    Nexta
+                  </span>
+                </div>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  A plataforma mais avançada para criadores de conteúdo tech. 
+                  Performance extrema, design moderno e ferramentas de IA integradas.
+                </p>
+              </div>
+
+              {/* Links */}
+              <div className="space-y-4">
+                <h3 className="text-white font-semibold">Produto</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="/posts" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blogs</a></li>
+                  <li><a href="/dashboard" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Dashboard</a></li>
+                  <li><a href="/posts/new" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Criar Post</a></li>
+                  <li><a href="/posts/public" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Posts Públicos</a></li>
+                </ul>
+              </div>
+
+              {/* Company */}
+              <div className="space-y-4">
+                <h3 className="text-white font-semibold">Empresa</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Sobre</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Blog</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Carreiras</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Contato</a></li>
+                </ul>
+              </div>
+
+              {/* Support */}
+              <div className="space-y-4">
+                <h3 className="text-white font-semibold">Suporte</h3>
+                <ul className="space-y-2 text-sm text-center md:text-left">
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Central de Ajuda</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Documentação</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">API</a></li>
+                  <li><a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Status</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-8">
+              <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                <p className="text-gray-300 text-sm">
+                  &copy; 2025 Nexta. Todos os direitos reservados.
+                </p>
+                <div className="flex space-x-6 text-sm">
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Privacidade</a>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Termos</a>
+                  <a href="#" className="text-gray-300 hover:text-white transition-colors hover:translate-x-1 inline-block">Cookies</a>
+                </div>
               </div>
             </div>
           </div>

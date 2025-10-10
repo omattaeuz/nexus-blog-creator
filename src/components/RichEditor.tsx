@@ -193,14 +193,14 @@ export default function RichEditor({ value, onChange, preview = false, onToggleP
             <Button type="button" size="sm" variant="outline" onClick={insertGallery} className="text-gray-400 hover:text-cyan-400 hover:bg-cyan-500/20 border-slate-600/50">Add Gallery</Button>
           </div>
           <div className="ml-auto">
-            <Button type="button" size="sm" onClick={togglePreview} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">
+            <Button type="button" size="sm" onClick={togglePreview} className="hidden lg:flex bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">
               {preview ? (<><EyeOff className="h-4 w-4 mr-2" /> Edit</>) : (<><Eye className="h-4 w-4 mr-2" /> Preview</>)}
             </Button>
           </div>
         </div>
 
         {preview ? (
-          <div className="prose max-w-none bg-background rounded border p-3" dangerouslySetInnerHTML={{ __html: internalHtml || "<p><em>Empty content</em></p>" }} />
+          <div className="hidden lg:block prose max-w-none bg-background rounded border p-3" dangerouslySetInnerHTML={{ __html: internalHtml || "<p><em>Empty content</em></p>" }} />
         ) : (
           <div
             ref={editorRef}

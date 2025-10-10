@@ -206,7 +206,7 @@ const PostForm = ({ initialData, onSubmit, isEdit = false }: PostFormProps) => {
       </div>
 
       {preview && (
-        <div className="w-1/2 bg-slate-800/50 backdrop-blur-md overflow-y-auto preview-enter">
+        <div className="hidden lg:block w-1/2 bg-slate-800/50 backdrop-blur-md overflow-y-auto preview-enter">
           <div className="p-6">
             <div className="mb-6 pb-4 border-b border-slate-700/50">
               <div className="flex items-center gap-3 mb-4">
