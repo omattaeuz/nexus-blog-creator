@@ -78,7 +78,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     canvas.width = 600;
     canvas.height = 400;
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#1e293b'; // slate-800
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const drawWidth = imageDisplaySize.width;
@@ -116,7 +116,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       (cropArea.height / imageSize.height) * imgHeight
     );
 
-    ctx.strokeStyle = '#3b82f6';
+    ctx.strokeStyle = '#06b6d4'; // cyan-500
     ctx.lineWidth = 2;
     ctx.strokeRect(
       imgX + (cropArea.x / imageSize.width) * imgWidth,
@@ -139,12 +139,12 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
       { x: imgX - handleSize/2, y: imgY + imgHeight/2 - handleSize/2, cursor: 'w-resize' }, // left
     ];
 
-    ctx.strokeStyle = '#3b82f6';
+    ctx.strokeStyle = '#06b6d4'; // cyan-500
     ctx.lineWidth = 2;
     ctx.strokeRect(imgX, imgY, imgWidth, imgHeight);
 
     handles.forEach((handle, index) => {
-      ctx.fillStyle = '#3b82f6';
+      ctx.fillStyle = '#06b6d4'; // cyan-500
       ctx.fillRect(handle.x, handle.y, handleSize, handleSize);
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1;
@@ -305,7 +305,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
     canvas.width = cropArea.width;
     canvas.height = cropArea.height;
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#1e293b'; // slate-800
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
@@ -395,20 +395,20 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
-        <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
-          <CardTitle>Editor de Imagem</CardTitle>
-          <Button variant="ghost" size="sm" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col bg-slate-800 border-slate-700 shadow-2xl">
+        <CardHeader className="flex flex-row items-center justify-between flex-shrink-0 bg-slate-800 border-b border-slate-700">
+          <CardTitle className="text-white">Editor de Imagem</CardTitle>
+          <Button variant="ghost" size="sm" onClick={onCancel} className="text-gray-300 hover:text-white hover:bg-slate-700">
             <X className="h-4 w-4" />
           </Button>
         </CardHeader>
         
-        <CardContent className="space-y-4 overflow-y-auto flex-1 p-4">
+        <CardContent className="space-y-4 overflow-y-auto flex-1 p-4 bg-slate-800">
           <div className="flex justify-center">
             <canvas
               ref={canvasRef}
-              className="border border-gray-300 rounded-lg cursor-crosshair max-w-full"
+              className="border border-slate-600/50 rounded-lg cursor-crosshair max-w-full shadow-lg"
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
@@ -418,13 +418,14 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-3">
-              <h3 className="font-semibold text-sm">Controles Básicos</h3>
+              <h3 className="font-semibold text-sm text-white">Controles Básicos</h3>
               
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => rotateImage('left')}
+                  className="border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white"
                 >
                   <RotateCcw className="h-4 w-4" />
                 </Button>
@@ -432,6 +433,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                   variant="outline"
                   size="sm"
                   onClick={() => rotateImage('right')}
+                  className="border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white"
                 >
                   <RotateCw className="h-4 w-4" />
                 </Button>
@@ -442,6 +444,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                     setCropMode(!cropMode);
                     if (cropMode) setResizeMode(false);
                   }}
+                  className={cropMode ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white" : "border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white"}
                 >
                   <Crop className="h-4 w-4" />
                 </Button>
@@ -452,6 +455,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                     setResizeMode(!resizeMode);
                     if (resizeMode) setCropMode(false);
                   }}
+                  className={resizeMode ? "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white" : "border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white"}
                 >
                   <Move className="h-4 w-4" />
                 </Button>
@@ -459,33 +463,34 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                   variant="outline"
                   size="sm"
                   onClick={resetFilters}
+                  className="border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white"
                 >
                   Reset
                 </Button>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs">Alinhamento</Label>
+                <Label className="text-xs text-gray-300">Alinhamento</Label>
                 <Select value={alignment} onValueChange={(value: any) => setAlignment(value)}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="left">Esquerda</SelectItem>
-                    <SelectItem value="center">Centro</SelectItem>
-                    <SelectItem value="right">Direita</SelectItem>
-                    <SelectItem value="full">Largura Total</SelectItem>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="left" className="text-white hover:bg-slate-700">Esquerda</SelectItem>
+                    <SelectItem value="center" className="text-white hover:bg-slate-700">Centro</SelectItem>
+                    <SelectItem value="right" className="text-white hover:bg-slate-700">Direita</SelectItem>
+                    <SelectItem value="full" className="text-white hover:bg-slate-700">Largura Total</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-3">
-              <h3 className="font-semibold text-sm">Filtros</h3>
+              <h3 className="font-semibold text-sm text-white">Filtros</h3>
               
               <div className="space-y-2">
                 <div>
-                  <Label className="text-xs">Brilho: {brightness}%</Label>
+                  <Label className="text-xs text-gray-300">Brilho: {brightness}%</Label>
                   <Slider
                     value={[brightness]}
                     onValueChange={([value]) => setBrightness(value)}
@@ -497,7 +502,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                 </div>
 
                 <div>
-                  <Label className="text-xs">Contraste: {contrast}%</Label>
+                  <Label className="text-xs text-gray-300">Contraste: {contrast}%</Label>
                   <Slider
                     value={[contrast]}
                     onValueChange={([value]) => setContrast(value)}
@@ -509,7 +514,7 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
                 </div>
 
                 <div>
-                  <Label className="text-xs">Saturação: {saturation}%</Label>
+                  <Label className="text-xs text-gray-300">Saturação: {saturation}%</Label>
                   <Slider
                     value={[saturation]}
                     onValueChange={([value]) => setSaturation(value)}
@@ -523,11 +528,11 @@ export default function ImageEditor({ imageFile, onSave, onCancel }: ImageEditor
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t flex-shrink-0">
-            <Button variant="outline" onClick={onCancel}>
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-700 flex-shrink-0">
+            <Button variant="outline" onClick={onCancel} className="border-slate-600 text-gray-300 hover:bg-slate-700 hover:text-white">
               Cancelar
             </Button>
-            <Button onClick={saveImage}>
+            <Button onClick={saveImage} className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white">
               <Download className="h-4 w-4 mr-2" />
               Salvar Imagem
             </Button>
