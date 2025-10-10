@@ -1,10 +1,11 @@
 "use client"
 import { motion } from "motion/react"
+import { useMemo } from "react"
 import { World } from "./ui/globe"
 
 export function GlobeDemo() {
   const globeConfig = {
-    pointSize: 4,
+    pointSize: 3,
     globeColor: "#062056",
     showAtmosphere: true,
     atmosphereColor: "#FFFFFF",
@@ -12,21 +13,22 @@ export function GlobeDemo() {
     emissive: "#062056",
     emissiveIntensity: 0.1,
     shininess: 0.9,
-    polygonColor: "rgba(100,149,237,0.8)",
+    polygonColor: "rgba(255,255,255,0.7)",
     ambientLight: "#38bdf8",
     directionalLeftLight: "#ffffff",
     directionalTopLight: "#ffffff",
     pointLight: "#ffffff",
-    arcTime: 4000,
-    arcLength: 0.1,
+    arcTime: 1000,
+    arcLength: 0.9,
     rings: 1,
     maxRings: 3,
     initialPosition: { lat: 22.3193, lng: 114.1694 },
     autoRotate: true,
-    autoRotateSpeed: 0.3,
+    autoRotateSpeed: 0.5,
   }
   const colors = ["#06b6d4", "#3b82f6", "#6366f1"]
-  const sampleArcs = [
+  
+  const sampleArcs = useMemo(() => [
     {
       order: 1,
       startLat: -19.885592,
@@ -387,7 +389,7 @@ export function GlobeDemo() {
       arcAlt: 0.3,
       color: colors[Math.floor(Math.random() * (colors.length - 1))],
     },
-  ]
+  ], [colors])
 
   return (
     <div className="md:mt-5 flex flex-row items-center justify-center py-8 sm:py-12 md:py-20 h-[100vh] sm:h-[100vh] md:h-[100vh] lg:h-[100vh] bg-transparent relative w-full">
