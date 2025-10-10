@@ -17,7 +17,7 @@ export function useCommentModeHandler({
   externalComments,
   externalOnAddComment,
   externalOnLikeComment,
-  externalOnReply,
+  externalOnReply: _externalOnReply,
   externalOnModerate
 }: CommentModeHandlerProps) {
   const cacheHook = mode === 'standalone' ? useCommentsWithCache(postId) : null;
@@ -31,13 +31,13 @@ export function useCommentModeHandler({
     : (cacheHook?.createComment || (() => Promise.reject('Cache hook not available')));
     
   const updateComment = mode === 'controlled' 
-    ? async (id: string, content: string) => {
+    ? async (_id: string, _content: string) => {
         console.warn('Update not supported in controlled mode');
       }
     : (cacheHook?.updateComment || (() => Promise.reject('Cache hook not available')));
     
   const deleteComment = mode === 'controlled' 
-    ? async (id: string) => {
+    ? async (_id: string) => {
         console.warn('Delete not supported in controlled mode');
       }
     : (cacheHook?.deleteComment || (() => Promise.reject('Cache hook not available')));

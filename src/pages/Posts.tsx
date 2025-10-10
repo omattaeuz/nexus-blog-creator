@@ -72,9 +72,7 @@ const Posts = () => {
     setCurrentPage(page);
   };
 
-  const handleFiltersChange = async (newFilters: FilterOptions) => {
-    await refetch();
-  };
+  const handleFiltersChange = async (_newFilters: FilterOptions) => { await refetch(); };
 
   const handleClearFilters = async () => {
     await refetch();

@@ -37,7 +37,7 @@ export default function Dashboard() {
     posts, 
     loading: postsLoading, 
     error: postsError,
-    refetch: refetchPosts
+    refetch: _refetchPosts
   } = usePostsWithCache();
 
   const {

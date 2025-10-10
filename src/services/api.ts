@@ -24,7 +24,7 @@ interface LoginData {
   password: string;
 }
 
-const supabaseClient = axios.create({
+const _supabaseClient = axios.create({
   baseURL: N8N_CONFIG.SUPABASE.URL,
   timeout: 10000,
   headers: {
@@ -97,8 +97,7 @@ class PostService extends BaseApiService {
 
       let filteredPosts = [...allPosts];
 
-      if (options?.token) filteredPosts = filteredPosts;
-      else filteredPosts = filteredPosts.filter((post) => post.is_public !== false);
+      if (!options?.token) filteredPosts = filteredPosts.filter((post) => post.is_public !== false);
 
       if (options?.search && options.search.trim()) {
         const term = options.search.trim().toLowerCase();

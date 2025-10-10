@@ -226,7 +226,7 @@ class RealNotificationService implements NotificationService {
     return false;
   }
 
-  generateActivityNotifications(posts: Post[]): void {
+  generateActivityNotifications(_posts: Post[]): void {
     if (this.notifications.length < 3) this.generateInitialNotifications();
   }
 }
