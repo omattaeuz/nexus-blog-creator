@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { VALIDATION_CONSTANTS, ERROR_MESSAGES } from '@/lib/constants';
+import { VALIDATION_CONSTANTS, AUTH_CONSTANTS, ERROR_MESSAGES } from '@/lib/constants';
 
 export interface ValidationRule {
   required?: boolean;
@@ -97,9 +97,9 @@ export const commonValidationRules = {
   },
   password: {
     required: true,
-    minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
+    minLength: AUTH_CONSTANTS.MIN_PASSWORD_LENGTH,
     custom: (value: string) => {
-      if (value.length < VALIDATION_CONSTANTS.MIN_TITLE_LENGTH) return ERROR_MESSAGES.PASSWORD_TOO_WEAK;
+      if (value.length < AUTH_CONSTANTS.MIN_PASSWORD_LENGTH) return ERROR_MESSAGES.PASSWORD_TOO_WEAK;
 
       return null;
     }
