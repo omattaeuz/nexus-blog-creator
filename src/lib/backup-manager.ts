@@ -222,7 +222,7 @@ export class BackupManager {
     markdown += `**Total de Posts:** ${posts.length}\n\n`;
     markdown += `---\n\n`;
 
-    posts.forEach((post, index) => {
+    posts.forEach((post, _index) => {
       markdown += `# ${post.title}\n\n`;
       markdown += `**Autor:** ${post.author}\n`;
       markdown += `**Data:** ${new Date(post.created_at).toLocaleString('pt-BR')}\n`;

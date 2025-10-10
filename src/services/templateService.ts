@@ -57,9 +57,9 @@ export class TemplateService {
     }
   }
 
-  static async delete(id: string): Promise<void> {
+  static async delete(_id: string): Promise<void> {
     try {
-      console.log('Deleting template:', id);
+      console.log('Deleting template:', _id);
       // TODO: Implement actual API call
     } catch (error) {
       console.error('Error deleting template:', error);
@@ -77,7 +77,7 @@ export class TemplateService {
     }
   }
 
-  static async getById(id: string): Promise<Template | null> {
+  static async getById(_id: string): Promise<Template | null> {
     try {
       // TODO: Implement actual API call
       return null;

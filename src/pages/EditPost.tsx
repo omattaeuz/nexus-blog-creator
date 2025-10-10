@@ -9,7 +9,7 @@ import { api } from "@/services/api";
 import { type Post, type UpdatePostData } from "@/types";
 import { useAuth } from "@/contexts/useAuth";
 import { toast } from "@/hooks/use-toast";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/lib/constants";
+import { ERROR_MESSAGES, ROUTES } from "@/lib/constants";
 
 const EditPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -32,7 +32,7 @@ const EditPost = () => {
         if (!fetchedPost) setError(ERROR_MESSAGES.NOT_FOUND);
         else setPost(fetchedPost);
         
-      } catch (_err) {
+      } catch {
         setError(ERROR_MESSAGES.NETWORK_ERROR);
         toast({
           title: "Erro",
