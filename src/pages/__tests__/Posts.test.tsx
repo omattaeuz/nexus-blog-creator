@@ -19,38 +19,28 @@ vi.mock('../../contexts/useAuth', () => ({
   })),
 }));
 
-// Mock do usePosts
-const mockUsePosts = {
+// Mock do usePostsWithCache
+const mockUsePostsWithCache = {
   posts: [
     { id: '1', title: 'Post 1', content: 'Content 1', created_at: '2024-01-01T00:00:00Z' },
     { id: '2', title: 'Post 2', content: 'Content 2', created_at: '2024-01-02T00:00:00Z' },
   ],
   loading: false,
   error: null,
-  total: 2,
-  totalPages: 1,
-  currentPage: 1,
-  itemsPerPage: 6,
-  hasNextPage: false,
-  hasPreviousPage: false,
-  startItem: 1,
-  endItem: 2,
-  filters: {
-    sortBy: 'created_at',
-    sortOrder: 'desc',
-    itemsPerPage: 6,
+  refetch: vi.fn(),
+  invalidateCache: vi.fn(),
+  invalidatePostCache: vi.fn(),
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    totalPosts: 2,
+    hasNextPage: false,
+    hasPrevPage: false,
   },
-  isAutoRefreshing: false,
-  searchPosts: vi.fn(),
-  goToPage: vi.fn(),
-  refreshPosts: vi.fn(),
-  setItemsPerPage: vi.fn(),
-  updateFilters: vi.fn(),
-  clearFilters: vi.fn(),
 };
 
-vi.mock('../../hooks/usePosts', () => ({
-  usePosts: vi.fn(() => mockUsePosts),
+vi.mock('../../hooks/usePostsWithCache', () => ({
+  usePostsWithCache: vi.fn((_options) => mockUsePostsWithCache),
 }));
 
 // Mock do api
