@@ -1,0 +1,13 @@
+[install]
+# Use the same cache directory as CI
+cache = "~/.bun/install/cache"
+
+# Enable frozen lockfile in CI
+frozen-lockfile = true
+
+[install.scopes]
+# Configure any scoped packages if needed
+
+[run]
+# Optimize for CI environment
+bun = "bun"

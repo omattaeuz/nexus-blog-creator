@@ -19,6 +19,7 @@ Modern blog platform with authentication, post management, analytics, comments s
 
 ## Tech Stack
 - React + TypeScript + Vite
+- Bun (package manager & runtime)
 - Tailwind CSS + shadcn-ui
 - Supabase (Auth SDK)
 - n8n (REST via Webhooks) on Railway
@@ -27,6 +28,39 @@ Modern blog platform with authentication, post management, analytics, comments s
 - Recharts (analytics charts)
 - date-fns (date formatting)
 - Lucide React (icons)
+
+---
+
+## Development Setup
+
+### Prerequisites
+- [Bun](https://bun.sh) (latest version)
+- Node.js 18+ (for compatibility)
+
+### Installation
+```bash
+# Install dependencies
+bun install
+
+# Start development server
+bun run dev
+
+# Run tests
+bun run test
+
+# Build for production
+bun run build
+```
+
+### Available Scripts
+- `bun run dev` - Start development server
+- `bun run build` - Build for production
+- `bun run test` - Run tests in watch mode
+- `bun run test:run` - Run tests once
+- `bun run test:ci` - Run CI pipeline (lint + type-check + tests + build)
+- `bun run lint` - Run ESLint
+- `bun run lint:fix` - Fix ESLint issues
+- `bun run type-check` - Run TypeScript type checking
 
 ---
 
