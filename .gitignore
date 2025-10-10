@@ -5,16 +5,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-bun-debug.log*
 lerna-debug.log*
 
 node_modules
 dist
 dist-ssr
 *.local
-
-# Bun
-.bun
 
 # Editor directories and files
 .vscode/*

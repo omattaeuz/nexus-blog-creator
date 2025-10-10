@@ -19,7 +19,7 @@ Modern blog platform with authentication, post management, analytics, comments s
 
 ## Tech Stack
 - React + TypeScript + Vite
-- Bun (package manager & runtime)
+- pnpm (package manager)
 - Tailwind CSS + shadcn-ui
 - Supabase (Auth SDK)
 - n8n (REST via Webhooks) on Railway
@@ -34,33 +34,33 @@ Modern blog platform with authentication, post management, analytics, comments s
 ## Development Setup
 
 ### Prerequisites
-- [Bun](https://bun.sh) (latest version)
-- Node.js 18+ (for compatibility)
+- [Node.js](https://nodejs.org) 18+ 
+- [pnpm](https://pnpm.io) (latest version)
 
 ### Installation
 ```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Start development server
-bun run dev
+pnpm run dev
 
 # Run tests
-bun run test
+pnpm run test
 
 # Build for production
-bun run build
+pnpm run build
 ```
 
 ### Available Scripts
-- `bun run dev` - Start development server
-- `bun run build` - Build for production
-- `bun run test` - Run tests in watch mode
-- `bun run test:run` - Run tests once
-- `bun run test:ci` - Run CI pipeline (lint + type-check + tests + build)
-- `bun run lint` - Run ESLint
-- `bun run lint:fix` - Fix ESLint issues
-- `bun run type-check` - Run TypeScript type checking
+- `pnpm run dev` - Start development server
+- `pnpm run build` - Build for production
+- `pnpm run test` - Run tests in watch mode
+- `pnpm run test:run` - Run tests once
+- `pnpm run test:ci` - Run CI pipeline (lint + type-check + tests + build)
+- `pnpm run lint` - Run ESLint
+- `pnpm run lint:fix` - Fix ESLint issues
+- `pnpm run type-check` - Run TypeScript type checking
 
 ---
 
