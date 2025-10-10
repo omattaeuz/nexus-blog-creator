@@ -23,7 +23,6 @@ const ResetPassword = () => {
   useEffect(() => {
     const handlePasswordReset = async () => {
       try {
-        // Check if we have the necessary tokens in the URL
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
         
@@ -32,7 +31,6 @@ const ResetPassword = () => {
         const type = params.get('type');
 
         if (type === 'recovery' && accessToken && refreshToken) {
-          // Set the session with the recovery tokens
           const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken
@@ -54,7 +52,6 @@ const ResetPassword = () => {
             setMessage('Erro ao processar link de reset.');
           }
         } else {
-          // Check if user is already authenticated
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session && session.user) {
@@ -129,7 +126,6 @@ const ResetPassword = () => {
           variant: 'default'
         });
 
-        // Redirect to posts page after 3 seconds
         setTimeout(() => {
           navigate('/posts');
         }, 3000);

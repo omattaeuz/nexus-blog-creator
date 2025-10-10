@@ -23,7 +23,6 @@ export default function LiveStats() {
   ]);
 
   useEffect(() => {
-    // Simulate real-time data updates
     const interval = setInterval(() => {
       setStats(prevStats => 
         prevStats.map(stat => ({
@@ -33,7 +32,6 @@ export default function LiveStats() {
       );
     }, 2000);
 
-    // Initialize with some base values
     setStats(prevStats => 
       prevStats.map((stat, index) => ({
         ...stat,

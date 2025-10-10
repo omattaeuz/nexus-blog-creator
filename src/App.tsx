@@ -10,7 +10,6 @@ import Home from "@/pages/Home";
 import Posts from "@/pages/Posts";
 import CreatePost from "@/pages/CreatePost";
 import EditPost from "@/pages/EditPost";
-import PostDetail from "@/pages/PostDetail";
 import PublicPostDetail from "@/pages/PublicPostDetail";
 import PublicPosts from "@/pages/PublicPosts";
 import Login from "@/pages/Login";

@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { Calendar, ArrowLeft, Loader2, AlertCircle, LogIn, User, Clock } from "lucide-react";
 import { api } from "@/services/api";
 import { type Post } from "@/types";
-// import { toast } from "@/hooks/use-toast";
 import { formatDate, calculateReadingTime } from "@/lib/formatters";
 import { redisCache } from "@/lib/redis-cache";
 import ShareButton from "@/components/ShareButton";
@@ -15,6 +14,7 @@ import RichRendererPro from "@/components/RichRendererPro";
 import RelatedPosts from "@/components/RelatedPosts";
 import CommentsSection from "@/components/CommentsSection";
 import { useAuth } from "@/contexts/useAuth";
+import { ERROR_MESSAGES, ROUTES } from "@/lib/constants";
 
 const PublicPostDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,25 +27,22 @@ const PublicPostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) {
-        setError("ID do post é obrigatório");
+        setError(ERROR_MESSAGES.NOT_FOUND);
         setLoading(false);
         return;
       }
 
       try {
-        // Try to fetch post without authentication token
         const fetchedPost = await api.getPost(id);
-        if (!fetchedPost) {
-          setError("Post não encontrado");
-        } else {
-          setPost(fetchedPost);
-        }
+
+        if (!fetchedPost) setError(ERROR_MESSAGES.NOT_FOUND);
+        else setPost(fetchedPost);
+
       } catch (err) {
-        // If API fails, try to get post from localStorage (from previous visits)
         console.error('Public access failed, trying localStorage fallback:', err);
         
         // Try to get from Redis cache
-        const cachedPost = await redisCache.get(`posts:detail:${id}`);
+        const cachedPost = await redisCache.get<Post>(`posts:detail:${id}`);
         if (cachedPost) {
           console.log('Found post in Redis cache, showing preview');
           setPost(cachedPost);
@@ -54,21 +51,21 @@ const PublicPostDetail = () => {
         }
         
         // If no cache available, show appropriate error message
-        let errorMessage = "Este post não está disponível publicamente ou requer login para visualização";
+        let errorMessage: string = ERROR_MESSAGES.UNAUTHORIZED;
         
         if (err instanceof Error) {
           if (err.message.includes('404')) {
-            errorMessage = "Post não encontrado";
+            errorMessage = ERROR_MESSAGES.NOT_FOUND;
           } else if (err.message.includes('CORS') || err.message.includes('servidor está com problemas')) {
-            errorMessage = "Problema de configuração do servidor. Este post pode não estar disponível publicamente.";
+            errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
           } else if (err.message.includes('não disponível publicamente')) {
             errorMessage = err.message;
           } else if (err.message.includes('Network Error') || err.message.includes('ERR_NETWORK')) {
-            errorMessage = "Servidor temporariamente indisponível. Tente novamente mais tarde.";
+            errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
           } else if (err.message.includes('500') || err.message.includes('Internal Server Error')) {
-            errorMessage = "Erro interno do servidor. O post pode não estar disponível no momento.";
+            errorMessage = ERROR_MESSAGES.UNEXPECTED_ERROR;
           } else if (err.message.includes('CORS policy')) {
-            errorMessage = "Problema de configuração de CORS. Este post pode não estar acessível publicamente.";
+            errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
           }
         }
         
@@ -133,7 +130,7 @@ const PublicPostDetail = () => {
                     asChild
                     className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
                   >
-                    <Link to="/login">
+                    <Link to={ROUTES.LOGIN}>
                       <LogIn className="h-4 w-4 mr-2" />
                       Fazer Login
                     </Link>
@@ -142,7 +139,7 @@ const PublicPostDetail = () => {
                 
                 <Button
                   variant="outline"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate(ROUTES.HOME)}
                   className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white transition-all duration-300"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -159,12 +156,9 @@ const PublicPostDetail = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
       <AnimatedBackground />
-      {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Article Content */}
           <article className="lg:col-span-3">
-            {/* Article Header */}
             <header className="mb-8">
               <div className="mb-4 flex items-center gap-3">
                 <Badge className="bg-green-500/10 text-green-400 border-green-500/50">
@@ -201,12 +195,10 @@ const PublicPostDetail = () => {
               </div>
             </header>
 
-            {/* Article Body */}
             <div className="prose prose-lg max-w-none">
               <RichRendererPro html={post.content} />
             </div>
 
-            {/* Article Footer */}
             <footer className="mt-12 pt-8 border-t border-slate-700/50">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <ShareButton
@@ -224,7 +216,7 @@ const PublicPostDetail = () => {
                       asChild
                       className="border-slate-600/50 text-gray-300 hover:bg-slate-700/50 hover:text-white"
                     >
-                      <Link to="/login" className="flex items-center space-x-2">
+                      <Link to={ROUTES.LOGIN} className="flex items-center space-x-2">
                         <LogIn className="h-4 w-4" />
                         <span>Fazer Login</span>
                       </Link>
@@ -236,7 +228,7 @@ const PublicPostDetail = () => {
                     asChild
                     className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <Link to="/" className="flex items-center justify-center">
+                    <Link to={ROUTES.HOME} className="flex items-center justify-center">
                       Ver Mais Posts
                     </Link>
                   </Button>
@@ -244,21 +236,18 @@ const PublicPostDetail = () => {
               </div>
             </footer>
 
-            {/* Comments Section */}
             <CommentsSection 
               postId={post.id}
               isAuthenticated={isAuthenticated}
               currentUser={isAuthenticated ? {
-                name: 'Usuário', // This would come from auth context
+                name: 'Usuário',
                 email: 'user@example.com'
               } : undefined}
             />
           </article>
 
-          {/* Sidebar */}
           <aside className="lg:col-span-1">
             <div className="sticky top-24 space-y-8">
-              {/* Author Info */}
               {post.author && (
                 <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
                   <h3 className="font-semibold text-white mb-4">Sobre o Autor</h3>
@@ -276,14 +265,12 @@ const PublicPostDetail = () => {
                 </Card>
               )}
 
-              {/* Related Posts */}
               <RelatedPosts 
                 currentPostId={post.id}
                 currentPostTags={post.tags}
                 maxPosts={3}
               />
 
-              {/* Newsletter Signup */}
               <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
                 <h3 className="font-semibold text-white mb-2">Fique por dentro</h3>
                 <p className="text-sm text-gray-300 mb-4">

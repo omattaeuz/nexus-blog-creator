@@ -390,7 +390,7 @@ export function GlobeDemo() {
   ]
 
   return (
-    <div className="flex flex-row items-center justify-center py-8 sm:py-12 md:py-20 h-[100vh] sm:h-[100vh] md:h-[100vh] lg:h-[100vh] bg-transparent relative w-full">
+    <div className="md:mt-5 flex flex-row items-center justify-center py-8 sm:py-12 md:py-20 h-[100vh] sm:h-[100vh] md:h-[100vh] lg:h-[100vh] bg-transparent relative w-full">
       <div className="max-w-7xl mx-auto w-full relative overflow-visible h-full md:h-[60rem] px-2 sm:px-4">
         <motion.div
           initial={{
@@ -406,10 +406,10 @@ export function GlobeDemo() {
           }}
           className="div"
         >
-          <h2 className="text-center text-lg sm:text-xl md:text-4xl font-bold text-white px-2">
+          <h2 className="text-center text-2xl md:text-4xl font-bold text-white px-2">
             Conectamos Criadores pelo Mundo
           </h2>
-          <p className="text-center text-sm sm:text-base md:text-lg font-normal text-white max-w-xs sm:max-w-md mt-2 mx-auto px-2">
+          <p className="text-center text-base md:text-lg font-normal text-white max-w-xs sm:max-w-md mt-2 mx-auto px-2">
             Nossa plataforma une blogueiros e leitores de todos os continentes. Explore, crie e compartilhe conhecimento globalmente.
           </p>
         </motion.div>

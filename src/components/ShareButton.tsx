@@ -137,7 +137,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({
         }
         
         if (!success) {
-          // If all automatic methods fail, show manual copy dialog
           setShowManualCopy(true);
           return;
         }

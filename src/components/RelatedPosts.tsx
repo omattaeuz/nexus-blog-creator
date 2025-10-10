@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, User } from 'lucide-react';
-import { api, type Post } from '@/services/api';
+import { api } from '@/services/api';
+import { type Post } from '@/types';
 import { formatDate, stripHtmlTags } from '@/lib/formatters';
+import { ROUTES } from '@/lib/constants';
 
 interface RelatedPostsProps {
   currentPostId: string;
@@ -25,21 +27,17 @@ export default function RelatedPosts({
       try {
         setLoading(true);
         
-        // Get all public posts using the public endpoint
-        const response = await api.getPublicPosts(1, 50); // Get more posts to filter
+        const response = await api.getPublicPosts(1, 50);
         
         if (response && response.data) {
           const allPosts = response.data;
           
-          // Filter out current post and find related posts
           const filteredPosts = allPosts
             .filter(post => 
               post.id !== currentPostId && 
-              post.is_public && 
-              !post.deleted_at
+              post.is_public
             )
             .map(post => {
-              // Calculate similarity score based on tags
               let similarityScore = 0;
               if (currentPostTags.length > 0 && post.tags) {
                 const commonTags = currentPostTags.filter(tag => 
@@ -50,8 +48,8 @@ export default function RelatedPosts({
               
               return { ...post, similarityScore };
             })
-            .filter(post => post.similarityScore > 0) // Only posts with common tags
-            .sort((a, b) => b.similarityScore - a.similarityScore) // Sort by similarity
+            .filter(post => post.similarityScore > 0)
+            .sort((a, b) => b.similarityScore - a.similarityScore)
             .slice(0, maxPosts);
           
           setRelatedPosts(filteredPosts);
@@ -102,7 +100,7 @@ export default function RelatedPosts({
         {relatedPosts.map((post) => (
           <Link 
             key={post.id} 
-            to={`/posts/${post.id}`}
+            to={ROUTES.POST_DETAIL(post.id)}
             className="block group"
           >
             <Card className="p-4 hover:shadow-xl transition-all duration-300 border border-slate-600/50 group-hover:border-cyan-400/50 bg-slate-700/30 group-hover:bg-slate-700/50">

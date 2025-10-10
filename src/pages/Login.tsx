@@ -81,10 +81,8 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Divider Line */}
             <div className="hidden lg:block w-px bg-gradient-to-b from-transparent via-slate-400/80 to-transparent"></div>
 
-            {/* Right Column - Login Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
               <div className="w-full max-w-md">
                 <LoginForm />

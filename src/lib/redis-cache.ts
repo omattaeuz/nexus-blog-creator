@@ -1,7 +1,4 @@
-/**
- * Redis Cache Manager for Frontend
- * Implements Cache-Aside Pattern with Redis backend
- */
+import { API_CONSTANTS } from './constants';
 
 interface CacheItem<T> {
   data: T;
@@ -31,14 +28,12 @@ class RedisCacheManager {
 
   private async initializeRedis() {
     try {
-      // Check if we have Redis configuration
       if (!this.config.url || this.config.url === 'redis://localhost:6379') {
         console.log('ℹ️ Redis not configured, using fallback cache');
         this.isConnected = false;
         return;
       }
 
-      // Dynamic import to avoid SSR issues
       const Redis = await import('ioredis');
       
       this.redis = new Redis.default({
@@ -47,11 +42,11 @@ class RedisCacheManager {
         password: this.config.password,
         db: this.config.db || 0,
         retryDelayOnFailover: this.config.retryDelayOnFailover || 100,
-        maxRetriesPerRequest: this.config.maxRetriesPerRequest || 3,
+        maxRetriesPerRequest: this.config.maxRetriesPerRequest || API_CONSTANTS.RETRY_ATTEMPTS,
         lazyConnect: true,
-        connectTimeout: 5000, // Reduced timeout
-        commandTimeout: 3000, // Reduced timeout
-      });
+        connectTimeout: API_CONSTANTS.TIMEOUT / 2, // Half of API timeout
+        commandTimeout: API_CONSTANTS.TIMEOUT / 3, // One third of API timeout
+      } as any);
 
       this.redis.on('connect', () => {
         console.log('✅ Redis connected');
@@ -68,10 +63,9 @@ class RedisCacheManager {
         this.isConnected = false;
       });
 
-      // Try to connect with timeout
       const connectPromise = this.redis.connect();
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Connection timeout')), 3000)
+        setTimeout(() => reject(new Error('Connection timeout')), API_CONSTANTS.TIMEOUT / 3)
       );
       
       await Promise.race([connectPromise, timeoutPromise]);
@@ -81,10 +75,7 @@ class RedisCacheManager {
     }
   }
 
-  /**
-   * Set data in cache with TTL
-   */
-  async set<T>(key: string, data: T, ttlSeconds: number = 300): Promise<void> {
+  async set<T>(key: string, data: T, ttlSeconds: number = API_CONSTANTS.CACHE_DURATION / 1000): Promise<void> {
     const cacheItem: CacheItem<T> = {
       data,
       timestamp: Date.now(),
@@ -106,28 +97,20 @@ class RedisCacheManager {
     }
   }
 
-  /**
-   * Get data from cache
-   */
   async get<T>(key: string): Promise<T | null> {
     try {
       let cacheItem: CacheItem<T> | null = null;
 
       if (this.isConnected && this.redis) {
         const cached = await this.redis.get(key);
-        if (cached) {
-          cacheItem = JSON.parse(cached);
-        }
+        if (cached) cacheItem = JSON.parse(cached);
+
       } else {
-        // Fallback to memory cache
         cacheItem = this.fallbackCache.get(key) || null;
       }
 
-      if (!cacheItem) {
-        return null;
-      }
+      if (!cacheItem) return null;
 
-      // Check if expired
       if (Date.now() - cacheItem.timestamp > cacheItem.ttl) {
         await this.delete(key);
         return null;
@@ -140,9 +123,6 @@ class RedisCacheManager {
     }
   }
 
-  /**
-   * Delete key from cache
-   */
   async delete(key: string): Promise<void> {
     try {
       if (this.isConnected && this.redis) {
@@ -154,9 +134,6 @@ class RedisCacheManager {
     }
   }
 
-  /**
-   * Delete multiple keys matching pattern
-   */
   async invalidatePattern(pattern: string): Promise<void> {
     try {
       if (this.isConnected && this.redis) {
@@ -166,26 +143,25 @@ class RedisCacheManager {
         }
       }
       
-      // Also clear from fallback cache
       for (const key of this.fallbackCache.keys()) {
-        if (key.includes(pattern.replace('*', ''))) {
-          this.fallbackCache.delete(key);
-        }
+        if (key.includes(pattern.replace('*', ''))) this.fallbackCache.delete(key);
+
       }
     } catch (error) {
       console.warn('Cache invalidate pattern error:', error);
     }
   }
 
-  /**
-   * Get cache statistics
-   */
   async getStats(): Promise<{
     connected: boolean;
     memoryKeys: number;
     redisKeys?: number;
   }> {
-    const stats = {
+    const stats: {
+      connected: boolean;
+      memoryKeys: number;
+      redisKeys?: number;
+    } = {
       connected: this.isConnected,
       memoryKeys: this.fallbackCache.size,
     };
@@ -201,23 +177,16 @@ class RedisCacheManager {
     return stats;
   }
 
-  /**
-   * Clear all cache
-   */
   async clear(): Promise<void> {
     try {
-      if (this.isConnected && this.redis) {
-        await this.redis.flushdb();
-      }
+      if (this.isConnected && this.redis) await this.redis.flushdb();
+
       this.fallbackCache.clear();
     } catch (error) {
       console.warn('Cache clear error:', error);
     }
   }
 
-  /**
-   * Health check
-   */
   async healthCheck(): Promise<boolean> {
     try {
       if (this.isConnected && this.redis) {
@@ -231,7 +200,6 @@ class RedisCacheManager {
   }
 }
 
-// Cache key generators
 export const CacheKeys = {
   posts: {
     list: (page?: number, limit?: number) => 
@@ -257,7 +225,6 @@ export const CacheKeys = {
   }
 };
 
-// Default cache TTLs (in seconds)
 export const CacheTTL = {
   posts: 300,        // 5 minutes
   analytics: 600,    // 10 minutes
@@ -266,7 +233,6 @@ export const CacheTTL = {
   search: 300,       // 5 minutes
 };
 
-// Initialize Redis cache manager
 const redisConfig: RedisConfig = {
   url: import.meta.env.VITE_REDIS_URL || 'redis://localhost:6379',
   password: import.meta.env.VITE_REDIS_PASSWORD,
@@ -275,7 +241,6 @@ const redisConfig: RedisConfig = {
 
 export const redisCache = new RedisCacheManager(redisConfig);
 
-// Cache invalidation helpers
 export const CacheInvalidation = {
   onPostCreate: () => redisCache.invalidatePattern('posts:*'),
   onPostUpdate: (postId: string) => {

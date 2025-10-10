@@ -1,14 +1,6 @@
-/**
- * Toast helper functions for consistent messaging across the app
- * Centralized location for common toast patterns
- */
-
 import { toast } from "@/hooks/use-toast";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "./constants";
 
-/**
- * Shows a validation error toast
- */
 export const showValidationError = () => {
   toast({
     title: "Erro de Validação",
@@ -17,9 +9,6 @@ export const showValidationError = () => {
   });
 };
 
-/**
- * Shows a network error toast
- */
 export const showNetworkError = () => {
   toast({
     title: "Erro de Conexão",
@@ -28,9 +17,6 @@ export const showNetworkError = () => {
   });
 };
 
-/**
- * Shows an unexpected error toast
- */
 export const showUnexpectedError = (customMessage?: string) => {
   toast({
     title: "Erro",
@@ -39,9 +25,6 @@ export const showUnexpectedError = (customMessage?: string) => {
   });
 };
 
-/**
- * Shows a success toast for post operations
- */
 export const showPostSuccess = (isEdit: boolean) => {
   toast({
     title: isEdit ? SUCCESS_MESSAGES.POST_UPDATED : SUCCESS_MESSAGES.POST_CREATED,
@@ -49,9 +32,6 @@ export const showPostSuccess = (isEdit: boolean) => {
   });
 };
 
-/**
- * Shows a success toast for authentication operations
- */
 export const showAuthSuccess = (operation: 'login' | 'register' | 'logout') => {
   const messages = {
     login: SUCCESS_MESSAGES.LOGIN_SUCCESS,
@@ -64,4 +44,3 @@ export const showAuthSuccess = (operation: 'login' | 'register' | 'logout') => {
     description: operation === 'login' ? "Você foi logado com sucesso." : undefined,
   });
 };
-

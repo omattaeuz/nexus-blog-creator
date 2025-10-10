@@ -23,11 +23,8 @@ const PublicPosts: React.FC = () => {
         setLoading(true);
         const result = await api.getPublicPosts(page, 10);
         
-        if (page === 1) {
-          setPosts(result.data);
-        } else {
-          setPosts(prev => [...prev, ...result.data]);
-        }
+        if (page === 1) setPosts(result.data);
+        else setPosts(prev => [...prev, ...result.data]);
         
         setHasMore(result.data.length === 10);
         setError(null);
@@ -92,7 +89,6 @@ const PublicPosts: React.FC = () => {
     <div className="min-h-screen bg-gradient-surface">
       <div className="container mx-auto px-3 sm:px-4 py-12 sm:py-20">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
               Posts Públicos
@@ -102,7 +98,6 @@ const PublicPosts: React.FC = () => {
             </p>
           </div>
 
-          {/* Posts List */}
           {posts.length === 0 ? (
             <Card className="bg-gradient-surface shadow-md">
               <CardContent className="p-8 sm:p-12 text-center">
@@ -160,7 +155,6 @@ const PublicPosts: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Tags */}
                     {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-4">
                         {post.tags.slice(0, 3).map((tag, index) => (
@@ -218,7 +212,6 @@ const PublicPosts: React.FC = () => {
                 </Card>
               ))}
               
-              {/* Load More Button */}
               {hasMore && (
                 <div className="text-center pt-6 sm:pt-8">
                   <Button

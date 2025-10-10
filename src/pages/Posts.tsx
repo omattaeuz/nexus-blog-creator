@@ -19,20 +19,21 @@ const Posts = () => {
   const { token } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const {
     posts,
     loading,
-    error,
-    refetch
+    refetch,
+    invalidatePostCache,
+    pagination
   } = usePostsWithCache({
-    autoFetch: true,
-    autoRefresh: true
+    page: currentPage,
+    limit: 6
   });
 
   const handleSearchSubmit = async () => {
-    // For now, just refetch all posts - search functionality can be added later
     await refetch();
   };
 
@@ -49,11 +50,14 @@ const Posts = () => {
     try {
       logApi('Deleting post', { postId: id });
       await api.deletePost(id, token);
+      
+      await invalidatePostCache(id);
+      await refetch(true);
+      
       toast({
         title: "Sucesso",
         description: "Post excluído com sucesso.",
       });
-      await refetch();
     } catch (error) {
       logError('Failed to delete post', { postId: id, error: error instanceof Error ? error.message : 'Unknown error' });
       toast({
@@ -65,17 +69,14 @@ const Posts = () => {
   };
 
   const handlePageChange = async (page: number) => {
-    // For now, just refetch - pagination can be added later
-    await refetch();
+    setCurrentPage(page);
   };
 
   const handleFiltersChange = async (newFilters: FilterOptions) => {
-    // For now, just refetch - filters can be added later
     await refetch();
   };
 
   const handleClearFilters = async () => {
-    // For now, just refetch - filters can be added later
     await refetch();
   };
 
@@ -107,7 +108,6 @@ const Posts = () => {
                 Blogs
               </span>
             </h1>
-            {/* Auto-refresh indicator removed for now */}
           </div>
           <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-2xl mx-auto px-4">
             Descubra histórias, insights e ideias da nossa comunidade de escritores
@@ -189,7 +189,7 @@ const Posts = () => {
               }}
               onFiltersChange={handleFiltersChange}
               onClearFilters={handleClearFilters}
-              totalPosts={posts.length}
+              totalPosts={pagination.totalPosts}
               loading={loading}
             />
           </div>
@@ -249,7 +249,11 @@ const Posts = () => {
 
         {shouldShowPagination && (
           <div className="mt-8">
-            {/* Pagination temporarily disabled - will be re-implemented with cache */}
+            <PostsPagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
           </div>
         )}
       </div>

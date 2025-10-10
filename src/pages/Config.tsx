@@ -7,7 +7,6 @@ const Config = () => {
   return (
     <div className="min-h-screen bg-gradient-surface">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             <span className="bg-gradient-primary bg-clip-text text-transparent">
@@ -19,7 +18,6 @@ const Config = () => {
           </p>
         </div>
 
-        {/* Status Alert */}
         <Alert className="mb-8 max-w-2xl mx-auto">
           <Info className="h-4 w-4" />
           <AlertDescription>
@@ -28,10 +26,8 @@ const Config = () => {
           </AlertDescription>
         </Alert>
 
-        {/* Configuration Card */}
         <N8nConfig />
 
-        {/* Instructions */}
         <Card className="max-w-2xl mx-auto mt-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

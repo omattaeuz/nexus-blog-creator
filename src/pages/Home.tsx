@@ -26,12 +26,11 @@ import {
   Pause,
 } from "lucide-react";
 import { useAuth } from "@/contexts/useAuth";
-import AdvancedTypewriter from "@/components/AdvancedTypewriter";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import LiveStats from "@/components/LiveStats";
 import GlobeDemo from "@/components/globe-demo";
 import RotatingText from "@/components/ui/rotating-text";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
@@ -43,7 +42,6 @@ const Home = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Mock data for demonstration
   const stats = [
     { label: "Posts Publicados", value: 2.4, suffix: "K", icon: <BookOpen className="h-4 w-4" />, color: "text-blue-500" },
     { label: "Leitores Ativos", value: 15.2, suffix: "K", icon: <Users className="h-4 w-4" />, color: "text-green-500" },
@@ -108,7 +106,6 @@ const Home = () => {
 
 
 
-  // Auto-rotate features
   useEffect(() => {
     if (!isPlaying) return;
     
@@ -119,7 +116,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [isPlaying, features.length]);
 
-  // Progress animation
   useEffect(() => {
     if (!isPlaying) return;
     
@@ -133,7 +129,6 @@ const Home = () => {
     return () => clearInterval(progressInterval);
   }, [isPlaying]);
 
-  // Mouse tracking for parallax effect
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -143,7 +138,6 @@ const Home = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Gradual blur on scroll
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -155,11 +149,9 @@ const Home = () => {
         const elementHeight = rect.height;
         const windowHeight = window.innerHeight;
         
-        // Calculate if element is in viewport
         const isInView = rect.top < windowHeight && rect.bottom > 0;
         
         if (isInView) {
-          // Calculate blur based on distance from center of viewport
           const centerY = windowHeight / 2;
           const elementCenter = rect.top + rect.height / 2;
           const distance = Math.abs(elementCenter - centerY);
@@ -176,7 +168,6 @@ const Home = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Scroll to top functionality
   useEffect(() => {
     const handleScrollTop = () => {
       setShowScrollTop(window.pageYOffset > 300);
@@ -196,9 +187,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
       <AnimatedBackground />
-      {/* Hero Section */}
       <section ref={heroRef} className="relative overflow-hidden min-h-screen flex items-center">
-        {/* Animated Background with Mouse Parallax */}
         <div className="absolute inset-0">
           <div 
             className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse transition-transform duration-1000 ease-out"
@@ -286,7 +275,6 @@ const Home = () => {
                 ))}
               </div>
 
-              {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
@@ -397,7 +385,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Grid Section */}
       <section className="py-20 bg-black/20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -453,7 +440,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section className="py-20 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -518,7 +504,6 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 shadow-2xl max-w-5xl mx-auto overflow-hidden">
             <CardContent className="p-12 lg:p-16 text-center relative">
-              {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div 
                   className="absolute top-0 left-0 w-full h-full"
@@ -605,7 +590,6 @@ const Home = () => {
                   )}
                 </div>
 
-                {/* Trust Indicators */}
                 <div className="flex flex-wrap justify-center items-center gap-8 pt-8 border-t border-white/20">
                   <div className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-300 group cursor-pointer">
                     <Shield className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import { Calendar, Edit, Trash2, ArrowLeft, Loader2, AlertCircle, User, MessageCircle, Clock } from "lucide-react";
+import { Calendar, Edit, Trash2, ArrowLeft, Loader2, AlertCircle, User, Clock } from "lucide-react";
 import { api } from "@/services/api";
 import { type Post } from "@/types";
 import { toast } from "@/hooks/use-toast";
@@ -182,7 +182,6 @@ const PostDetail = () => {
                 </div>
               </div>
 
-              {/* Action Buttons for Authenticated Users */}
               {isAuthenticated && (
                 <div className="flex items-center gap-3 mb-6">
                   <Button
@@ -209,12 +208,10 @@ const PostDetail = () => {
               )}
             </header>
 
-            {/* Article Body */}
             <div className="prose prose-lg max-w-none">
               <RichRendererPro html={post.content} />
             </div>
 
-            {/* Article Footer */}
             <footer className="mt-12 pt-8 border-t border-slate-700/50">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <ShareButton
@@ -238,10 +235,8 @@ const PostDetail = () => {
             </footer>
           </article>
 
-          {/* Sidebar */}
           <aside className="lg:col-span-1">
             <div className="sticky top-24 space-y-8">
-              {/* Author Info */}
               {post.author && (
                 <Card className="p-6 bg-slate-800/50 backdrop-blur-md border-slate-700/50 shadow-2xl">
                   <h3 className="font-semibold text-white mb-4">Sobre o Autor</h3>
@@ -259,12 +254,11 @@ const PostDetail = () => {
                 </Card>
               )}
 
-          {/* Comments Section */}
           <CommentsSection 
             postId={post.id}
             isAuthenticated={isAuthenticated}
             currentUser={isAuthenticated ? {
-              name: 'Usuário', // This would come from auth context
+              name: 'Usuário',
               email: 'user@example.com'
             } : undefined}
           />

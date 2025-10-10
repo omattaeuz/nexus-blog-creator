@@ -2,14 +2,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TabsContent } from '@/components/ui/tabs';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import { 
-  BarChart3, 
   MessageCircle, 
   FileText, 
-  Search,
-  Settings,
   HardDrive,
   Bell,
   TrendingUp,
@@ -17,25 +14,25 @@ import {
   Heart
 } from 'lucide-react';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
-import CommentsSection from '@/components/CommentsSection';
 import PostTemplates from '@/components/PostTemplates';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import NotificationSystem from '@/components/NotificationSystem';
 import BackupManager from '@/components/BackupManager';
 import HelpModal from '@/components/HelpModal';
-import { useKeyboardShortcuts, createBlogShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { usePostsWithCache } from '@/hooks/usePostsWithCache';
 import { useNotifications } from '@/hooks/useNotifications';
-import { Comment } from '@/types/analytics';
+import { useDashboardShortcuts } from '@/hooks/useDashboardShortcuts';
+import { createBlogShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Post } from '@/types/index';
 import { analyticsService } from '@/services/analytics';
+import DashboardTabs from '@/components/dashboard/DashboardTabs';
+import DashboardComments from '@/components/dashboard/DashboardComments';
+import { DASHBOARD_TABS } from '@/lib/constants';
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [activeTab, setActiveTab] = useState<string>(DASHBOARD_TABS.OVERVIEW);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Use real posts data
   const { 
     posts, 
     loading: postsLoading, 
@@ -43,18 +40,15 @@ export default function Dashboard() {
     refetch: refetchPosts
   } = usePostsWithCache();
 
-  // Use notifications hook
   const {
     notifications,
     unreadCount,
     markAsRead,
     markAllAsRead,
     deleteNotification,
-    preferences,
     updatePreferences
   } = useNotifications();
 
-  // Calculate real stats using analytics service
   const realStats = analyticsService.getDashboardStats(posts);
   const realPostAnalytics = analyticsService.getPostAnalytics(posts);
 
@@ -62,127 +56,45 @@ export default function Dashboard() {
     setIsLoading(postsLoading);
   }, [postsLoading]);
 
-  // Generate activity-based notifications when posts change
   useEffect(() => {
     if (posts.length > 0) {
       // This would be called by the notification service when posts are updated
-      // For now, we'll just ensure notifications are loaded
     }
   }, [posts]);
 
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    shortcuts: createBlogShortcuts({
-      onNewPost: () => window.location.href = '/posts/new',
-      onSavePost: () => console.log('Save post shortcut'),
-      onPreviewPost: () => console.log('Preview post shortcut'),
-      onSearch: () => setActiveTab('search'),
-      onGoToPosts: () => window.location.href = '/posts',
-      onGoToHome: () => setActiveTab('overview'),
-      onGoToAnalytics: () => setActiveTab('analytics'),
-      onGoToSettings: () => setActiveTab('settings'),
-      onHelp: () => console.log('Help shortcut')
-    })
+  useDashboardShortcuts({
+    onTabChange: setActiveTab,
   });
 
-  // Real functions for comments (would integrate with API)
-  const handleAddComment = (content: string, parentId?: string) => {
-    // TODO: Integrate with real comments API
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      postId: '1',
-      author: 'Usuário',
-      authorEmail: 'usuario@example.com',
-      content,
-      replies: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      approved: true,
-      likes: 0,
-      isReply: !!parentId,
-      parentId
-    };
-    setComments(prev => [...prev, newComment]);
-  };
-
-  const handleLikeComment = (commentId: string) => {
-    setComments(prev => prev.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, likes: comment.likes + 1 }
-        : comment
-    ));
-  };
-
-  const handleReply = (commentId: string, content: string) => {
-    const newReply: Comment = {
-      id: Date.now().toString(),
-      postId: '1',
-      author: 'Usuário',
-      authorEmail: 'usuario@example.com',
-      content,
-      replies: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      approved: true,
-      likes: 0,
-      isReply: true,
-      parentId: commentId
-    };
-    
-    setComments(prev => prev.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, replies: [...comment.replies, newReply] }
-        : comment
-    ));
-  };
-
-  const handleModerate = (commentId: string, approved: boolean) => {
-    setComments(prev => prev.map(comment => 
-      comment.id === commentId 
-        ? { ...comment, approved }
-        : comment
-    ));
-  };
-
-  // Notification handlers are now provided by the hook
-
-  // Handle search with real data
   const handleSearchResults = (results: Post[]) => {
     console.log('Search results:', results);
   };
 
-  // Handle template selection - redirect to create post with template
   const handleSelectTemplate = (template: any) => {
-    // Create a URL with template data as query parameters
     const templateData = encodeURIComponent(JSON.stringify({
       title: template.name,
       content: template.content,
       category: template.category
     }));
     
-    // Redirect to create post page with template data
     window.location.href = `/posts/new?template=${templateData}`;
   };
 
-  // Handle template creation
   const handleCreateTemplate = (template: any) => {
     console.log('Creating template:', template);
     // TODO: Implement template creation API
   };
 
-  // Handle template update
   const handleUpdateTemplate = (id: string, template: any) => {
     console.log('Updating template:', id, template);
     // TODO: Implement template update API
   };
 
-  // Handle template deletion
   const handleDeleteTemplate = (id: string) => {
     console.log('Deleting template:', id);
     // TODO: Implement template deletion API
   };
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -197,7 +109,6 @@ export default function Dashboard() {
     );
   }
 
-  // Show error state
   if (postsError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -257,41 +168,7 @@ export default function Dashboard() {
       </header>
 
       <main className="relative z-10 container mx-auto px-4 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="flex flex-wrap w-full md:grid md:grid-cols-6 lg:grid-cols-8 bg-slate-800/50 backdrop-blur-md border-slate-700/50">
-            <TabsTrigger value="overview" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
-              <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
-              <TrendingUp className="h-4 w-4" />
-              <span className="hidden sm:inline">Analytics</span>
-            </TabsTrigger>
-            <TabsTrigger value="comments" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
-              <MessageCircle className="h-4 w-4" />
-              <span className="hidden sm:inline">Comentários</span>
-            </TabsTrigger>
-            <TabsTrigger value="templates" className="flex items-center justify-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg flex-1 min-w-0">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Templates</span>
-            </TabsTrigger>
-            <TabsTrigger value="search" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              <Search className="h-4 w-4" />
-              <span className="hidden sm:inline">Busca</span>
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              <Bell className="h-4 w-4" />
-              <span className="hidden sm:inline">Notificações</span>
-            </TabsTrigger>
-            <TabsTrigger value="backup" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              <HardDrive className="h-4 w-4" />
-              <span className="hidden sm:inline">Backup</span>
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="hidden md:flex items-center gap-2 text-gray-300 data-[state=active]:bg-slate-600/50 data-[state=active]:text-white data-[state=active]:shadow-lg">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Config</span>
-            </TabsTrigger>
-          </TabsList>
+        <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab}>
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -417,15 +294,10 @@ export default function Dashboard() {
                 <CardTitle className="text-white">Sistema de Comentários</CardTitle>
               </CardHeader>
               <CardContent>
-                <CommentsSection
+                <DashboardComments
                   postId="1"
-                  mode="controlled"
-                  comments={comments}
-                  onAddComment={handleAddComment}
-                  onLikeComment={handleLikeComment}
-                  onReply={handleReply}
-                  onModerate={handleModerate}
-                  isModerator={true}
+                  isAuthenticated={true}
+                  currentUser={{ name: 'Usuário', email: 'usuario@example.com' }}
                 />
               </CardContent>
             </Card>
@@ -536,7 +408,7 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+        </DashboardTabs>
       </main>
     </div>
   );

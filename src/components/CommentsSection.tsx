@@ -20,6 +20,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useCommentsWithCache } from '@/hooks/useCommentsWithCache';
 import { Comment } from '@/services/comments';
+import { COMMENT_MODES } from '@/lib/constants';
 
 interface CommentsSectionProps {
   postId: string;
@@ -28,14 +29,12 @@ interface CommentsSectionProps {
     name: string;
     email: string;
   };
-  // Props para compatibilidade com CommentsSystem
   comments?: Comment[];
   onAddComment?: (content: string, parentId?: string) => void;
   onLikeComment?: (commentId: string) => void;
   onReply?: (commentId: string, content: string) => void;
   onModerate?: (commentId: string, approved: boolean) => void;
   isModerator?: boolean;
-  // Modo de uso: 'standalone' (usa cache) ou 'controlled' (usa props)
   mode?: 'standalone' | 'controlled';
 }
 
@@ -246,14 +245,13 @@ export default function CommentsSection({
   postId, 
   isAuthenticated = false, 
   currentUser,
-  // Props para modo controlled
   comments: externalComments,
   onAddComment: externalOnAddComment,
   onLikeComment: externalOnLikeComment,
   onReply: externalOnReply,
   onModerate: externalOnModerate,
   isModerator = false,
-  mode = 'standalone'
+  mode = COMMENT_MODES.STANDALONE
 }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -261,38 +259,33 @@ export default function CommentsSection({
   const [authorName, setAuthorName] = useState(currentUser?.name || '');
   const [authorEmail, setAuthorEmail] = useState(currentUser?.email || '');
 
-  // Hook para modo standalone (só chama se não for controlled)
-  const cacheHook = mode === 'standalone' ? useCommentsWithCache(postId) : null;
+  const cacheHook = mode === COMMENT_MODES.STANDALONE ? useCommentsWithCache(postId) : null;
   
-  // Dados e funções baseadas no modo
-  const comments = mode === 'controlled' ? (externalComments || []) : (cacheHook?.comments || []);
-  const isLoading = mode === 'controlled' ? false : (cacheHook?.loading || false);
-  const error = mode === 'controlled' ? null : (cacheHook?.error || null);
+  const comments = mode === COMMENT_MODES.CONTROLLED ? (externalComments || []) : (cacheHook?.comments || []);
+  const isLoading = mode === COMMENT_MODES.CONTROLLED ? false : (cacheHook?.loading || false);
+  const error = mode === COMMENT_MODES.CONTROLLED ? null : (cacheHook?.error || null);
   
-  // Funções baseadas no modo
-  const createComment = mode === 'controlled' 
+  const createComment = mode === COMMENT_MODES.CONTROLLED 
     ? async (data: any) => externalOnAddComment?.(data.content, data.parentId)
     : (cacheHook?.createComment || (() => Promise.reject('Cache hook not available')));
     
-  const updateComment = mode === 'controlled' 
+  const updateComment = mode === COMMENT_MODES.CONTROLLED 
     ? async (id: string, content: string) => {
-        // No modo controlled, não há update direto
         console.warn('Update not supported in controlled mode');
       }
     : (cacheHook?.updateComment || (() => Promise.reject('Cache hook not available')));
     
-  const deleteComment = mode === 'controlled' 
+  const deleteComment = mode === COMMENT_MODES.CONTROLLED 
     ? async (id: string) => {
-        // No modo controlled, não há delete direto
         console.warn('Delete not supported in controlled mode');
       }
     : (cacheHook?.deleteComment || (() => Promise.reject('Cache hook not available')));
     
-  const likeComment = mode === 'controlled' 
+  const likeComment = mode === COMMENT_MODES.CONTROLLED
     ? async (id: string) => externalOnLikeComment?.(id)
     : (cacheHook?.likeComment || (() => Promise.reject('Cache hook not available')));
     
-  const moderateComment = mode === 'controlled' 
+  const moderateComment = mode === COMMENT_MODES.CONTROLLED 
     ? async (id: string, approved: boolean) => externalOnModerate?.(id, approved)
     : (cacheHook?.moderateComment || (() => Promise.reject('Cache hook not available')));
 

@@ -28,7 +28,6 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     setError(null);
 
     try {
-      // Try cache first
       if (!forceRefresh) {
         const cached = await redisCache.get<Comment[]>(cacheKey);
         if (cached) {
@@ -38,10 +37,8 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
         }
       }
 
-      // Cache miss - fetch from service
       const commentsData = await commentService.getComments(postId);
 
-      // Store in cache
       await redisCache.set(cacheKey, commentsData, CacheTTL.comments);
       
       setComments(commentsData);
@@ -58,7 +55,6 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     try {
       const newComment = await commentService.createComment(data);
       
-      // Invalidate cache and refetch
       await CacheInvalidation.onCommentAdd(postId);
       await fetchComments(true);
       
@@ -73,7 +69,6 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     try {
       const updatedComment = await commentService.updateComment(id, content);
       
-      // Invalidate cache and refetch
       await CacheInvalidation.onCommentUpdate(postId);
       await fetchComments(true);
       
@@ -88,7 +83,6 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     try {
       await commentService.deleteComment(id);
       
-      // Invalidate cache and refetch
       await CacheInvalidation.onCommentDelete(postId);
       await fetchComments(true);
     } catch (err) {
@@ -101,12 +95,8 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     try {
       const likedComment = await commentService.likeComment(id);
       
-      // Update local state immediately for better UX
-      setComments(prev => prev.map(comment => 
-        comment.id === id ? { ...comment, likes: likedComment.likes } : comment
-      ));
+      setComments(prev => prev.map(comment => comment.id === id ? { ...comment, likes: likedComment.likes } : comment ));
       
-      // Update cache
       await redisCache.set(cacheKey, comments, CacheTTL.comments);
       
       return likedComment;
@@ -120,7 +110,6 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
     try {
       const moderatedComment = await commentService.moderateComment(id, approved);
       
-      // Invalidate cache and refetch
       await CacheInvalidation.onCommentUpdate(postId);
       await fetchComments(true);
       
@@ -136,9 +125,7 @@ export function useCommentsWithCache(postId: string): UseCommentsWithCacheReturn
   }, [postId]);
 
   useEffect(() => {
-    if (postId) {
-      fetchComments();
-    }
+    if (postId) fetchComments();
   }, [fetchComments, postId]);
 
   return {

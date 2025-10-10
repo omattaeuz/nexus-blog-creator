@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { VALIDATION_CONSTANTS, ERROR_MESSAGES } from '@/lib/constants';
 
 export interface ValidationRule {
   required?: boolean;
@@ -25,11 +26,6 @@ export interface UseFormValidationReturn<T> {
   hasErrors: boolean;
 }
 
-/**
- * Hook for form validation with consistent error handling
- * @param rules - Validation rules for each field
- * @returns Validation utilities and error state
- */
 export function useFormValidation<T extends Record<string, unknown>>(
   rules: ValidationRules
 ): UseFormValidationReturn<T> {
@@ -92,18 +88,18 @@ export function useFormValidation<T extends Record<string, unknown>>(
 export const commonValidationRules = {
   email: {
     required: true,
-    pattern: /\S+@\S+\.\S+/,
+    pattern: VALIDATION_CONSTANTS.EMAIL_PATTERN,
     custom: (value: string) => {
-      if (!/\S+@\S+\.\S+/.test(value)) return 'Por favor, digite um email válido';
+      if (!VALIDATION_CONSTANTS.EMAIL_PATTERN.test(value)) return ERROR_MESSAGES.INVALID_EMAIL;
       
       return null;
     }
   },
   password: {
     required: true,
-    minLength: 6,
+    minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
     custom: (value: string) => {
-      if (value.length < 6) return 'A senha deve ter pelo menos 6 caracteres';
+      if (value.length < VALIDATION_CONSTANTS.MIN_TITLE_LENGTH) return ERROR_MESSAGES.PASSWORD_TOO_WEAK;
 
       return null;
     }
@@ -111,18 +107,18 @@ export const commonValidationRules = {
   confirmPassword: {
     required: true,
     custom: (value: string, originalPassword?: string) => {
-      if (originalPassword && value !== originalPassword) return 'As senhas não coincidem';
+      if (originalPassword && value !== originalPassword) return ERROR_MESSAGES.PASSWORDS_DONT_MATCH;
       
       return null;
     }
   },
   title: {
     required: true,
-    minLength: 3,
-    maxLength: 100,
+    minLength: VALIDATION_CONSTANTS.MIN_TITLE_LENGTH,
+    maxLength: VALIDATION_CONSTANTS.MAX_TITLE_LENGTH,
   },
   content: {
     required: true,
-    minLength: 10,
+    minLength: VALIDATION_CONSTANTS.MIN_CONTENT_LENGTH,
   }
 };

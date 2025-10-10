@@ -67,17 +67,14 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
       );
     }
 
-    // Author filter
     if (filters.author) results = results.filter(post => post.author?.email === filters.author);
 
-    // Tags filter
     if (filters.tags.length > 0) {
       results = results.filter(post => 
         filters.tags.some(tag => post.tags?.includes(tag))
       );
     }
 
-    // Date range filter
     if (filters.dateFrom) {
       results = results.filter(post => 
         new Date(post.created_at) >= new Date(filters.dateFrom)
@@ -89,13 +86,11 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
       );
     }
 
-    // Read time filter (estimated based on content length)
     results = results.filter(post => {
       const estimatedReadTime = Math.ceil(post.content.length / 1000); // ~1000 chars per minute
       return estimatedReadTime >= filters.minReadTime && estimatedReadTime <= filters.maxReadTime;
     });
 
-    // Sorting
     results.sort((a, b) => {
       let comparison = 0;
       
@@ -111,7 +106,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
           break;
         case 'relevance':
         default:
-          // Simple relevance based on query matches
           if (filters.query) {
             const aMatches = (a.title + ' ' + a.content).toLowerCase().split(filters.query.toLowerCase()).length - 1;
             const bMatches = (b.title + ' ' + b.content).toLowerCase().split(filters.query.toLowerCase()).length - 1;
@@ -128,7 +122,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
     return results;
   }, [posts, filters]);
 
-  // Update search results when filters change
   useEffect(() => {
     onSearchResults(searchResults);
   }, [searchResults, onSearchResults]);
@@ -165,7 +158,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Search Input */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -176,7 +168,6 @@ export default function AdvancedSearch({ posts, onSearchResults }: AdvancedSearc
           />
         </div>
 
-        {/* Filters Toggle */}
         <div className="flex items-center justify-between">
           <Button
             variant="outline"

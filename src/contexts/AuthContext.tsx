@@ -1,8 +1,8 @@
-import React, { useContext, useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { supabase, authHelpers } from '@/lib/supabase';
 import { logAuth, logError } from '@/lib/logger';
 import { ERROR_MESSAGES } from '@/lib/constants';
-import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 import type { User, LoginData, RegisterData } from '@/types';
 import { AuthContext, type AuthContextType } from './auth-context-definition';
 
@@ -15,7 +15,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Convert Supabase user to local User type
   const convertSupabaseUser = (supabaseUser: SupabaseUser | null): User | null => {
     if (!supabaseUser) return null;
     return {
@@ -25,11 +24,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
   };
 
-  // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Get initial session
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -48,7 +45,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     initializeAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         logAuth('Auth state changed', { event, email: session?.user?.email });

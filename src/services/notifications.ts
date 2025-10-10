@@ -204,14 +204,10 @@ class RealNotificationService implements NotificationService {
 
     this.notifications.unshift(newNotification);
     
-    // Keep only last 100 notifications
-    if (this.notifications.length > 100) {
-      this.notifications = this.notifications.slice(0, 100);
-    }
+    if (this.notifications.length > 100) this.notifications = this.notifications.slice(0, 100);
 
     this.saveNotifications();
 
-    // Show browser notification if enabled and permission granted
     if (this.preferences.push[notification.type as keyof typeof this.preferences.push] && 
         'Notification' in window && 
         Notification.permission === 'granted') {
@@ -222,7 +218,6 @@ class RealNotificationService implements NotificationService {
     }
   }
 
-  // Helper method to request notification permission
   async requestPermission(): Promise<boolean> {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission();
@@ -231,18 +226,11 @@ class RealNotificationService implements NotificationService {
     return false;
   }
 
-  // Helper method to generate notifications based on blog activity
   generateActivityNotifications(posts: Post[]): void {
-    // This would be called when posts are created, updated, or receive engagement
-    // For now, we'll just ensure we have some realistic notifications
-    if (this.notifications.length < 3) {
-      this.generateInitialNotifications();
-    }
+    if (this.notifications.length < 3) this.generateInitialNotifications();
   }
 }
 
-// Export singleton instance
 export const notificationService = new RealNotificationService();
 
-// Export types
-export type { NotificationService };
+export type { NotificationService as NotificationServiceType };

@@ -5,9 +5,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { Loader2, AlertCircle, ArrowLeft } from "lucide-react";
-import { api, type Post, type UpdatePostData } from "@/services/api";
+import { api } from "@/services/api";
+import { type Post, type UpdatePostData } from "@/types";
 import { useAuth } from "@/contexts/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, ROUTES } from "@/lib/constants";
 
 const EditPost = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,23 +22,21 @@ const EditPost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) {
-        setError("Post ID is required");
+        setError(ERROR_MESSAGES.NOT_FOUND);
         setLoading(false);
         return;
       }
 
       try {
         const fetchedPost = await api.getPost(id, token);
-        if (!fetchedPost) {
-          setError("Post not found");
-        } else {
-          setPost(fetchedPost);
-        }
+        if (!fetchedPost) setError(ERROR_MESSAGES.NOT_FOUND);
+        else setPost(fetchedPost);
+        
       } catch (_err) {
-        setError("Failed to fetch post");
+        setError(ERROR_MESSAGES.NETWORK_ERROR);
         toast({
-          title: "Error",
-          description: "Failed to load post. Please try again.",
+          title: "Erro",
+          description: ERROR_MESSAGES.NETWORK_ERROR,
           variant: "destructive",
         });
       } finally {
@@ -48,12 +48,12 @@ const EditPost = () => {
   }, [id, token]);
 
   const handleSubmit = async (data: UpdatePostData) => {
-    if (!id) throw new Error("Post ID is required");
-    if (!token) throw new Error("Authentication required");
+    if (!id) throw new Error(ERROR_MESSAGES.NOT_FOUND);
+    if (!token) throw new Error(ERROR_MESSAGES.UNAUTHORIZED);
     
     const updatedPost = await api.updatePost(id, data, token);
     if (!updatedPost) {
-      throw new Error("Failed to update post");
+      throw new Error(ERROR_MESSAGES.UNEXPECTED_ERROR);
     }
   };
 
@@ -90,7 +90,7 @@ const EditPost = () => {
                 O post que você está procurando não existe ou foi removido.
               </p>
               <Button
-                onClick={() => navigate("/posts")}
+                onClick={() => navigate(ROUTES.POSTS)}
                 className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
