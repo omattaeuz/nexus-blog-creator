@@ -9,7 +9,7 @@ import { api } from "@/services/api";
 import { type Post } from "@/types";
 // import { toast } from "@/hooks/use-toast";
 import { formatDate, calculateReadingTime } from "@/lib/formatters";
-import { cacheManager } from "@/lib/cache-manager";
+import { redisCache } from "@/lib/redis-cache";
 import ShareButton from "@/components/ShareButton";
 import RichRendererPro from "@/components/RichRendererPro";
 import RelatedPosts from "@/components/RelatedPosts";
@@ -44,10 +44,10 @@ const PublicPostDetail = () => {
         // If API fails, try to get post from localStorage (from previous visits)
         console.error('Public access failed, trying localStorage fallback:', err);
         
-        // Try to get from cache using the new cache manager
-        const cachedPost = cacheManager.getPost(id);
+        // Try to get from Redis cache
+        const cachedPost = await redisCache.get(`posts:detail:${id}`);
         if (cachedPost) {
-          console.log('Found post in cache, showing preview');
+          console.log('Found post in Redis cache, showing preview');
           setPost(cachedPost);
           setLoading(false);
           return;

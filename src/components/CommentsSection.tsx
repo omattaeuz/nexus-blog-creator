@@ -28,6 +28,15 @@ interface CommentsSectionProps {
     name: string;
     email: string;
   };
+  // Props para compatibilidade com CommentsSystem
+  comments?: Comment[];
+  onAddComment?: (content: string, parentId?: string) => void;
+  onLikeComment?: (commentId: string) => void;
+  onReply?: (commentId: string, content: string) => void;
+  onModerate?: (commentId: string, approved: boolean) => void;
+  isModerator?: boolean;
+  // Modo de uso: 'standalone' (usa cache) ou 'controlled' (usa props)
+  mode?: 'standalone' | 'controlled';
 }
 
 interface CommentItemProps {
@@ -236,7 +245,15 @@ function CommentItem({
 export default function CommentsSection({ 
   postId, 
   isAuthenticated = false, 
-  currentUser 
+  currentUser,
+  // Props para modo controlled
+  comments: externalComments,
+  onAddComment: externalOnAddComment,
+  onLikeComment: externalOnLikeComment,
+  onReply: externalOnReply,
+  onModerate: externalOnModerate,
+  isModerator = false,
+  mode = 'standalone'
 }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -244,16 +261,40 @@ export default function CommentsSection({
   const [authorName, setAuthorName] = useState(currentUser?.name || '');
   const [authorEmail, setAuthorEmail] = useState(currentUser?.email || '');
 
-  const {
-    comments,
-    loading: isLoading,
-    error,
-    createComment,
-    updateComment,
-    deleteComment,
-    likeComment,
-    moderateComment
-  } = useCommentsWithCache(postId);
+  // Hook para modo standalone (só chama se não for controlled)
+  const cacheHook = mode === 'standalone' ? useCommentsWithCache(postId) : null;
+  
+  // Dados e funções baseadas no modo
+  const comments = mode === 'controlled' ? (externalComments || []) : (cacheHook?.comments || []);
+  const isLoading = mode === 'controlled' ? false : (cacheHook?.loading || false);
+  const error = mode === 'controlled' ? null : (cacheHook?.error || null);
+  
+  // Funções baseadas no modo
+  const createComment = mode === 'controlled' 
+    ? async (data: any) => externalOnAddComment?.(data.content, data.parentId)
+    : (cacheHook?.createComment || (() => Promise.reject('Cache hook not available')));
+    
+  const updateComment = mode === 'controlled' 
+    ? async (id: string, content: string) => {
+        // No modo controlled, não há update direto
+        console.warn('Update not supported in controlled mode');
+      }
+    : (cacheHook?.updateComment || (() => Promise.reject('Cache hook not available')));
+    
+  const deleteComment = mode === 'controlled' 
+    ? async (id: string) => {
+        // No modo controlled, não há delete direto
+        console.warn('Delete not supported in controlled mode');
+      }
+    : (cacheHook?.deleteComment || (() => Promise.reject('Cache hook not available')));
+    
+  const likeComment = mode === 'controlled' 
+    ? async (id: string) => externalOnLikeComment?.(id)
+    : (cacheHook?.likeComment || (() => Promise.reject('Cache hook not available')));
+    
+  const moderateComment = mode === 'controlled' 
+    ? async (id: string, approved: boolean) => externalOnModerate?.(id, approved)
+    : (cacheHook?.moderateComment || (() => Promise.reject('Cache hook not available')));
 
   const handleSubmitComment = async () => {
     if (!newComment.trim() || !authorName.trim() || !authorEmail.trim()) return;

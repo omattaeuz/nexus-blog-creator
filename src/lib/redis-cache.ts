@@ -31,6 +31,13 @@ class RedisCacheManager {
 
   private async initializeRedis() {
     try {
+      // Check if we have Redis configuration
+      if (!this.config.url || this.config.url === 'redis://localhost:6379') {
+        console.log('ℹ️ Redis not configured, using fallback cache');
+        this.isConnected = false;
+        return;
+      }
+
       // Dynamic import to avoid SSR issues
       const Redis = await import('ioredis');
       
@@ -42,8 +49,8 @@ class RedisCacheManager {
         retryDelayOnFailover: this.config.retryDelayOnFailover || 100,
         maxRetriesPerRequest: this.config.maxRetriesPerRequest || 3,
         lazyConnect: true,
-        connectTimeout: 10000,
-        commandTimeout: 5000,
+        connectTimeout: 5000, // Reduced timeout
+        commandTimeout: 3000, // Reduced timeout
       });
 
       this.redis.on('connect', () => {
@@ -61,8 +68,13 @@ class RedisCacheManager {
         this.isConnected = false;
       });
 
-      // Try to connect
-      await this.redis.connect();
+      // Try to connect with timeout
+      const connectPromise = this.redis.connect();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Connection timeout')), 3000)
+      );
+      
+      await Promise.race([connectPromise, timeoutPromise]);
     } catch (error) {
       console.warn('⚠️ Redis not available, using fallback cache:', error);
       this.isConnected = false;

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Post } from '@/types/index';
 import { api } from '@/services/api';
 import { redisCache, CacheKeys, CacheTTL, CacheInvalidation } from '@/lib/redis-cache';
+import { useAuth } from '@/contexts/useAuth';
 
 interface UsePostsWithCacheOptions {
   page?: number;
@@ -22,6 +23,7 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAuth();
 
   const cacheKey = CacheKeys.posts.list(page, limit);
 
@@ -41,8 +43,8 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
       }
 
       // Cache miss - fetch from API
-      const response = await api.getPosts({ page, limit });
-      const postsData = response.data || response;
+      const response = await api.getPosts({ page, limit, token });
+      const postsData = response.posts || response.data || response;
 
       // Store in cache
       await redisCache.set(cacheKey, postsData, CacheTTL.posts);
@@ -55,7 +57,7 @@ export function usePostsWithCache(options: UsePostsWithCacheOptions = {}): UsePo
     } finally {
       setLoading(false);
     }
-  }, [page, limit, cacheKey]);
+  }, [page, limit, cacheKey, token]);
 
   const invalidateCache = useCallback(async () => {
     await CacheInvalidation.onPostCreate();

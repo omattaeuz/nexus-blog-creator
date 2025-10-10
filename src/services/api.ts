@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { N8N_CONFIG } from '@/config/n8n';
 import { logApi, logError } from '@/lib/logger';
-import { cacheManager } from '@/lib/cache-manager';
+import { redisCache } from '@/lib/redis-cache';
 
 interface Post {
   id: string;
@@ -526,8 +526,8 @@ export const api = {
   },
 
   // Cache post for public access
-  cachePost(post: Post): void {
-    cacheManager.storePost(post);
+  async cachePost(post: Post): Promise<void> {
+    await redisCache.set(`posts:detail:${post.id}`, post, 300); // 5 minutes TTL
   },
 
   // Get a specific post by ID (works for both public and private posts)
@@ -546,7 +546,7 @@ export const api = {
 
       // Handle HTTP 304 (Not Modified): try cache, then one retry with cache-busting
       if ((response as any)?.status === 304) {
-        const cached = cacheManager.getPost(id);
+        const cached = await redisCache.get(`posts:detail:${id}`);
         if (cached) {
           return cached;
         }
@@ -591,7 +591,7 @@ export const api = {
 
         // Some adapters surface 304 as an error; handle same as above
         if (status === 304) {
-          const cached = cacheManager.getPost(id);
+          const cached = await redisCache.get(`posts:detail:${id}`);
           if (cached) {
             return cached;
           }
@@ -685,7 +685,7 @@ export const api = {
       
       // If API fails, try to get from cache
       logApi('API failed, trying cache fallback for public posts', { page, limit });
-      const cachedPosts = cacheManager.getPublicPosts();
+      const cachedPosts = await redisCache.get(`posts:public:${page}`) || [];
       
       if (cachedPosts.length > 0) {
         // Apply pagination to cached posts
@@ -734,8 +734,8 @@ export const api = {
       const updatedPost = response.data?.data || response.data || null;
       if (updatedPost && updatedPost.id) {
         // Remove any stale cache first to avoid old ETag path
-        cacheManager.removePost(updatedPost.id);
-        this.cachePost(updatedPost);
+        await redisCache.delete(`posts:detail:${updatedPost.id}`);
+        await this.cachePost(updatedPost);
       } else {
         // Fallback: refetch from GET ONE and cache
         try {
@@ -795,7 +795,7 @@ export const api = {
       });
 
       // Remove from cache immediately
-      cacheManager.removePost(id);
+      await redisCache.delete(`posts:detail:${id}`);
       
       return true;
     } catch (error) {

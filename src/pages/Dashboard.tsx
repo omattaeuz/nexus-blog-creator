@@ -17,14 +17,14 @@ import {
   Heart
 } from 'lucide-react';
 import AnalyticsDashboard from '@/components/AnalyticsDashboard';
-import CommentsSystem from '@/components/CommentsSystem';
+import CommentsSection from '@/components/CommentsSection';
 import PostTemplates from '@/components/PostTemplates';
 import AdvancedSearch from '@/components/AdvancedSearch';
 import NotificationSystem from '@/components/NotificationSystem';
 import BackupManager from '@/components/BackupManager';
 import HelpModal from '@/components/HelpModal';
 import { useKeyboardShortcuts, createBlogShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { usePosts } from '@/hooks/usePosts';
+import { usePostsWithCache } from '@/hooks/usePostsWithCache';
 import { useNotifications } from '@/hooks/useNotifications';
 import { Comment } from '@/types/analytics';
 import { Post } from '@/types/index';
@@ -40,9 +40,8 @@ export default function Dashboard() {
     posts, 
     loading: postsLoading, 
     error: postsError,
-    searchPosts,
-    filters 
-  } = usePosts();
+    refetch: refetchPosts
+  } = usePostsWithCache();
 
   // Use notifications hook
   const {
@@ -418,8 +417,9 @@ export default function Dashboard() {
                 <CardTitle className="text-white">Sistema de Comentários</CardTitle>
               </CardHeader>
               <CardContent>
-                <CommentsSystem
+                <CommentsSection
                   postId="1"
+                  mode="controlled"
                   comments={comments}
                   onAddComment={handleAddComment}
                   onLikeComment={handleLikeComment}
