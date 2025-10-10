@@ -390,8 +390,8 @@ export function GlobeDemo() {
   ]
 
   return (
-    <div className="flex flex-row items-center justify-center py-20 h-screen md:h-auto bg-transparent relative w-full">
-      <div className="max-w-7xl mx-auto w-full relative overflow-visible h-full md:h-[60rem] px-4">
+    <div className="flex flex-row items-center justify-center py-8 sm:py-12 md:py-20 h-[100vh] sm:h-[100vh] md:h-[100vh] lg:h-[100vh] bg-transparent relative w-full">
+      <div className="max-w-7xl mx-auto w-full relative overflow-visible h-full md:h-[60rem] px-2 sm:px-4">
         <motion.div
           initial={{
             opacity: 0,
@@ -406,14 +406,14 @@ export function GlobeDemo() {
           }}
           className="div"
         >
-          <h2 className="text-center text-xl md:text-4xl font-bold text-white">
+          <h2 className="text-center text-lg sm:text-xl md:text-4xl font-bold text-white px-2">
             Conectamos Criadores pelo Mundo
           </h2>
-          <p className="text-center text-base md:text-lg font-normal text-white max-w-md mt-2 mx-auto">
+          <p className="text-center text-sm sm:text-base md:text-lg font-normal text-white max-w-xs sm:max-w-md mt-2 mx-auto px-2">
             Nossa plataforma une blogueiros e leitores de todos os continentes. Explore, crie e compartilhe conhecimento globalmente.
           </p>
         </motion.div>
-        <div className="absolute w-full -bottom-20 h-[120vh] md:h-[100vh] z-10">
+        <div className="absolute w-[120vw] h-[120vw] sm:w-[110vw] sm:h-[110vw] md:w-[60vw] md:h-[60vw] lg:w-[50vw] lg:h-[50vw] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <World data={sampleArcs} globeConfig={globeConfig} />
         </div>
       </div>

@@ -13,8 +13,12 @@ declare module "@react-three/fiber" {
 extend({ ThreeGlobe: ThreeGlobe })
 
 const RING_PROPAGATION_SPEED = 3
-const aspect = 1.2
-const cameraZ = 400
+const aspect = 1.0
+const cameraZ = 500
+
+// Mobile-specific configurations
+const mobileAspect = 0.8
+const mobileCameraZ = 450
 
 
 type Position = {
@@ -198,15 +202,65 @@ export function WebGLRendererConfig() {
 
 export function World(props: WorldProps) {
   const { globeConfig } = props
+  
+  // Responsive camera configuration
+  const getCameraConfig = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth
+      if (width >= 300 && width <= 768) {
+        // Mobile configuration
+        return {
+          fov: 50,
+          aspect: mobileAspect,
+          near: 200,
+          far: 2000,
+          position: [0, 50, mobileCameraZ],
+        }
+      }
+    }
+    // Desktop/tablet configuration
+    return {
+      fov: 40,
+      aspect: aspect,
+      near: 180,
+      far: 1800,
+      position: [0, 100, cameraZ],
+    }
+  }
+
+  const getOrbitControlsConfig = () => {
+    if (typeof window !== 'undefined') {
+      const width = window.innerWidth
+      if (width >= 300 && width <= 768) {
+        // Mobile configuration
+        return {
+          enablePan: false,
+          enableZoom: false,
+          minDistance: mobileCameraZ,
+          maxDistance: mobileCameraZ,
+          autoRotateSpeed: 0.3,
+          autoRotate: true,
+          minPolarAngle: Math.PI / 3,
+          maxPolarAngle: Math.PI / 2.2,
+        }
+      }
+    }
+    // Desktop/tablet configuration
+    return {
+      enablePan: false,
+      enableZoom: false,
+      minDistance: cameraZ,
+      maxDistance: cameraZ,
+      autoRotateSpeed: 0.5,
+      autoRotate: true,
+      minPolarAngle: Math.PI / 4,
+      maxPolarAngle: Math.PI / 2.5,
+    }
+  }
+
   return (
     <Canvas
-      camera={{
-        fov: 35,
-        aspect: aspect,
-        near: 180,
-        far: 1800,
-        position: [0, 100, cameraZ],
-      }}
+      camera={getCameraConfig()}
     >
       <WebGLRendererConfig />
       <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
@@ -214,16 +268,7 @@ export function World(props: WorldProps) {
       <directionalLight color={globeConfig.directionalTopLight} position={[-200, 500, 200]} />
       <pointLight color={globeConfig.pointLight} position={[-200, 500, 200]} intensity={0.8} />
       <Globe {...props} />
-      <OrbitControls
-        enablePan={false}
-        enableZoom={false}
-        minDistance={cameraZ}
-        maxDistance={cameraZ}
-        autoRotateSpeed={0.5}
-        autoRotate={true}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 2.5}
-      />
+      <OrbitControls {...getOrbitControlsConfig()} />
     </Canvas>
   )
 }
